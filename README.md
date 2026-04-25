@@ -17,9 +17,13 @@ Rastreabilidade de itens
 ☛ Desenvolver uma aplicação simples, funcional e didática que represente um sistema real de WMS, servindo tanto para aprendizado quanto para demonstração prática no TCC.
 
 🛠️ Tecnologias Utilizadas
-Python → Backend e regras de negócio
-Supabase → Banco de dados e backend como serviço
-React → Interface do usuário (frontend)
+
+☛Python → Backend e regras de negócio
+
+☛Supabase → Banco de dados e backend como serviço
+
+☛React → Interface do usuário (frontend)
+
 ⚙️ Funcionalidades (em desenvolvimento)
 Cadastro de produtos
 Controle de entrada e saída

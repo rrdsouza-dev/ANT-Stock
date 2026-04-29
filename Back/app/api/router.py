@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from app.api.routes.auth import router as auth_router
 from app.api.routes.categories import router as categories_router
 from app.api.routes.inventory import router as inventory_router
 from app.api.routes.locations import router as locations_router
@@ -9,6 +10,9 @@ from app.api.routes.products import router as products_router
 
 # Agrupa todas as rotas expostas pela API.
 api_router = APIRouter()
+
+# Autenticacao concentra o acesso do usuario ao sistema.
+api_router.include_router(auth_router)
 
 # Produtos sao o nucleo do controle de estoque.
 api_router.include_router(products_router)

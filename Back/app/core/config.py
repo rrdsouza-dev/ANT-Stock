@@ -28,6 +28,42 @@ class Settings(BaseSettings):
         default=10,
         validation_alias="SUPABASE_TIMEOUT_SECONDS",
     )
+    auth_google_redirect: str | None = Field(
+        default=None,
+        validation_alias="AUTH_GOOGLE_REDIRECT",
+    )
+    auth_google_scopes: str = Field(
+        default="openid email profile",
+        validation_alias="AUTH_GOOGLE_SCOPES",
+    )
+    jwt_chave: str = Field(
+        default="troque-esta-chave-em-producao",
+        validation_alias="JWT_CHAVE",
+    )
+    jwt_algoritmo: str = Field(
+        default="HS256",
+        validation_alias="JWT_ALGORITMO",
+    )
+    jwt_expira_minutos: int = Field(
+        default=60,
+        validation_alias="JWT_EXPIRA_MINUTOS",
+    )
+    rate_limite_janela_segundos: int = Field(
+        default=60,
+        validation_alias="RATE_LIMITE_JANELA_SEGUNDOS",
+    )
+    rate_limite_auth_tentativas: int = Field(
+        default=8,
+        validation_alias="RATE_LIMITE_AUTH_TENTATIVAS",
+    )
+    rate_limite_bloqueio_segundos: int = Field(
+        default=120,
+        validation_alias="RATE_LIMITE_BLOQUEIO_SEGUNDOS",
+    )
+    rate_limite_peso_identidade: bool = Field(
+        default=True,
+        validation_alias="RATE_LIMITE_PESO_IDENTIDADE",
+    )
 
     @property
     def supabase_enabled(self) -> bool:

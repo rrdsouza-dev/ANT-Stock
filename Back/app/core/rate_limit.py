@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 
 from fastapi import HTTPException, Request, status
 
-from app.core.config import get_settings
+from app.core.config import obter_config
 
 
 @dataclass
@@ -60,7 +60,7 @@ def _limpar(balde: Balde, agora: float, janela: int) -> None:
 
 
 async def limitar(request: Request, escopo: str = "global") -> None:
-    config = get_settings()
+    config = obter_config()
     agora = time.monotonic()
     limite = config.rate_limite_auth_tentativas
     janela = config.rate_limite_janela_segundos
@@ -99,5 +99,4 @@ async def limitar(request: Request, escopo: str = "global") -> None:
 
 
 async def limitar_auth(request: Request) -> None:
-    # Protege rotas sensiveis contra repeticao por IP, fingerprint leve e identidade.
     await limitar(request, escopo="auth")

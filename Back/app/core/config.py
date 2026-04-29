@@ -71,5 +71,5 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def get_settings() -> Settings:
+def obter_config() -> Settings:
     return Settings()

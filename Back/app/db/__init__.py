@@ -1,4 +1,3 @@
-from app.db.client import SupabaseNotConfiguredError, get_supabase_client
-from app.db.repositories.base import BaseRepository
+from app.db.client import SupabaseNaoConfiguradoErro, obter_cliente_supabase
 
-__all__ = ("BaseRepository", "SupabaseNotConfiguredError", "get_supabase_client")
+__all__ = ("SupabaseNaoConfiguradoErro", "obter_cliente_supabase")

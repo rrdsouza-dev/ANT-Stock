@@ -1,30 +1,18 @@
 from fastapi import APIRouter
 
-from app.api.routes.auth import router as auth_router
-from app.api.routes.categories import router as categories_router
-from app.api.routes.inventory import router as inventory_router
-from app.api.routes.locations import router as locations_router
-from app.api.routes.movements import router as movements_router
-from app.api.routes.products import router as products_router
+from app.api.routes.autenticacao import router as autenticacao_router
+from app.api.routes.categorias import router as categorias_router
+from app.api.routes.estoque import router as estoque_router
+from app.api.routes.localizacoes import router as localizacoes_router
+from app.api.routes.movimentacoes import router as movimentacoes_router
+from app.api.routes.produtos import router as produtos_router
 
 
-# Agrupa todas as rotas expostas pela API.
 api_router = APIRouter()
 
-# Autenticacao concentra o acesso do usuario ao sistema.
-api_router.include_router(auth_router)
-
-# Produtos sao o nucleo do controle de estoque.
-api_router.include_router(products_router)
-
-# Categorias ajudam na organizacao logica do armazem.
-api_router.include_router(categories_router)
-
-# Localizacoes representam onde os itens ficam armazenados.
-api_router.include_router(locations_router)
-
-# Estoque concentra consultas de disponibilidade.
-api_router.include_router(inventory_router)
-
-# Movimentacoes registram entradas e saidas de itens.
-api_router.include_router(movements_router)
+api_router.include_router(autenticacao_router)
+api_router.include_router(produtos_router)
+api_router.include_router(categorias_router)
+api_router.include_router(localizacoes_router)
+api_router.include_router(estoque_router)
+api_router.include_router(movimentacoes_router)

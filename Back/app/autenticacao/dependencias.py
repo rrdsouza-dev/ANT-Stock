@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.auth.servico import perfil
+from app.autenticacao.contas import buscar_perfil
 from app.models.comum.usuario import Usuario
 
 
@@ -11,7 +11,6 @@ bearer = HTTPBearer(auto_error=False)
 def token_atual(
     credenciais: HTTPAuthorizationCredentials | None = Depends(bearer),
 ) -> str:
-    # Extrai o token Bearer usado nas rotas protegidas.
     if not credenciais or credenciais.scheme.lower() != "bearer":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -22,5 +21,4 @@ def token_atual(
 
 
 def usuario_atual(token: str = Depends(token_atual)) -> Usuario:
-    # Resolve o usuario autenticado a partir do token enviado.
-    return perfil(token)
+    return buscar_perfil(token)

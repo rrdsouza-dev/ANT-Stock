@@ -2,20 +2,20 @@ from functools import lru_cache
 
 from supabase import Client, ClientOptions, create_client
 
-from app.core.config import get_settings
+from app.core.config import obter_config
 
 
-class SupabaseNotConfiguredError(RuntimeError):
-    """Raised when Supabase settings are missing."""
+class SupabaseNaoConfiguradoErro(RuntimeError):
+    pass
 
 
 @lru_cache
-def get_supabase_client() -> Client:
-    settings = get_settings()
+def obter_cliente_supabase() -> Client:
+    settings = obter_config()
 
     if not settings.supabase_url or not settings.supabase_key:
-        raise SupabaseNotConfiguredError(
-            "Configure SUPABASE_URL and SUPABASE_KEY before using the database layer."
+        raise SupabaseNaoConfiguradoErro(
+            "Configure SUPABASE_URL and SUPABASE_KEY antes de usar o Supabase."
         )
 
     return create_client(
@@ -29,5 +29,5 @@ def get_supabase_client() -> Client:
     )
 
 
-def is_supabase_configured() -> bool:
-    return get_settings().supabase_enabled
+def supabase_configurado() -> bool:
+    return obter_config().supabase_enabled

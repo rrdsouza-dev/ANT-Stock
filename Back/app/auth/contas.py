@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from app.auth.cliente import cliente
 from app.auth.conversores import sessao, usuario
 from app.auth.esquemas import Cadastro, Login, Saida, Sessao
-from app.models.usuario import Usuario
+from app.models.comum.usuario import Usuario
 
 
 def cadastrar(dados: Cadastro) -> Sessao:

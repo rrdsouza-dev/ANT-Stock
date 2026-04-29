@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Literal
 
-from app.models.base import RegistroDB
+from app.models.comum.base import RegistroDB
 
 
 class MovimentacaoDB(RegistroDB):
+    escopo_id: str
+    tipo_escopo: Literal["gestao_escola", "turma_logistica"]
     produto_id: str
     tipo: Literal["entrada", "saida"]
     quantidade: int

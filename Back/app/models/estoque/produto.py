@@ -1,7 +1,11 @@
-from app.models.base import RegistroDB
+from typing import Literal
+
+from app.models.comum.base import RegistroDB
 
 
 class ProdutoDB(RegistroDB):
+    escopo_id: str
+    tipo_escopo: Literal["gestao_escola", "turma_logistica"]
     nome: str
     sku: str | None = None
     categoria_id: str | None = None

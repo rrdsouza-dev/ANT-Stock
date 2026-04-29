@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.auth.servico import perfil
-from app.models.usuario import Usuario
+from app.models.comum.usuario import Usuario
 
 
 bearer = HTTPBearer(auto_error=False)

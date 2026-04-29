@@ -1,15 +1,25 @@
-from app.models.categoria import CategoriaDB
-from app.models.estoque import EstoqueDB
-from app.models.localizacao import LocalizacaoDB
-from app.models.movimentacao import MovimentacaoDB
-from app.models.produto import ProdutoDB
-from app.models.usuario import Usuario
+from app.models.comum import EscopoDB, RegistroDB, Usuario
+from app.models.escola import EscolaDB, GestaoEscolaDB
+from app.models.estoque import (
+    CategoriaDB,
+    EstoqueDB,
+    LocalizacaoDB,
+    MovimentacaoDB,
+    ProdutoDB,
+)
+from app.models.logistica import AlunoLogisticaDB, TurmaLogisticaDB
 
 __all__ = (
+    "AlunoLogisticaDB",
     "CategoriaDB",
+    "EscolaDB",
+    "EscopoDB",
     "EstoqueDB",
+    "GestaoEscolaDB",
     "LocalizacaoDB",
     "MovimentacaoDB",
     "ProdutoDB",
+    "RegistroDB",
+    "TurmaLogisticaDB",
     "Usuario",
 )

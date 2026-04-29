@@ -11,7 +11,7 @@ from app.auth.servico import (
     url_google,
 )
 from app.core.rate_limit import limitar_auth
-from app.models.usuario import Usuario
+from app.models.comum.usuario import Usuario
 
 
 # Rotas de autenticacao de usuario e acesso social.

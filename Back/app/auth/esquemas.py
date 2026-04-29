@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app.models.usuario import Usuario
+from app.models.comum.usuario import Usuario
 
 
 class Cadastro(BaseModel):

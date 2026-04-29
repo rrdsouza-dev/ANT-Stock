@@ -2,7 +2,7 @@ from typing import Any
 
 from app.auth.esquemas import Sessao
 from app.auth.seguranca import criar_token
-from app.models.usuario import Usuario
+from app.models.comum.usuario import Usuario
 
 
 def usuario(dados: Any) -> Usuario | None:
@@ -17,11 +17,19 @@ def usuario(dados: Any) -> Usuario | None:
     if dados.identities:
         provedor = dados.identities[0].provider
 
+    perfil = None
+    escopo_id = None
+    if dados.user_metadata:
+        perfil = dados.user_metadata.get("perfil")
+        escopo_id = dados.user_metadata.get("escopo_id")
+
     return Usuario(
         id=dados.id,
         email=dados.email,
         nome=nome,
         provedor=provedor,
+        perfil=perfil,
+        escopo_id=escopo_id,
     )
 
 

@@ -6,6 +6,7 @@ from app.models.comum.usuario import Usuario
 
 
 def montar_usuario(dados: Any) -> Usuario | None:
+    # Traduz o usuario do Supabase para o modelo usado pela API.
     if not dados:
         return None
 
@@ -23,6 +24,7 @@ def montar_usuario(dados: Any) -> Usuario | None:
 
 
 def montar_sessao(resposta: Any) -> Sessao:
+    # Normaliza a sessao do Supabase em uma resposta estavel para o frontend.
     sessao_supabase = resposta.session
     dados_usuario = (
         resposta.user

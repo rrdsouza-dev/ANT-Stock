@@ -7,6 +7,7 @@ from app.models.comum.usuario import Usuario
 
 
 def cadastrar(dados: Cadastro) -> Sessao:
+    # Cadastro fica no Supabase Auth; o backend so adapta entrada e saida.
     try:
         resposta = cliente_supabase().auth.sign_up(
             {
@@ -25,6 +26,7 @@ def cadastrar(dados: Cadastro) -> Sessao:
 
 
 def entrar(dados: Login) -> Sessao:
+    # Login por email e senha usando o provedor nativo do Supabase.
     try:
         resposta = cliente_supabase().auth.sign_in_with_password(
             {"email": dados.email, "password": dados.senha}
@@ -39,6 +41,7 @@ def entrar(dados: Login) -> Sessao:
 
 
 def buscar_perfil(token: str) -> Usuario:
+    # Valida o token no Supabase antes de liberar dados protegidos.
     try:
         resposta = cliente_supabase().auth.get_user(token)
     except Exception as exc:

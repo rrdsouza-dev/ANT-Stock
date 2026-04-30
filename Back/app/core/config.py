@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
+    # Centraliza as variaveis do .env usadas pelo backend.
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
         env_file_encoding="utf-8",
@@ -72,4 +73,5 @@ class Settings(BaseSettings):
 
 @lru_cache
 def obter_config() -> Settings:
+    # Evita reler o .env a cada chamada.
     return Settings()

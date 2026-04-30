@@ -11,6 +11,7 @@ bearer = HTTPBearer(auto_error=False)
 def token_atual(
     credenciais: HTTPAuthorizationCredentials | None = Depends(bearer),
 ) -> str:
+    # Dependencia reutilizavel para rotas que exigem Authorization: Bearer.
     if not credenciais or credenciais.scheme.lower() != "bearer":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

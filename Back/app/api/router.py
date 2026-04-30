@@ -10,6 +10,7 @@ from app.api.routes.produtos import router as produtos_router
 
 api_router = APIRouter()
 
+# Ponto unico onde os modulos da API sao conectados ao FastAPI.
 api_router.include_router(autenticacao_router)
 api_router.include_router(produtos_router)
 api_router.include_router(categorias_router)

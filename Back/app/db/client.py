@@ -18,6 +18,7 @@ def obter_cliente_supabase() -> Client:
             "Configure SUPABASE_URL and SUPABASE_KEY antes de usar o Supabase."
         )
 
+    # Cliente compartilhado para Auth, PostgREST e Storage do Supabase.
     return create_client(
         settings.supabase_url,
         settings.supabase_key.get_secret_value(),

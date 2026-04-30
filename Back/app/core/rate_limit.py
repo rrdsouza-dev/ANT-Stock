@@ -60,6 +60,7 @@ def _limpar(balde: Balde, agora: float, janela: int) -> None:
 
 
 async def limitar(request: Request, escopo: str = "global") -> None:
+    # Limite em memoria: suficiente para desenvolvimento e uma unica instancia.
     config = obter_config()
     agora = time.monotonic()
     limite = config.rate_limite_auth_tentativas
@@ -68,6 +69,7 @@ async def limitar(request: Request, escopo: str = "global") -> None:
 
     partes = [escopo, request.url.path, _assinatura(request)]
     if config.rate_limite_peso_identidade:
+        # Email/token entram na chave para reduzir tentativas distribuidas.
         identidade = await _identidade(request)
         if identidade:
             partes.append(_hash(identidade))

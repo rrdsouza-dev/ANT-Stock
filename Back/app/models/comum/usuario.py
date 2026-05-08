@@ -1,11 +1,11 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class Usuario(BaseModel):
     id: str
-    email: str | None = None
+    email: EmailStr | None = None
     nome: str | None = None
     provedor: str | None = None
     perfil: Literal["gestao", "professor", "aluno"] | None = None

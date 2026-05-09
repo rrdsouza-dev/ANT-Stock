@@ -1,17 +1,56 @@
-# Back
+# ANT Stock Backend
 
-Estrutura inicial do banco de dados para o backend Python com Supabase.
+Backend FastAPI moderno com SQLModel, SQLAlchemy async, PostgreSQL, Alembic,
+JWT, Redis/Celery, Loguru, Ruff, mypy e pytest.
 
-## O que existe aqui
+## Estrutura
 
-- `app/core/config.py`: carrega as variaveis de ambiente do arquivo `.env`.
-- `app/db/client.py`: cria o cliente Supabase de forma lazy.
-- `app/db/repositories/base.py`: base para os futuros repositorios.
+```text
+src/
+├── api/
+│   ├── endpoints/
+│   └── routes.py
+├── core/
+├── database/
+├── middlewares/
+├── models/
+├── repositories/
+├── schemas/
+├── services/
+├── tasks/
+├── tests/
+├── utils/
+└── main.py
+```
 
-## Como conectar depois
+## Executar localmente
 
-1. Copie `.env.example` para `.env`.
-2. Preencha `SUPABASE_URL` e `SUPABASE_KEY`.
-3. Importe `get_supabase_client` ou herde de `BaseRepository`.
+```bash
+python -m venv .venv
+.venv/Scripts/activate
+pip install -r ../requirements.txt
+copy .env.example .env
+alembic upgrade head
+uvicorn src.main:app --reload
+```
 
-Nenhuma conexao externa e feita automaticamente nesta estrutura.
+Endpoints principais:
+
+- `GET /health`
+- `POST /api/v1/autenticacao/cadastro`
+- `POST /api/v1/autenticacao/entrar`
+- `GET /api/v1/produtos`
+- `GET /api/v1/categorias`
+- `GET /api/v1/localizacoes`
+- `GET /api/v1/estoque`
+- `GET /api/v1/movimentacoes`
+
+## Qualidade
+
+```bash
+ruff check .
+ruff format .
+mypy src
+pytest
+```
+

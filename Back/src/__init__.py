@@ -1,0 +1,1 @@
+"""ANT Stock backend package."""

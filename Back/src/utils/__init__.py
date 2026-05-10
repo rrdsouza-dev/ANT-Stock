@@ -1,4 +1,4 @@
-from src.utils.files import read_text, write_text
-from src.utils.http import get_http_client
+from src.utils.files import ler_texto, salvar_texto
+from src.utils.http import cliente_http
 
-__all__ = ["get_http_client", "read_text", "write_text"]
+__all__ = ["cliente_http", "ler_texto", "salvar_texto"]

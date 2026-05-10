@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.dependencies import get_current_user, get_db_session
+from src.api.dependencies import sessao_db, usuario_atual
 from src.models import User
 from src.schemas import APIMessage, LoginRequest, RegisterRequest, TokenResponse, UserRead
 from src.services import AuthService
@@ -10,20 +10,20 @@ router = APIRouter(prefix="/autenticacao", tags=["Autenticacao"])
 
 
 @router.post("/cadastro", response_model=TokenResponse)
-async def register(payload: RegisterRequest, session: AsyncSession = Depends(get_db_session)) -> TokenResponse:
-    return await AuthService(session).register(payload)
+async def cadastrar(payload: RegisterRequest, session: AsyncSession = Depends(sessao_db)) -> TokenResponse:
+    return await AuthService(session).cadastrar(payload)
 
 
 @router.post("/entrar", response_model=TokenResponse)
-async def login(payload: LoginRequest, session: AsyncSession = Depends(get_db_session)) -> TokenResponse:
-    return await AuthService(session).login(payload)
+async def entrar(payload: LoginRequest, session: AsyncSession = Depends(sessao_db)) -> TokenResponse:
+    return await AuthService(session).entrar(payload)
 
 
 @router.get("/perfil", response_model=UserRead)
-async def profile(user: User = Depends(get_current_user)) -> User:
+async def perfil(user: User = Depends(usuario_atual)) -> User:
     return user
 
 
 @router.post("/sair", response_model=APIMessage)
-async def logout() -> APIMessage:
+async def sair() -> APIMessage:
     return APIMessage(message="Sessao encerrada no cliente.")

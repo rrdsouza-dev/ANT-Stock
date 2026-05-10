@@ -2,12 +2,12 @@ from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from src.core.config import get_settings
+from src.core.config import config
 
-settings = get_settings()
+settings = config()
 
 engine = create_async_engine(
-    settings.sqlalchemy_database_url,
+    settings.url_banco,
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
@@ -21,6 +21,6 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
+async def abrir_sessao() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session

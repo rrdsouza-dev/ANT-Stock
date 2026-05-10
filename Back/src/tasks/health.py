@@ -2,5 +2,5 @@ from src.tasks.celery_app import celery_app
 
 
 @celery_app.task(name="health.ping")  # type: ignore[untyped-decorator]
-def ping() -> str:
+def testar() -> str:
     return "pong"

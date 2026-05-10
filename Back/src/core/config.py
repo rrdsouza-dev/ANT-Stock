@@ -49,18 +49,18 @@ class Settings(BaseSettings):
     rate_limit_block_seconds: int = Field(default=120, validation_alias="RATE_LIMIT_BLOCK_SECONDS")
 
     @property
-    def sqlalchemy_database_url(self) -> str:
+    def url_banco(self) -> str:
         return self.database_url.get_secret_value()
 
     @property
-    def celery_broker(self) -> str:
+    def broker_celery(self) -> str:
         return self.celery_broker_url or self.redis_url
 
     @property
-    def celery_backend(self) -> str:
+    def backend_celery(self) -> str:
         return self.celery_result_backend or self.redis_url
 
 
 @lru_cache
-def get_settings() -> Settings:
+def config() -> Settings:
     return Settings()

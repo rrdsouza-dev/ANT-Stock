@@ -19,14 +19,14 @@ class AppError(Exception):
         self.code = code
 
 
-async def app_error_handler(_: Request, exc: AppError) -> ORJSONResponse:
+async def tratar_erro_app(_: Request, exc: AppError) -> ORJSONResponse:
     return ORJSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.message, "code": exc.code},
     )
 
 
-async def http_error_handler(_: Request, exc: StarletteHTTPException) -> ORJSONResponse:
+async def tratar_erro_http(_: Request, exc: StarletteHTTPException) -> ORJSONResponse:
     return ORJSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
@@ -34,14 +34,14 @@ async def http_error_handler(_: Request, exc: StarletteHTTPException) -> ORJSONR
     )
 
 
-async def validation_error_handler(_: Request, exc: ValidationError) -> ORJSONResponse:
+async def tratar_validacao(_: Request, exc: ValidationError) -> ORJSONResponse:
     return ORJSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": exc.errors()},
     )
 
 
-async def integrity_error_handler(_: Request, exc: IntegrityError) -> ORJSONResponse:
+async def tratar_integridade(_: Request, exc: IntegrityError) -> ORJSONResponse:
     logger.warning("Database integrity error: {}", exc.orig)
     return ORJSONResponse(
         status_code=status.HTTP_409_CONFLICT,
@@ -49,7 +49,7 @@ async def integrity_error_handler(_: Request, exc: IntegrityError) -> ORJSONResp
     )
 
 
-async def unhandled_error_handler(request: Request, exc: Exception) -> ORJSONResponse:
+async def tratar_erro_geral(request: Request, exc: Exception) -> ORJSONResponse:
     logger.exception("Unhandled error at {}: {}", request.url.path, exc)
     return ORJSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -14,23 +14,24 @@ class CRUDService(Generic[ModelT]):
         self.repository = repository
         self.resource_name = resource_name
 
-    async def list(self, *, offset: int = 0, limit: int = 100, filters: dict[str, Any] | None = None) -> list[ModelT]:
-        return await self.repository.list(offset=offset, limit=min(limit, 200), filters=filters)
+    async def listar(self, *, offset: int = 0, limit: int = 100, filters: dict[str, Any] | None = None) -> list[ModelT]:
+        return await self.repository.listar(offset=offset, limit=min(limit, 200), filters=filters)
 
-    async def get(self, item_id: UUID) -> ModelT:
-        instance = await self.repository.get(item_id)
+    async def buscar(self, item_id: UUID) -> ModelT:
+        instance = await self.repository.buscar(item_id)
         if instance is None:
             raise AppError(f"{self.resource_name} nao encontrado.", status_code=404, code="not_found")
         return instance
 
-    async def create(self, payload: dict[str, Any]) -> ModelT:
-        return await self.repository.create(payload)
+    async def criar(self, payload: dict[str, Any]) -> ModelT:
+        return await self.repository.criar(payload)
 
-    async def update(self, item_id: UUID, payload: dict[str, Any]) -> ModelT:
-        instance = await self.get(item_id)
+    async def editar(self, item_id: UUID, payload: dict[str, Any]) -> ModelT:
+        instance = await self.buscar(item_id)
+        # Em PATCH, campos ausentes ou nulos nao sobrescrevem dados existentes.
         data = {key: value for key, value in payload.items() if value is not None}
-        return await self.repository.update(instance, data)
+        return await self.repository.editar(instance, data)
 
-    async def delete(self, item_id: UUID) -> None:
-        instance = await self.get(item_id)
-        await self.repository.delete(instance)
+    async def remover(self, item_id: UUID) -> None:
+        instance = await self.buscar(item_id)
+        await self.repository.remover(instance)

@@ -4,10 +4,11 @@ from uuid import uuid4
 from fastapi import Request, Response
 
 
-async def request_id_middleware(
+async def id_requisicao(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
 ) -> Response:
+    # Mantem o mesmo ID na requisicao e na resposta para rastrear logs.
     request_id = request.headers.get("x-request-id", str(uuid4()))
     request.state.request_id = request_id
     response = await call_next(request)

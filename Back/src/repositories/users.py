@@ -12,6 +12,6 @@ class UserRepository(SQLModelRepository[User]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
 
-    async def get_by_email(self, email: str) -> User | None:
+    async def por_email(self, email: str) -> User | None:
         result = await self.session.execute(select(User).where(col(User.email) == email.lower()))
         return result.scalar_one_or_none()

@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field
 
-from src.models.base import MovementType, ScopeType, TimestampMixin, UUIDMixin, utcnow
+from src.models.base import MovementType, ScopeType, TimestampMixin, UUIDMixin, agora_utc
 
 
 class Category(UUIDMixin, TimestampMixin, table=True):
@@ -70,4 +70,4 @@ class Movement(UUIDMixin, TimestampMixin, table=True):
     origin: str | None = Field(default=None, alias="origem", max_length=120)
     destination: str | None = Field(default=None, alias="destino", max_length=120)
     note: str | None = Field(default=None, alias="observacao", max_length=500)
-    moved_at: datetime = Field(default_factory=utcnow, alias="movimentado_em")
+    moved_at: datetime = Field(default_factory=agora_utc, alias="movimentado_em")

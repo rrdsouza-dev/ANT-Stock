@@ -9,37 +9,37 @@ from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.api.routes import api_router
-from src.core.config import get_settings
+from src.core.config import config
 from src.core.exceptions import (
     AppError,
-    app_error_handler,
-    http_error_handler,
-    integrity_error_handler,
-    unhandled_error_handler,
-    validation_error_handler,
+    tratar_erro_app,
+    tratar_erro_geral,
+    tratar_erro_http,
+    tratar_integridade,
+    tratar_validacao,
 )
-from src.core.logging import configure_logging
+from src.core.logging import configurar_logs
 from src.database.session import engine
-from src.middlewares import request_id_middleware
+from src.middlewares import id_requisicao
 
-settings = get_settings()
-configure_logging(settings)
+settings = config()
+configurar_logs(settings)
 ExceptionHandler = Any
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+async def ciclo_vida(_: FastAPI) -> AsyncIterator[None]:
     yield
     await engine.dispose()
 
 
-def create_app() -> FastAPI:
+def criar_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         description="Backend moderno do ANT Stock.",
         version=settings.app_version,
         debug=settings.debug,
-        lifespan=lifespan,
+        lifespan=ciclo_vida,
     )
 
     app.add_middleware(
@@ -49,25 +49,25 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.middleware("http")(request_id_middleware)
+    app.middleware("http")(id_requisicao)
 
-    app.add_exception_handler(AppError, cast(ExceptionHandler, app_error_handler))
-    app.add_exception_handler(StarletteHTTPException, cast(ExceptionHandler, http_error_handler))
-    app.add_exception_handler(ValidationError, cast(ExceptionHandler, validation_error_handler))
-    app.add_exception_handler(IntegrityError, cast(ExceptionHandler, integrity_error_handler))
-    app.add_exception_handler(Exception, cast(ExceptionHandler, unhandled_error_handler))
+    app.add_exception_handler(AppError, cast(ExceptionHandler, tratar_erro_app))
+    app.add_exception_handler(StarletteHTTPException, cast(ExceptionHandler, tratar_erro_http))
+    app.add_exception_handler(ValidationError, cast(ExceptionHandler, tratar_validacao))
+    app.add_exception_handler(IntegrityError, cast(ExceptionHandler, tratar_integridade))
+    app.add_exception_handler(Exception, cast(ExceptionHandler, tratar_erro_geral))
 
     app.include_router(api_router, prefix=settings.api_prefix)
 
     @app.get("/", tags=["Raiz"])
-    async def root() -> dict[str, str]:
+    async def raiz() -> dict[str, str]:
         return {"message": "ANT Stock API online", "version": settings.app_version}
 
     @app.get("/health", tags=["Saude"])
-    async def health() -> dict[str, str]:
+    async def saude() -> dict[str, str]:
         return {"status": "ok"}
 
     return app
 
 
-app = create_app()
+app = criar_app()

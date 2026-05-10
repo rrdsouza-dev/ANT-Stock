@@ -21,5 +21,5 @@ class InventoryServices:
         self.stocks = CRUDService[Stock](StockRepository(session), "Estoque")
         self.movements = CRUDService[Movement](MovementRepository(session), "Movimentacao")
 
-    async def list_stock_by_product(self, product_id: UUID) -> list[Stock]:
-        return await self.stocks.list(filters={"product_id": product_id})
+    async def estoque_do_produto(self, product_id: UUID) -> list[Stock]:
+        return await self.stocks.listar(filters={"product_id": product_id})

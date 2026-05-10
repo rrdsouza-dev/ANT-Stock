@@ -1,13 +1,13 @@
 from celery import Celery
 
-from src.core.config import get_settings
+from src.core.config import config
 
-settings = get_settings()
+settings = config()
 
 celery_app = Celery(
     "ant_stock",
-    broker=settings.celery_broker,
-    backend=settings.celery_backend,
+    broker=settings.broker_celery,
+    backend=settings.backend_celery,
     include=["src.tasks.health"],
 )
 celery_app.conf.update(

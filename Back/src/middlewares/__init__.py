@@ -1,3 +1,3 @@
-from src.middlewares.request_id import request_id_middleware
+from src.middlewares.request_id import id_requisicao
 
-__all__ = ["request_id_middleware"]
+__all__ = ["id_requisicao"]

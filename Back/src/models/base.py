@@ -21,13 +21,13 @@ class UserProfile(StrEnum):
     STUDENT = "aluno"
 
 
-def utcnow() -> datetime:
+def agora_utc() -> datetime:
     return datetime.now(UTC)
 
 
 class TimestampMixin(SQLModel):
-    created_at: datetime = Field(default_factory=utcnow, nullable=False)
-    updated_at: datetime = Field(default_factory=utcnow, nullable=False)
+    created_at: datetime = Field(default_factory=agora_utc, nullable=False)
+    updated_at: datetime = Field(default_factory=agora_utc, nullable=False)
 
 
 class UUIDMixin(SQLModel):

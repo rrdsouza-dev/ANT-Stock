@@ -15,7 +15,7 @@ class InterceptHandler(logging.Handler):
         logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
 
 
-def configure_logging(settings: Settings) -> None:
+def configurar_logs(settings: Settings) -> None:
     logger.remove()
     logger.add(
         sys.stdout,

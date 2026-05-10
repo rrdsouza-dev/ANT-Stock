@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from src.main import app
 
 
-def test_health() -> None:
+def test_saude() -> None:
     client = TestClient(app)
 
     response = client.get("/health")
@@ -11,7 +11,7 @@ def test_health() -> None:
     assert response.json() == {"status": "ok"}
 
 
-def test_root() -> None:
+def test_raiz() -> None:
     client = TestClient(app)
 
     response = client.get("/")

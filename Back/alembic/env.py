@@ -7,21 +7,21 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 from src import models  # noqa: F401
-from src.core.config import get_settings
+from src.core.config import config as app_config
 
-config = context.config
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.sqlalchemy_database_url)
+alembic_config = context.config
+settings = app_config()
+alembic_config.set_main_option("sqlalchemy.url", settings.url_banco)
 
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+if alembic_config.config_file_name is not None:
+    fileConfig(alembic_config.config_file_name)
 
 target_metadata = SQLModel.metadata
 
 
-def run_migrations_offline() -> None:
+def migrar_offline() -> None:
     context.configure(
-        url=settings.sqlalchemy_database_url,
+        url=settings.url_banco,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -31,27 +31,27 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def do_run_migrations(connection: Connection) -> None:
+def rodar_migracoes(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata)
 
     with context.begin_transaction():
         context.run_migrations()
 
 
-async def run_migrations_online() -> None:
+async def migrar_online() -> None:
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        alembic_config.get_section(alembic_config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+        await connection.run_sync(rodar_migracoes)
 
     await connectable.dispose()
 
 
 if context.is_offline_mode():
-    run_migrations_offline()
+    migrar_offline()
 else:
-    run(run_migrations_online())
+    run(migrar_online())

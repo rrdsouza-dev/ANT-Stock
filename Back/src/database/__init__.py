@@ -1,3 +1,3 @@
-from src.database.session import AsyncSessionLocal, engine, get_session
+from src.database.session import AsyncSessionLocal, abrir_sessao, engine
 
-__all__ = ["AsyncSessionLocal", "engine", "get_session"]
+__all__ = ["AsyncSessionLocal", "abrir_sessao", "engine"]

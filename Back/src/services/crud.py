@@ -1,3 +1,4 @@
+# Servico CRUD generico com tratamento de nao encontrado.
 from typing import Any, Generic, TypeVar
 from uuid import UUID
 

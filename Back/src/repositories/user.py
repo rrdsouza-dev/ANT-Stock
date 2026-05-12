@@ -1,3 +1,4 @@
+# Repositorio de usuarios.
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col

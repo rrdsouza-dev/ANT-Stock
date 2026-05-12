@@ -1,3 +1,4 @@
+# Endpoints para registrar e consultar movimentacoes.
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status

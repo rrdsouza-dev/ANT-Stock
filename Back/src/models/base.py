@@ -1,3 +1,4 @@
+# Tipos, mixins e enums compartilhados pelos modelos.
 from datetime import UTC, datetime
 from enum import StrEnum
 from uuid import UUID, uuid4

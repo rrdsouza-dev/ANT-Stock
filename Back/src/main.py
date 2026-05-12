@@ -1,3 +1,4 @@
+# Cria e configura a aplicacao FastAPI principal.
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any, cast

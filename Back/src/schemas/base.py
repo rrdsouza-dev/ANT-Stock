@@ -1,3 +1,4 @@
+# Schemas compartilhados entre respostas da API.
 from datetime import datetime
 from uuid import UUID
 

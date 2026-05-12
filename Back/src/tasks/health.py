@@ -1,3 +1,4 @@
+# Tarefa simples para verificar o worker Celery.
 from src.tasks.celery import celery_app
 
 

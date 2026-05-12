@@ -1,3 +1,4 @@
+# Servicos que coordenam operacoes de estoque.
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession

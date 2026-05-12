@@ -1,3 +1,4 @@
+# Schemas de autenticacao e leitura de usuario.
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field

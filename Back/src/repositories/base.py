@@ -1,3 +1,4 @@
+# Repositorio base com operacoes CRUD genericas.
 from typing import Any, Generic, TypeVar
 from uuid import UUID
 

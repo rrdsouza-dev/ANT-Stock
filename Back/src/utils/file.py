@@ -1,3 +1,4 @@
+# Utilitarios para leitura e escrita de arquivos de texto.
 from pathlib import Path
 from typing import cast
 

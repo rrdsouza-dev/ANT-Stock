@@ -1,3 +1,4 @@
+# Configura logs padronizados com Loguru.
 import logging
 import sys
 

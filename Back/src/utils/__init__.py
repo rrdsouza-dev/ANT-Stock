@@ -1,3 +1,4 @@
+# Exporta utilitarios gerais do backend.
 from src.utils.file import ler_texto, salvar_texto
 from src.utils.http import cliente_http
 

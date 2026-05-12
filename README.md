@@ -1,3 +1,4 @@
+<!-- Visao geral do projeto ANT Stock. -->
 # ANT Stock
 
 Sistema WMS academico para controle de estoque, produtos, categorias,

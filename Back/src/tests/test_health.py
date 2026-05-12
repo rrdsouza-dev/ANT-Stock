@@ -1,3 +1,4 @@
+# Teste basico dos endpoints de saude da API.
 from fastapi.testclient import TestClient
 from src.main import app
 

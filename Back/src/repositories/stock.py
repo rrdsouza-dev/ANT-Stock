@@ -1,3 +1,4 @@
+# Repositorios dos recursos de estoque.
 from src.models import Category, Location, Movement, Product, Stock
 from src.repositories.base import SQLModelRepository
 

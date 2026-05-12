@@ -1,3 +1,4 @@
+# Utilitario para criar clientes HTTP assincronos.
 from collections.abc import AsyncGenerator
 
 import httpx

@@ -1,3 +1,4 @@
+# Exporta modelos de dominio usados pelo backend.
 from src.models.base import MovementType, ScopeType, UserProfile
 from src.models.stock import Category, Location, Movement, Product, Stock
 from src.models.scope import Scope

@@ -1,3 +1,4 @@
+# Endpoints para gerenciar saldos de estoque.
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status

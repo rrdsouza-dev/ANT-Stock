@@ -1,3 +1,4 @@
+# Endpoints para gerenciar produtos.
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status

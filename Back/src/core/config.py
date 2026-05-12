@@ -1,3 +1,4 @@
+# Carrega e expoe as configuracoes da aplicacao.
 from functools import lru_cache
 from pathlib import Path
 
@@ -25,6 +26,10 @@ class Settings(BaseSettings):
         default=SecretStr("postgresql+asyncpg://postgres:postgres@localhost:5432/ant_stock"),
         validation_alias="DATABASE_URL",
     )
+    supabase_url: AnyHttpUrl | None = Field(default=None, validation_alias="SUPABASE_URL")
+    supabase_anon_key: SecretStr | None = Field(default=None, validation_alias="SUPABASE_ANON_KEY")
+    supabase_service_role_key: SecretStr | None = Field(default=None, validation_alias="SUPABASE_SERVICE_ROLE_KEY")
+
     redis_url: str = Field(default="redis://localhost:6379/0", validation_alias="REDIS_URL")
     celery_broker_url: str | None = Field(default=None, validation_alias="CELERY_BROKER_URL")
     celery_result_backend: str | None = Field(default=None, validation_alias="CELERY_RESULT_BACKEND")

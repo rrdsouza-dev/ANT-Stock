@@ -1,3 +1,4 @@
+# Arquivos locais e caches ignorados pelo Git.
 .venv/
 __pycache__/
 *.pyc

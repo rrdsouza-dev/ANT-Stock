@@ -1,3 +1,4 @@
+﻿# Configura a aplicacao Celery para tarefas assincronas.
 from celery import Celery
 
 from src.core.config import config

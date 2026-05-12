@@ -1,3 +1,4 @@
+# Erros da aplicacao e handlers HTTP globais.
 from fastapi import Request, status
 from fastapi.responses import ORJSONResponse
 from loguru import logger

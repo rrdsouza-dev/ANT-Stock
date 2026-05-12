@@ -1,3 +1,4 @@
+# Modelo de escopo organizacional do estoque.
 from uuid import UUID
 
 from sqlmodel import Field

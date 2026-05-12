@@ -1,3 +1,4 @@
+# Funcoes de senha e tokens JWT.
 from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 

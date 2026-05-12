@@ -1,3 +1,4 @@
+# Modelos de produtos, categorias, locais, estoque e movimentos.
 from datetime import datetime
 from uuid import UUID
 

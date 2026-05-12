@@ -1,3 +1,4 @@
+# Dependencias compartilhadas usadas pelos endpoints.
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status

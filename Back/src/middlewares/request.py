@@ -1,3 +1,4 @@
+# Middleware para propagar o ID de cada requisicao.
 from collections.abc import Awaitable, Callable
 from uuid import uuid4
 

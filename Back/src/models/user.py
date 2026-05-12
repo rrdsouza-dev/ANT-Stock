@@ -1,3 +1,4 @@
+# Modelo de usuario da aplicacao.
 from uuid import UUID
 
 from sqlmodel import Field

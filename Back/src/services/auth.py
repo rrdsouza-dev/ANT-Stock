@@ -1,3 +1,4 @@
+# Servico de cadastro, login e emissao de tokens.
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.errors import AppError

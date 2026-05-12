@@ -1,3 +1,4 @@
+# Agrega todos os roteadores da API.
 from fastapi import APIRouter
 
 from src.api.endpoints import auth, category, location, movement, product, stock

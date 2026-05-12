@@ -1,3 +1,4 @@
+# Exporta repositorios de acesso a dados.
 from src.repositories.stock import (
     CategoryRepository,
     LocationRepository,

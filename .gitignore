@@ -4,4 +4,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .env
+.env.*
+!.env.example
 Back/.env
+Back/.env.*
+!Back/.env.example

@@ -1,6 +1,6 @@
 from src.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserRead
-from src.schemas.common import APIMessage
-from src.schemas.inventory import (
+from src.schemas.base import APIMessage
+from src.schemas.stock import (
     CategoryCreate,
     CategoryRead,
     CategoryUpdate,

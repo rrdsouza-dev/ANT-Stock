@@ -1,11 +1,11 @@
-from src.repositories.inventory import (
+from src.repositories.stock import (
     CategoryRepository,
     LocationRepository,
     MovementRepository,
     ProductRepository,
     StockRepository,
 )
-from src.repositories.users import UserRepository
+from src.repositories.user import UserRepository
 
 __all__ = [
     "CategoryRepository",

@@ -4,7 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.base import MovementType, ScopeType
-from src.schemas.common import TimestampedSchema
+from src.schemas.base import TimestampedSchema
 
 
 class ScopedPayload(BaseModel):

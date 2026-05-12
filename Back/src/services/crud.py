@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlmodel import SQLModel
 
-from src.core.exceptions import AppError
+from src.core.errors import AppError
 from src.repositories.base import SQLModelRepository
 
 ModelT = TypeVar("ModelT", bound=SQLModel)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.dependencies import sessao_db, usuario_atual
+from src.api.deps import sessao_db, usuario_atual
 from src.models import User
 from src.schemas import APIMessage, LoginRequest, RegisterRequest, TokenResponse, UserRead
 from src.services import AuthService

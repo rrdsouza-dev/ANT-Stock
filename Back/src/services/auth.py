@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.exceptions import AppError
-from src.core.security import checar_senha, criar_token, gerar_hash
+from src.core.errors import AppError
+from src.core.auth import checar_senha, criar_token, gerar_hash
 from src.models import User
-from src.repositories.users import UserRepository
+from src.repositories.user import UserRepository
 from src.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
 
 

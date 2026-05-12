@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.dependencies import sessao_db
+from src.api.deps import sessao_db
 from src.schemas import APIMessage, CategoryCreate, CategoryRead, CategoryUpdate
 from src.services import InventoryServices
 

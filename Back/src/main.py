@@ -8,9 +8,9 @@ from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from src.api.routes import api_router
+from src.api.router import api_router
 from src.core.config import config
-from src.core.exceptions import (
+from src.core.errors import (
     AppError,
     tratar_erro_app,
     tratar_erro_geral,
@@ -18,8 +18,8 @@ from src.core.exceptions import (
     tratar_integridade,
     tratar_validacao,
 )
-from src.core.logging import configurar_logs
-from src.database.session import engine
+from src.core.log import configurar_logs
+from src.database.db import engine
 from src.middlewares import id_requisicao
 
 settings = config()

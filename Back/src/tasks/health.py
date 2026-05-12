@@ -1,4 +1,4 @@
-from src.tasks.celery_app import celery_app
+from src.tasks.celery import celery_app
 
 
 @celery_app.task(name="health.ping")  # type: ignore[untyped-decorator]

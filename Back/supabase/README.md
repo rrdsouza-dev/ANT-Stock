@@ -1,7 +1,6 @@
-<!-- Estrutura Supabase do banco ANT Stock. -->
 # Supabase
 
-Use esta pasta para moldar o banco no Supabase sem depender do Alembic.
+Use esta pasta para moldar o banco do ANT no Supabase sem depender do Alembic.
 
 ## Ordem
 
@@ -10,4 +9,6 @@ Use esta pasta para moldar o banco no Supabase sem depender do Alembic.
 3. Rode `migrations/202605120001_ant_stock.sql` no SQL Editor do Supabase.
 4. Opcionalmente rode `seed.sql` para dados iniciais de teste.
 
-O backend continua usando SQLAlchemy/Alembic via `DATABASE_URL`. O cliente em `src/database/supabase.py` serve para recursos da API Supabase, como Storage, Auth ou chamadas administrativas.
+O backend continua usando SQLAlchemy via `DATABASE_URL`. O cliente em `src/banco/supabase.py` serve para recursos da API Supabase, como Storage, Auth ou chamadas administrativas.
+
+A tabela `usuarios` possui `auth_id` como FK opcional para `auth.users(id)`, deixando a integracao futura com Supabase Auth preparada sem travar os demais atributos.

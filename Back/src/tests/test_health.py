@@ -1,5 +1,5 @@
-# Teste basico dos endpoints de saude da API.
 from fastapi.testclient import TestClient
+
 from src.main import app
 
 
@@ -18,4 +18,4 @@ def test_raiz() -> None:
     response = client.get("/")
 
     assert response.status_code == 200
-    assert response.json()["message"] == "ANT Stock API online"
+    assert response.json()["mensagem"] == "ANT API online"

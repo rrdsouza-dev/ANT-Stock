@@ -1,153 +1,87 @@
-# Sistema WMS
+# ANT
 
-Sistema de gerenciamento de armazém (WMS - Warehouse Management System) desenvolvido como Trabalho de Conclusão de Curso (TCC) para o curso técnico de Logística.
+Sistema WMS leve para gerenciamento de estoque, produtos, pedidos e movimentacoes logisticas.
 
-O projeto foi criado com foco acadêmico e educacional, buscando unir conceitos de logística com desenvolvimento de software moderno.
+O ANT foi desenvolvido como projeto academico para apoiar o aprendizado de logistica e desenvolvimento web. A proposta e manter um sistema simples, funcional e facil de evoluir.
 
----
+## Objetivos
 
-# Sobre o Projeto
+- Controlar estoque.
+- Registrar entradas e saidas de produtos.
+- Organizar produtos e localizacoes.
+- Acompanhar pedidos e movimentacoes.
+- Simular operacoes logisticas reais.
+- Integrar front-end, back-end e Supabase.
 
-O Sistema WMS foi desenvolvido para auxiliar no gerenciamento de operações logísticas dentro de um ambiente de armazenagem.
+## Funcionalidades
 
-A aplicação permite controlar estoque, registrar movimentações, organizar produtos e acompanhar operações internas de forma prática e organizada.
+### Produtos
 
-O sistema foi projetado para simular processos utilizados em empresas reais, permitindo que estudantes tenham contato com tecnologias e rotinas presentes no mercado de logística e tecnologia.
+- Cadastro de produtos.
+- Controle de categorias.
+- Localizacao de itens.
+- Quantidade minima.
 
-Além disso, o projeto também serve como base de aprendizado para futuras turmas do curso técnico de logística.
+### Estoque
 
----
+- Entrada de mercadorias.
+- Saida de produtos.
+- Saldo por produto e localizacao.
+- Atualizacao automatica por movimentacao.
 
-# Objetivos do Sistema
+### Movimentacoes
 
-- Melhorar o controle de estoque
-- Registrar entradas e saídas de produtos
-- Organizar localização de mercadorias
-- Simular operações logísticas reais
-- Aplicar conceitos de desenvolvimento web
-- Integrar front-end, back-end e banco de dados
-- Desenvolver experiência prática em tecnologia
+- Historico operacional.
+- Registro de usuario, produto e pedido.
+- Origem e destino por localizacao.
 
----
+### Usuarios e Acesso
 
-# Funcionalidades
+- Cadastro e login.
+- Perfis fixos: Aluno, Professor e Gestao.
+- Estrutura preparada para Supabase Auth.
 
-## Gestão de Produtos
+## Modelagem
 
-- Cadastro de produtos
-- Atualização de informações
-- Controle de categorias
-- Identificação de itens
+Entidades principais:
 
----
+- `perfis`
+- `usuarios`
+- `categorias`
+- `localizacoes`
+- `produtos`
+- `estoque`
+- `movimentacoes`
+- `pedidos`
+- `itens_pedido`
 
-## Controle de Estoque
+Relacionamentos principais usam chaves simples como `usuario_id`, `produto_id` e `pedido_id`.
 
-- Entrada de mercadorias
-- Saída de produtos
-- Controle de quantidade disponível
-- Atualização automática do estoque
+## Tecnologias
 
----
-
-## Movimentações Logísticas
-
-- Registro de movimentações
-- Histórico operacional
-- Controle de operações internas
-- Rastreamento de alterações
-
----
-
-## Usuários e Acesso
-
-- Controle de usuários
-- Sistema de autenticação
-- Gerenciamento de acesso
-- Segurança de operações
-
----
-
-# Tecnologias Utilizadas
-
-## Back-end
+### Back-end
 
 - Python
 - FastAPI
+- SQLModel
+- SQLAlchemy async
 
-O FastAPI foi utilizado para desenvolvimento da API REST responsável pelas regras de negócio e comunicação com o banco de dados.
-
----
-
-## Front-end
+### Front-end
 
 - React
 - JavaScript
 - HTML
 - CSS
 
-O React foi utilizado para criação da interface do sistema, permitindo uma aplicação moderna, rápida e organizada.
-
----
-
-## Banco de Dados
+### Banco e Autenticacao
 
 - Supabase
+- PostgreSQL
 
-O Supabase foi utilizado como solução de banco de dados e autenticação da aplicação.
+## Objetivo Academico
 
----
+Este projeto foi desenvolvido como base de estudo para estudantes de logistica e tecnologia, com foco em um WMS minimalista, moderno e de facil manutencao.
 
-- Organização do projeto
-- Escalabilidade
-- Manutenção do sistema
-- Separação de responsabilidades
-- Integração entre serviços
+## Licenca
 
-# Objetivo Acadêmico
-
-Este projeto foi desenvolvido como parte do Trabalho de Conclusão de Curso (TCC) do curso técnico de Logística.
-
-O sistema possui finalidade educacional e foi criado para aplicação prática dos conhecimentos adquiridos durante o curso.
-
----
-
-# Projeto Open Source
-
-Este projeto possui código aberto (Open Source).
-
-O objetivo é incentivar estudantes e desenvolvedores iniciantes a estudarem tecnologias modernas aplicadas à logística e sistemas web.
-
-O sistema pode ser utilizado para:
-
-- Estudos
-- Melhorias
-- Adaptações
-- Aprendizado acadêmico
-- Projetos educacionais
-
----
-
-# Possíveis Melhorias Futuras
-
-- Dashboard com gráficos logísticos
-- Sistema de relatórios avançados
-- Controle de pedidos
-- Integração com leitores de código de barras
-- Sistema de notificações
-- Controle de níveis de acesso
-- Responsividade mobile
-- Monitoramento em tempo real
-- IA integrada
-
----
-
-# Licença
-
-Este projeto está sob a licença MIT.
-
----
-
-# Desenvolvedores
-
-Projeto desenvolvido por estudantes do curso técnico de Logística para apresentação acadêmica de TCC.
+MIT.

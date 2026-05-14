@@ -1,11 +1,12 @@
 from functools import lru_cache
-
-from supabase import Client, create_client
+from typing import Any
 
 from src.nucleo.configuracao import configuracao
 
 
-def _criar_cliente(chave: str) -> Client:
+def _criar_cliente(chave: str) -> Any:
+    from supabase import create_client
+
     config = configuracao()
     if config.supabase_url is None:
         raise RuntimeError("SUPABASE_URL nao configurado.")
@@ -13,7 +14,7 @@ def _criar_cliente(chave: str) -> Client:
 
 
 @lru_cache
-def cliente_supabase() -> Client:
+def cliente_supabase() -> Any:
     config = configuracao()
     if config.supabase_anon_key is None:
         raise RuntimeError("SUPABASE_ANON_KEY nao configurado.")
@@ -21,7 +22,7 @@ def cliente_supabase() -> Client:
 
 
 @lru_cache
-def cliente_supabase_admin() -> Client:
+def cliente_supabase_admin() -> Any:
     config = configuracao()
     if config.supabase_service_role_key is None:
         raise RuntimeError("SUPABASE_SERVICE_ROLE_KEY nao configurado.")

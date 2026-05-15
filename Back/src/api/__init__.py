@@ -1,2 +1,1 @@
-# Pacote de rotas e dependencias da API.
-"""API package."""
+"""Rotas e dependencias da API."""

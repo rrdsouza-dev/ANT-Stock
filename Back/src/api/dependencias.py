@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -33,7 +34,12 @@ async def usuario_atual(
     if not usuario_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido.")
 
-    usuario = await RepositorioUsuario(sessao).buscar(usuario_id)
+    try:
+        usuario_uuid = UUID(str(usuario_id))
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido.") from exc
+
+    usuario = await RepositorioUsuario(sessao).buscar(usuario_uuid)
     if usuario is None or not usuario.ativo:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario nao autenticado.")
     return usuario

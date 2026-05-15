@@ -1,27 +1,29 @@
-<!-- Guia rapido do backend FastAPI. -->
-# ANT Stock Backend
+# ANT Backend
 
-Backend FastAPI moderno com SQLModel, SQLAlchemy async, Supabase/PostgreSQL,
-JWT, Redis/Celery, Loguru, Ruff, mypy e pytest.
+Backend FastAPI do sistema WMS ANT.
+
+O codigo prioriza uma estrutura simples, em portugues, com SQLModel,
+SQLAlchemy async, Supabase/PostgreSQL, JWT, Redis/Celery, Loguru, Ruff,
+mypy e pytest.
 
 ## Estrutura
 
 ```text
 src/
 |-- api/
-|   |-- endpoints/
-|   |-- deps.py
-|   `-- router.py
-|-- core/
-|-- database/
-|-- middlewares/
-|-- models/
-|-- repositories/
-|-- schemas/
-|-- services/
-|-- tasks/
+|   |-- rotas/
+|   |-- dependencias.py
+|   `-- roteador.py
+|-- banco/
+|-- esquemas/
+|-- intermediarios/
+|-- modelos/
+|-- nucleo/
+|-- repositorios/
+|-- servicos/
+|-- tarefas/
 |-- tests/
-|-- utils/
+|-- utilitarios/
 `-- main.py
 
 supabase/
@@ -43,7 +45,7 @@ uvicorn src.main:app --reload
 
 ## Supabase
 
-Para usar Supabase como banco, configure no `Back/.env`:
+Configure no `Back/.env`:
 
 ```env
 DATABASE_URL=postgresql+asyncpg://postgres.PROJECT_REF:PASSWORD@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?ssl=require
@@ -53,6 +55,17 @@ SUPABASE_SERVICE_ROLE_KEY=sua-chave-service-role
 ```
 
 Depois rode `Back/supabase/migrations/202605120001_ant_stock.sql` no SQL Editor do Supabase. O arquivo `Back/supabase/seed.sql` tem dados iniciais opcionais.
+
+## Modelagem
+
+Entidades principais:
+
+- `perfis`: Aluno, Professor e Gestao.
+- `usuarios`: preparado para Supabase Auth via `auth_id`.
+- `categorias`, `localizacoes`, `produtos`.
+- `estoque`: saldo por produto e localizacao.
+- `movimentacoes`: entradas e saidas com `usuario_id`, `produto_id` e `pedido_id`.
+- `pedidos` e `itens_pedido`.
 
 Endpoints principais:
 
@@ -64,6 +77,7 @@ Endpoints principais:
 - `GET /api/v1/localizacoes`
 - `GET /api/v1/estoque`
 - `GET /api/v1/movimentacoes`
+- `GET /api/v1/pedidos`
 
 ## Qualidade
 

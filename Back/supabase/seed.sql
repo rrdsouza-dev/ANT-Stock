@@ -1,24 +1,23 @@
 -- Dados iniciais opcionais para testar o banco Supabase.
-insert into public.escopos (id, name, scope_type, active)
-values ('00000000-0000-0000-0000-000000000001', 'Escola Demo', 'SCHOOL_MANAGEMENT', true)
-on conflict (id) do nothing;
+insert into public.perfis (codigo, nome)
+values
+    ('aluno', 'Aluno'),
+    ('professor', 'Professor'),
+    ('gestao', 'Gestao')
+on conflict (codigo) do update set nome = excluded.nome;
 
-insert into public.categorias (id, scope_id, scope_type, name, description, active)
+insert into public.categorias (id, nome, descricao, ativo)
 values (
     '00000000-0000-0000-0000-000000000101',
-    '00000000-0000-0000-0000-000000000001',
-    'SCHOOL_MANAGEMENT',
     'Materiais',
     'Categoria inicial para testes.',
     true
 )
 on conflict (id) do nothing;
 
-insert into public.localizacoes (id, scope_id, scope_type, name, active)
+insert into public.localizacoes (id, nome, ativo)
 values (
     '00000000-0000-0000-0000-000000000201',
-    '00000000-0000-0000-0000-000000000001',
-    'SCHOOL_MANAGEMENT',
     'Almoxarifado',
     true
 )

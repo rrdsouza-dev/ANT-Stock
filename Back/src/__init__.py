@@ -1,2 +1,1 @@
-# Pacote principal do backend ANT Stock.
-"""ANT Stock backend package."""
+"""Backend do sistema WMS ANT."""

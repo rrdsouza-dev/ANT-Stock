@@ -1,5 +1,4 @@
-from __future__ import annotations
-
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint
@@ -15,7 +14,7 @@ class Pedido(IdMixin, DatasMixin, table=True):
     status: StatusPedido = Field(default=StatusPedido.ABERTO, index=True)
     observacao: str | None = Field(default=None, max_length=500)
 
-    usuario: "Usuario" | None = Relationship(back_populates="pedidos")
+    usuario: Optional["Usuario"] = Relationship(back_populates="pedidos")
     itens: list["ItemPedido"] = Relationship(back_populates="pedido")
     movimentacoes: list["Movimentacao"] = Relationship(back_populates="pedido")
 
@@ -29,4 +28,4 @@ class ItemPedido(IdMixin, DatasMixin, table=True):
     quantidade: int = Field(gt=0)
 
     pedido: Pedido | None = Relationship(back_populates="itens")
-    produto: "Produto" | None = Relationship(back_populates="itens_pedido")
+    produto: Optional["Produto"] = Relationship(back_populates="itens_pedido")

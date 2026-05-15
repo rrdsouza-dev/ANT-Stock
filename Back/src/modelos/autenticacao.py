@@ -1,10 +1,13 @@
-from __future__ import annotations
-
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlmodel import Field, Relationship
 
 from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo
+
+if TYPE_CHECKING:
+    from src.modelos.estoque import Movimentacao
+    from src.modelos.pedido import Pedido
 
 
 class Perfil(IdMixin, DatasMixin, table=True):
@@ -19,7 +22,7 @@ class Perfil(IdMixin, DatasMixin, table=True):
 class Usuario(IdMixin, DatasMixin, table=True):
     __tablename__ = "usuarios"
 
-    auth_id: UUID | None = Field(default=None, unique=True, index=True)
+    auth_id: UUID | None = Field(default=None, unique=True, index=True) 
     email: str = Field(unique=True, index=True, max_length=255)
     nome: str | None = Field(default=None, max_length=120)
     senha_hash: str | None = Field(default=None, max_length=255)

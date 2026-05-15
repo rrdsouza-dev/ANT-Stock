@@ -1,3 +1,4 @@
+from typing import Any, cast
 from uuid import UUID
 
 from sqlalchemy import select
@@ -24,11 +25,13 @@ class RepositorioUsuario(RepositorioSQL[Usuario]):
         super().__init__(sessao)
 
     async def buscar(self, item_id: UUID) -> Usuario | None:
-        consulta = select(Usuario).options(selectinload(Usuario.perfil)).where(col(Usuario.id) == item_id)
+        consulta = select(Usuario).options(selectinload(cast(Any, Usuario.perfil))).where(col(Usuario.id) == item_id)
         resultado = await self.sessao.execute(consulta)
         return resultado.scalar_one_or_none()
 
     async def por_email(self, email: str) -> Usuario | None:
-        consulta = select(Usuario).options(selectinload(Usuario.perfil)).where(col(Usuario.email) == email.lower())
+        consulta = select(Usuario).options(selectinload(cast(Any, Usuario.perfil))).where(
+            col(Usuario.email) == email.lower()
+        )
         resultado = await self.sessao.execute(consulta)
         return resultado.scalar_one_or_none()

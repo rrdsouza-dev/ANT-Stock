@@ -1,12 +1,15 @@
-from __future__ import annotations
-
 from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, Relationship
 
 from src.modelos.base import DatasMixin, IdMixin, TipoMovimentacao, agora_utc
+
+if TYPE_CHECKING:
+    from src.modelos.autenticacao import Usuario
+    from src.modelos.pedido import ItemPedido, Pedido
 
 
 class Categoria(IdMixin, DatasMixin, table=True):
@@ -75,5 +78,5 @@ class Movimentacao(IdMixin, DatasMixin, table=True):
     movimentado_em: datetime = Field(default_factory=agora_utc)
 
     produto: Produto | None = Relationship(back_populates="movimentacoes")
-    usuario: "Usuario" | None = Relationship(back_populates="movimentacoes")
-    pedido: "Pedido" | None = Relationship(back_populates="movimentacoes")
+    usuario: Optional["Usuario"] = Relationship(back_populates="movimentacoes")
+    pedido: Optional["Pedido"] = Relationship(back_populates="movimentacoes")

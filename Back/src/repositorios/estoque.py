@@ -22,8 +22,16 @@ class RepositorioProduto(RepositorioSQL[Produto]):
 class RepositorioEstoque(RepositorioSQL[Estoque]):
     modelo = Estoque
 
-    async def por_produto_local(self, produto_id: UUID, localizacao_id: UUID | None) -> Estoque | None:
-        consulta = select(Estoque).where(col(Estoque.produto_id) == produto_id)
+    async def por_produto_local(
+        self,
+        deposito_id: UUID,
+        produto_id: UUID,
+        localizacao_id: UUID | None,
+    ) -> Estoque | None:
+        consulta = select(Estoque).where(
+            col(Estoque.deposito_id) == deposito_id,
+            col(Estoque.produto_id) == produto_id,
+        )
         if localizacao_id is None:
             consulta = consulta.where(col(Estoque.localizacao_id).is_(None))
         else:

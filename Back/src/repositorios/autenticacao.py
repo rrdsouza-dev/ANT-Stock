@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlmodel import col
 
-from src.modelos import Perfil, PerfilCodigo, Usuario
+from src.modelos import Perfil, PerfilCodigo, Usuario, UsuarioDeposito
 from src.repositorios.base import RepositorioSQL
 
 
@@ -35,3 +35,15 @@ class RepositorioUsuario(RepositorioSQL[Usuario]):
         )
         resultado = await self.sessao.execute(consulta)
         return resultado.scalar_one_or_none()
+
+
+class RepositorioUsuarioDeposito(RepositorioSQL[UsuarioDeposito]):
+    modelo = UsuarioDeposito
+
+    async def existe(self, usuario_id: UUID, deposito_id: UUID) -> bool:
+        consulta = select(UsuarioDeposito).where(
+            col(UsuarioDeposito.usuario_id) == usuario_id,
+            col(UsuarioDeposito.deposito_id) == deposito_id,
+        )
+        resultado = await self.sessao.execute(consulta)
+        return resultado.scalar_one_or_none() is not None

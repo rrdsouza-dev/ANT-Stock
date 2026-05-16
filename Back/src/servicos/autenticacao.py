@@ -1,10 +1,12 @@
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.esquemas.autenticacao import CadastroEntrada, EntrarEntrada, TokenSaida, UsuarioSaida
 from src.modelos import Perfil, PerfilCodigo, Usuario
 from src.nucleo.erros import ErroApp
 from src.nucleo.seguranca import checar_senha, criar_token, gerar_hash
-from src.repositorios.autenticacao import RepositorioPerfil, RepositorioUsuario
+from src.repositorios.autenticacao import RepositorioPerfil, RepositorioUsuario, RepositorioUsuarioDeposito
 
 NOMES_PERFIL = {
     PerfilCodigo.ALUNO: "Aluno",
@@ -17,6 +19,7 @@ class ServicoAutenticacao:
     def __init__(self, sessao: AsyncSession) -> None:
         self.perfis = RepositorioPerfil(sessao)
         self.usuarios = RepositorioUsuario(sessao)
+        self.usuario_depositos = RepositorioUsuarioDeposito(sessao)
 
     async def cadastrar(self, dados: CadastroEntrada) -> TokenSaida:
         existente = await self.usuarios.por_email(str(dados.email))
@@ -50,6 +53,9 @@ class ServicoAutenticacao:
         if perfil:
             return perfil
         return await self.perfis.criar({"codigo": codigo, "nome": NOMES_PERFIL[codigo]})
+
+    async def verificar_acesso(self, usuario_id: UUID, deposito_id: UUID) -> bool:
+        return await self.usuario_depositos.existe(usuario_id, deposito_id)
 
     def _resposta_token(self, usuario: Usuario) -> TokenSaida:
         perfil = usuario.perfil.codigo if usuario.perfil else None

@@ -5,7 +5,7 @@ from src.nucleo.configuracao import configuracao
 
 
 def _criar_cliente(chave: str) -> Any:
-    from supabase import create_client as criar_cliente_supabase  # type: ignore[attr-defined]
+    from supabase import create_client as criar_cliente_supabase
 
     config = configuracao()
     if config.supabase_url is None:

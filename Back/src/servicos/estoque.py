@@ -1,7 +1,8 @@
-from typing import Any
+from typing import Any, TypeVar
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import SQLModel
 
 from src.modelos import Categoria, Estoque, ItemPedido, Localizacao, Movimentacao, Pedido, Produto, TipoMovimentacao
 from src.nucleo.erros import ErroApp
@@ -16,6 +17,8 @@ from src.repositorios import (
     RepositorioUsuarioDeposito,
 )
 from src.servicos.crud import ServicoCrud
+
+ModeloCrudT = TypeVar("ModeloCrudT", bound=SQLModel)
 
 
 class ServicoEstoque:
@@ -39,7 +42,12 @@ class ServicoEstoque:
         if not await self.verificar_acesso(usuario_id, deposito_id):
             raise ErroApp("Sem acesso a este deposito", status_code=403, codigo="sem_acesso_deposito")
 
-    async def _buscar_no_deposito(self, crud: ServicoCrud[Any], item_id: UUID, deposito_id: UUID) -> Any:
+    async def _buscar_no_deposito(
+        self,
+        crud: ServicoCrud[ModeloCrudT],
+        item_id: UUID,
+        deposito_id: UUID,
+    ) -> ModeloCrudT:
         item = await crud.buscar(item_id)
         if getattr(item, "deposito_id", None) != deposito_id:
             raise ErroApp(f"{crud.nome_recurso} nao encontrado.", status_code=404, codigo="nao_encontrado")
@@ -49,9 +57,9 @@ class ServicoEstoque:
         self,
         usuario_id: UUID,
         deposito_id: UUID,
-        crud: ServicoCrud[Any],
+        crud: ServicoCrud[ModeloCrudT],
         dados: dict[str, Any],
-    ) -> Any:
+    ) -> ModeloCrudT:
         await self._exigir_acesso(usuario_id, deposito_id)
         dados = {campo: valor for campo, valor in dados.items() if campo != "deposito_id"}
         dados["deposito_id"] = deposito_id
@@ -61,10 +69,10 @@ class ServicoEstoque:
         self,
         usuario_id: UUID,
         deposito_id: UUID,
-        crud: ServicoCrud[Any],
+        crud: ServicoCrud[ModeloCrudT],
         item_id: UUID,
         dados: dict[str, Any],
-    ) -> Any:
+    ) -> ModeloCrudT:
         await self._exigir_acesso(usuario_id, deposito_id)
         item = await self._buscar_no_deposito(crud, item_id, deposito_id)
         dados = {campo: valor for campo, valor in dados.items() if campo != "deposito_id"}
@@ -75,7 +83,7 @@ class ServicoEstoque:
         self,
         usuario_id: UUID,
         deposito_id: UUID,
-        crud: ServicoCrud[Any],
+        crud: ServicoCrud[ModeloCrudT],
         item_id: UUID,
     ) -> None:
         await self._exigir_acesso(usuario_id, deposito_id)

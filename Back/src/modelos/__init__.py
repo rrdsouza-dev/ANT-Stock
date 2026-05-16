@@ -1,10 +1,11 @@
-from src.modelos.autenticacao import Perfil, Usuario
+from src.modelos.autenticacao import Perfil, Usuario, UsuarioDeposito
 from src.modelos.base import PerfilCodigo, StatusPedido, TipoMovimentacao
-from src.modelos.estoque import Categoria, Estoque, Localizacao, Movimentacao, Produto
+from src.modelos.estoque import Categoria, Deposito, Estoque, Localizacao, Movimentacao, Produto
 from src.modelos.pedido import ItemPedido, Pedido
 
 __all__ = [
     "Categoria",
+    "Deposito",
     "Estoque",
     "ItemPedido",
     "Localizacao",
@@ -16,4 +17,5 @@ __all__ = [
     "StatusPedido",
     "TipoMovimentacao",
     "Usuario",
+    "UsuarioDeposito",
 ]

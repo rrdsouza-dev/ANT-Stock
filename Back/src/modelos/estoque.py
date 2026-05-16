@@ -6,7 +6,7 @@ from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, Relationship
 
 from src.modelos.autenticacao import UsuarioDeposito
-from src.modelos.base import DatasMixin, IdMixin, TipoMovimentacao, agora_utc
+from src.modelos.base import DatasMixin, IdMixin, TipoDeposito, TipoMovimentacao, agora_utc
 
 if TYPE_CHECKING:
     from src.modelos.autenticacao import Usuario
@@ -17,7 +17,7 @@ class Deposito(IdMixin, DatasMixin, table=True):
     __tablename__ = "depositos"
 
     nome: str = Field(min_length=1, max_length=120, unique=True, index=True)
-    tipo: str = Field(max_length=40)
+    tipo: TipoDeposito = Field(index=True)
     descricao: str | None = Field(default=None, max_length=500)
     ativo: bool = Field(default=True)
 

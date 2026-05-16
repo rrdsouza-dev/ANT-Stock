@@ -23,6 +23,11 @@ class StatusPedido(StrEnum):
     CANCELADO = "cancelado"
 
 
+class TipoDeposito(StrEnum):
+    ESCOLAR = "escolar"
+    DIDATICO = "didatico"
+
+
 def agora_utc() -> datetime:
     return datetime.now(UTC)
 

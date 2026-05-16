@@ -15,11 +15,11 @@ class Configuracoes(BaseSettings):
         case_sensitive=False,
     )
 
-    nome_app: str = "ANT API"
-    versao_app: str = "1.0.0"
-    ambiente: str = "development"
-    depurar: bool = False
-    prefixo_api: str = "/api/v1"
+    nome_app: str = Field(default="ANT API", validation_alias="APP_NAME")
+    versao_app: str = Field(default="1.0.0", validation_alias="APP_VERSION")
+    ambiente: str = Field(default="development", validation_alias="ENVIRONMENT")
+    depurar: bool = Field(default=False, validation_alias="DEBUG")
+    prefixo_api: str = Field(default="/api/v1", validation_alias="API_PREFIX")
 
     url_banco_dados: SecretStr = Field(
         default=SecretStr("postgresql+asyncpg://postgres:postgres@localhost:5432/ant_stock"),

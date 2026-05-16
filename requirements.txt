@@ -10,7 +10,6 @@ orjson>=3.10.18
 passlib[bcrypt]>=1.7.4
 pydantic-settings>=2.9.0
 PyJWT>=2.10.1
-redis>=5.2.0
 sqlalchemy[asyncio]>=2.0.40
 sqlmodel>=0.0.24
 supabase>=2.10.0

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Pedido(IdMixin, DatasMixin, table=True):
-    __tablename__ = "pedidos"
+    __tablename__: ClassVar[str] = "pedidos"
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     usuario_id: UUID | None = Field(default=None, foreign_key="usuarios.id", index=True)
@@ -26,8 +26,10 @@ class Pedido(IdMixin, DatasMixin, table=True):
 
 
 class ItemPedido(IdMixin, DatasMixin, table=True):
-    __tablename__ = "itens_pedido"
-    __table_args__ = (UniqueConstraint("deposito_id", "pedido_id", "produto_id", name="uq_itens_pedido_produto"),)
+    __tablename__: ClassVar[str] = "itens_pedido"
+    __table_args__: ClassVar[tuple[UniqueConstraint]] = (
+        UniqueConstraint("deposito_id", "pedido_id", "produto_id", name="uq_itens_pedido_produto"),
+    )
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     pedido_id: UUID = Field(foreign_key="pedidos.id", index=True)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 from uuid import UUID
 
 from sqlalchemy import PrimaryKeyConstraint
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Perfil(IdMixin, DatasMixin, table=True):
-    __tablename__ = "perfis"
+    __tablename__: ClassVar[str] = "perfis"
 
     codigo: PerfilCodigo = Field(unique=True, index=True)
     nome: str = Field(max_length=40)
@@ -22,8 +22,8 @@ class Perfil(IdMixin, DatasMixin, table=True):
 
 
 class UsuarioDeposito(SQLModel, table=True):
-    __tablename__ = "usuario_depositos"
-    __table_args__ = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)
+    __tablename__: ClassVar[str] = "usuario_depositos"
+    __table_args__: ClassVar[tuple[PrimaryKeyConstraint]] = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
@@ -31,7 +31,7 @@ class UsuarioDeposito(SQLModel, table=True):
 
 
 class Usuario(IdMixin, DatasMixin, table=True):
-    __tablename__ = "usuarios"
+    __tablename__: ClassVar[str] = "usuarios"
 
     auth_id: UUID | None = Field(default=None, unique=True, index=True) 
     email: str = Field(unique=True, index=True, max_length=255)

@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 from uuid import UUID
 
 from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy.orm import declared_attr
 from sqlmodel import Field, Relationship, SQLModel
 
 from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, agora_utc
@@ -13,7 +14,9 @@ if TYPE_CHECKING:
 
 
 class Perfil(IdMixin, DatasMixin, table=True):
-    __tablename__: ClassVar[str] = "perfis"
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "perfis"
 
     codigo: PerfilCodigo = Field(unique=True, index=True)
     nome: str = Field(max_length=40)
@@ -22,8 +25,11 @@ class Perfil(IdMixin, DatasMixin, table=True):
 
 
 class UsuarioDeposito(SQLModel, table=True):
-    __tablename__: ClassVar[str] = "usuario_depositos"
     __table_args__: ClassVar[tuple[PrimaryKeyConstraint]] = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)
+
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "usuario_depositos"
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
@@ -31,7 +37,9 @@ class UsuarioDeposito(SQLModel, table=True):
 
 
 class Usuario(IdMixin, DatasMixin, table=True):
-    __tablename__: ClassVar[str] = "usuarios"
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "usuarios"
 
     auth_id: UUID | None = Field(default=None, unique=True, index=True) 
     email: str = Field(unique=True, index=True, max_length=255)

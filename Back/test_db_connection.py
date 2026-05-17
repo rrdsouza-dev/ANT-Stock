@@ -1,31 +1,29 @@
 import asyncio
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from src.nucleo.configuracao import configuracao
 
 
-async def test_connection():
+async def testar_conexao() -> None:
     config = configuracao()
+    engine = create_async_engine(config.url_banco, pool_pre_ping=True)
 
     try:
-        # Tentar conectar
-        engine = create_async_engine(config.url_banco, echo=True, pool_pre_ping=True)
-
         async with engine.begin() as conn:
-            result = await conn.execute("SELECT 1")
-            print("✓ Conexão com Supabase OK!")
+            result = await conn.execute(text("select 1"))
+            print("Conexao com Supabase OK.")
             print(f"Resultado: {result.fetchone()}")
-
-        await engine.dispose()
-
-    except Exception as e:
-        print(f"✗ ERRO na conexão: {e}")
+    except Exception as exc:
+        print(f"Erro na conexao: {exc}")
         print("\nVerifique:")
-        print("1. DATABASE_URL no .env está correto?")
-        print("2. Credenciais do Supabase estão corretas?")
-        print("3. Sua conexão de internet está funcionando?")
-        print("4. Firewall não está bloqueando?")
+        print("1. DATABASE_URL no .env esta correto?")
+        print("2. Credenciais do Supabase estao corretas?")
+        print("3. Sua conexao de internet esta funcionando?")
+        print("4. Firewall nao esta bloqueando?")
+    finally:
+        await engine.dispose()
 
 
 if __name__ == "__main__":
-    asyncio.run(test_connection())
+    asyncio.run(testar_conexao())

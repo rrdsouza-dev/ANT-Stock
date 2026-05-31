@@ -3,7 +3,7 @@ create extension if not exists "pgcrypto";
 
 do $$
 begin
-    create type perfil_codigo as enum ('aluno', 'professor', 'gestao');
+    create type perfil_codigo as enum ('professor', 'gestao');
 exception when duplicate_object then null;
 end $$;
 
@@ -148,7 +148,6 @@ alter table public.movimentacoes add column if not exists deposito_id uuid refer
 
 insert into public.perfis (codigo, nome)
 values
-    ('aluno', 'Aluno'),
     ('professor', 'Professor'),
     ('gestao', 'Gestao')
 on conflict (codigo) do update set nome = excluded.nome;

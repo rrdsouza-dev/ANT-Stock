@@ -1,7 +1,6 @@
 -- Dados iniciais opcionais para testar o banco Supabase.
 insert into public.perfis (codigo, nome)
 values
-    ('aluno', 'Aluno'),
     ('professor', 'Professor'),
     ('gestao', 'Gestao')
 on conflict (codigo) do update set nome = excluded.nome;

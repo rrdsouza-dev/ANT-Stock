@@ -18,6 +18,15 @@ class RepositorioLocalizacao(RepositorioSQL[Localizacao]):
 class RepositorioProduto(RepositorioSQL[Produto]):
     modelo = Produto
 
+    async def por_codigo(self, deposito_id: UUID, codigo: str) -> Produto | None:
+        consulta = select(Produto).where(
+            col(Produto.deposito_id) == deposito_id,
+            col(Produto.codigo) == codigo,
+            col(Produto.ativo).is_(True),
+        )
+        resultado = await self.sessao.execute(consulta)
+        return resultado.scalar_one_or_none()
+
 
 class RepositorioEstoque(RepositorioSQL[Estoque]):
     modelo = Estoque

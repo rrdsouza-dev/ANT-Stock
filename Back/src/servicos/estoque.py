@@ -150,6 +150,13 @@ class ServicoEstoque:
         await self._exigir_acesso(usuario_id, deposito_id)
         return await self._buscar_no_deposito(self.produtos, produto_id, deposito_id)
 
+    async def buscar_produto_por_codigo(self, usuario_id: UUID, deposito_id: UUID, codigo: str) -> Produto:
+        await self._exigir_acesso(usuario_id, deposito_id)
+        produto = await self.produtos.repositorio.por_codigo(deposito_id, codigo)
+        if produto is None:
+            raise ErroApp("Produto nao encontrado para este codigo.", status_code=404, codigo="produto_codigo_nao_encontrado")
+        return produto
+
     async def criar_produto(self, usuario_id: UUID, deposito_id: UUID, dados: dict[str, Any]) -> Produto:
         await self._exigir_acesso(usuario_id, deposito_id)
         await self._validar_referencias_produto(deposito_id, dados)
@@ -273,6 +280,13 @@ class ServicoEstoque:
         dados["deposito_id"] = deposito_id
         await self._ajustar_estoque(deposito_id, dados)
         return await self.movimentacoes.criar(dados)
+
+    async def registrar_movimentacao_por_codigo(
+        self, usuario_id: UUID, deposito_id: UUID, dados: dict[str, Any]
+    ) -> Movimentacao:
+        produto = await self.buscar_produto_por_codigo(usuario_id, deposito_id, dados.pop("codigo"))
+        dados["produto_id"] = produto.id
+        return await self.registrar_movimentacao(usuario_id, deposito_id, dados)
 
     async def _validar_referencias_movimentacao(self, deposito_id: UUID, dados: dict[str, Any]) -> None:
         await self._buscar_no_deposito(self.produtos, dados["produto_id"], deposito_id)

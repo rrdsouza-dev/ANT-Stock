@@ -98,5 +98,16 @@ class MovimentacaoOperacaoEntrada(BaseModel):
     observacao: str | None = Field(default=None, max_length=500)
 
 
+class MovimentacaoCodigoEntrada(BaseModel):
+    codigo: str = Field(min_length=1, max_length=80)
+    tipo: TipoMovimentacao
+    quantidade: int = Field(gt=0)
+    usuario_id: UUID | None = None
+    pedido_id: UUID | None = None
+    origem_id: UUID | None = None
+    destino_id: UUID | None = None
+    observacao: str | None = Field(default=None, max_length=500)
+
+
 class MovimentacaoSaida(MovimentacaoEntrada, SchemaComDatas):
     movimentado_em: datetime

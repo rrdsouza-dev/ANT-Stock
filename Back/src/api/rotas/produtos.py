@@ -33,6 +33,17 @@ async def buscar(
     return ProdutoSaida.model_validate(await ServicoEstoque(sessao).buscar_produto(usuario.id, deposito_id, produto_id))
 
 
+@router.get("/codigo/{codigo}", response_model=ProdutoSaida)
+async def buscar_por_codigo(
+    codigo: str,
+    usuario_deposito: tuple[Usuario, UUID] = Depends(verificar_acesso_deposito),
+    sessao: AsyncSession = Depends(sessao_db),
+) -> ProdutoSaida:
+    usuario, deposito_id = usuario_deposito
+    item = await ServicoEstoque(sessao).buscar_produto_por_codigo(usuario.id, deposito_id, codigo)
+    return ProdutoSaida.model_validate(item)
+
+
 @router.post("", response_model=ProdutoSaida, status_code=status.HTTP_201_CREATED)
 async def criar(
     dados: ProdutoEntrada,

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.dependencias import sessao_db, verificar_acesso_deposito
-from src.esquemas import MovimentacaoEntrada, MovimentacaoOperacaoEntrada, MovimentacaoSaida
+from src.esquemas import MovimentacaoCodigoEntrada, MovimentacaoEntrada, MovimentacaoOperacaoEntrada, MovimentacaoSaida
 from src.modelos import TipoMovimentacao, Usuario
 from src.servicos import ServicoEstoque
 
@@ -54,6 +54,19 @@ async def criar(
     payload = dados.model_dump()
     payload["usuario_id"] = payload.get("usuario_id") or usuario.id
     item = await ServicoEstoque(sessao).registrar_movimentacao(usuario.id, deposito_id, payload)
+    return MovimentacaoSaida.model_validate(item)
+
+
+@router.post("/codigo", response_model=MovimentacaoSaida, status_code=status.HTTP_201_CREATED)
+async def criar_por_codigo(
+    dados: MovimentacaoCodigoEntrada,
+    usuario_deposito: tuple[Usuario, UUID] = Depends(verificar_acesso_deposito),
+    sessao: AsyncSession = Depends(sessao_db),
+) -> MovimentacaoSaida:
+    usuario, deposito_id = usuario_deposito
+    payload = dados.model_dump()
+    payload["usuario_id"] = payload.get("usuario_id") or usuario.id
+    item = await ServicoEstoque(sessao).registrar_movimentacao_por_codigo(usuario.id, deposito_id, payload)
     return MovimentacaoSaida.model_validate(item)
 
 

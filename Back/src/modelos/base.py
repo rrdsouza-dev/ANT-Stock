@@ -6,7 +6,6 @@ from sqlmodel import Field, SQLModel
 
 
 class PerfilCodigo(StrEnum):
-    ALUNO = "aluno"
     PROFESSOR = "professor"
     GESTAO = "gestao"
 

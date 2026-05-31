@@ -1,4 +1,12 @@
-from src.esquemas.autenticacao import CadastroEntrada, EntrarEntrada, TokenSaida, UsuarioSaida
+from src.esquemas.autenticacao import (
+    CadastroEntrada,
+    EntrarEntrada,
+    NovaSenhaEntrada,
+    RecuperarSenhaEntrada,
+    TokenSaida,
+    UsuarioSaida,
+    ValidarCodigoEntrada,
+)
 from src.esquemas.base import MensagemAPI
 from src.esquemas.estoque import (
     CategoriaAtualizar,
@@ -11,6 +19,7 @@ from src.esquemas.estoque import (
     LocalizacaoEntrada,
     LocalizacaoSaida,
     MovimentacaoEntrada,
+    MovimentacaoCodigoEntrada,
     MovimentacaoOperacaoEntrada,
     MovimentacaoSaida,
     ProdutoAtualizar,
@@ -41,6 +50,8 @@ __all__ = [
     "LocalizacaoSaida",
     "MensagemAPI",
     "MovimentacaoEntrada",
+    "MovimentacaoCodigoEntrada",
+    "NovaSenhaEntrada",
     "MovimentacaoOperacaoEntrada",
     "MovimentacaoSaida",
     "PedidoAtualizar",
@@ -49,6 +60,8 @@ __all__ = [
     "ProdutoAtualizar",
     "ProdutoEntrada",
     "ProdutoSaida",
+    "RecuperarSenhaEntrada",
     "TokenSaida",
     "UsuarioSaida",
+    "ValidarCodigoEntrada",
 ]

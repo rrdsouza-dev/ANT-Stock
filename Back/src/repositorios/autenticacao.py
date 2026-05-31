@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlmodel import col
 
-from src.modelos import Perfil, PerfilCodigo, Usuario, UsuarioDeposito
+from src.modelos import CodigoRecuperacao, Perfil, PerfilCodigo, Usuario, UsuarioDeposito
 from src.repositorios.base import RepositorioSQL
 
 
@@ -47,3 +47,19 @@ class RepositorioUsuarioDeposito(RepositorioSQL[UsuarioDeposito]):
         )
         resultado = await self.sessao.execute(consulta)
         return resultado.scalar_one_or_none() is not None
+
+
+class RepositorioCodigoRecuperacao(RepositorioSQL[CodigoRecuperacao]):
+    modelo = CodigoRecuperacao
+
+    async def ultimo_ativo(self, usuario_id: UUID) -> CodigoRecuperacao | None:
+        consulta = (
+            select(CodigoRecuperacao)
+            .where(
+                col(CodigoRecuperacao.usuario_id) == usuario_id,
+                col(CodigoRecuperacao.usado).is_(False),
+            )
+            .order_by(col(CodigoRecuperacao.criado_em).desc())
+        )
+        resultado = await self.sessao.execute(consulta)
+        return resultado.scalars().first()

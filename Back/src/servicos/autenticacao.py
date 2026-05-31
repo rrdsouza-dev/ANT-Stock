@@ -1,15 +1,31 @@
+from datetime import timedelta
+from hashlib import sha256
+from secrets import randbelow
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.esquemas.autenticacao import CadastroEntrada, EntrarEntrada, TokenSaida, UsuarioSaida
+from src.esquemas.autenticacao import (
+    CadastroEntrada,
+    EntrarEntrada,
+    NovaSenhaEntrada,
+    RecuperarSenhaEntrada,
+    TokenSaida,
+    UsuarioSaida,
+    ValidarCodigoEntrada,
+)
 from src.modelos import Perfil, PerfilCodigo, Usuario
 from src.nucleo.erros import ErroApp
 from src.nucleo.seguranca import checar_senha, criar_token, gerar_hash
-from src.repositorios.autenticacao import RepositorioPerfil, RepositorioUsuario, RepositorioUsuarioDeposito
+from src.modelos.base import agora_utc
+from src.repositorios.autenticacao import (
+    RepositorioCodigoRecuperacao,
+    RepositorioPerfil,
+    RepositorioUsuario,
+    RepositorioUsuarioDeposito,
+)
 
 NOMES_PERFIL = {
-    PerfilCodigo.ALUNO: "Aluno",
     PerfilCodigo.PROFESSOR: "Professor",
     PerfilCodigo.GESTAO: "Gestao",
 }
@@ -20,6 +36,7 @@ class ServicoAutenticacao:
         self.perfis = RepositorioPerfil(sessao)
         self.usuarios = RepositorioUsuario(sessao)
         self.usuario_depositos = RepositorioUsuarioDeposito(sessao)
+        self.codigos = RepositorioCodigoRecuperacao(sessao)
 
     async def cadastrar(self, dados: CadastroEntrada) -> TokenSaida:
         existente = await self.usuarios.por_email(str(dados.email))
@@ -48,11 +65,61 @@ class ServicoAutenticacao:
             raise ErroApp("Usuario inativo.", status_code=403, codigo="usuario_inativo")
         return self._resposta_token(usuario)
 
+    async def recuperar_senha(self, dados: RecuperarSenhaEntrada) -> str:
+        usuario = await self.usuarios.por_email(str(dados.email))
+        if not usuario or not usuario.ativo:
+            return "Se o email existir, um codigo sera enviado."
+
+        codigo = f"{randbelow(1_000_000):06d}"
+        await self.codigos.criar(
+            {
+                "usuario_id": usuario.id,
+                "codigo_hash": self._hash_codigo(codigo),
+                "expira_em": agora_utc() + timedelta(minutes=15),
+                "usado": False,
+                "tentativas": 0,
+            }
+        )
+        # Em producao, este codigo deve ser enviado por email. A resposta facilita testes locais.
+        return f"Codigo de recuperacao gerado. Use {codigo} em ambiente local."
+
+    async def validar_codigo(self, dados: ValidarCodigoEntrada) -> None:
+        usuario, registro = await self._registro_codigo(str(dados.email), dados.codigo)
+        if registro.usuario_id != usuario.id:
+            raise ErroApp("Codigo invalido.", status_code=400, codigo="codigo_invalido")
+
+    async def nova_senha(self, dados: NovaSenhaEntrada) -> None:
+        usuario, registro = await self._registro_codigo(str(dados.email), dados.codigo)
+        await self.usuarios.editar(usuario, {"senha_hash": gerar_hash(dados.nova_senha)})
+        await self.codigos.editar(registro, {"usado": True})
+
     async def _perfil(self, codigo: PerfilCodigo) -> Perfil:
         perfil = await self.perfis.por_codigo(codigo)
         if perfil:
             return perfil
         return await self.perfis.criar({"codigo": codigo, "nome": NOMES_PERFIL[codigo]})
+
+    async def _registro_codigo(self, email: str, codigo: str):
+        usuario = await self.usuarios.por_email(email)
+        if not usuario:
+            raise ErroApp("Codigo invalido.", status_code=400, codigo="codigo_invalido")
+        registro = await self.codigos.ultimo_ativo(usuario.id)
+        agora = agora_utc()
+        if not registro or registro.expira_em < agora:
+            raise ErroApp("Codigo expirado.", status_code=400, codigo="codigo_expirado")
+        if registro.bloqueado_ate and registro.bloqueado_ate > agora:
+            raise ErroApp("Codigo temporariamente bloqueado.", status_code=429, codigo="codigo_bloqueado")
+        if registro.codigo_hash != self._hash_codigo(codigo):
+            tentativas = registro.tentativas + 1
+            dados = {"tentativas": tentativas}
+            if tentativas >= 3:
+                dados["bloqueado_ate"] = agora + timedelta(minutes=5)
+            await self.codigos.editar(registro, dados)
+            raise ErroApp("Codigo invalido.", status_code=400, codigo="codigo_invalido")
+        return usuario, registro
+
+    def _hash_codigo(self, codigo: str) -> str:
+        return sha256(codigo.encode("utf-8")).hexdigest()
 
     async def verificar_acesso(self, usuario_id: UUID, deposito_id: UUID) -> bool:
         return await self.usuario_depositos.existe(usuario_id, deposito_id)

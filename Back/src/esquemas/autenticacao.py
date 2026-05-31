@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from src.modelos import PerfilCodigo, Usuario
 
@@ -9,7 +9,7 @@ class CadastroEntrada(BaseModel):
     nome: str | None = Field(default=None, min_length=2, max_length=120)
     email: EmailStr
     senha: str = Field(min_length=8, max_length=128)
-    perfil: PerfilCodigo = PerfilCodigo.ALUNO
+    perfil: PerfilCodigo = PerfilCodigo.PROFESSOR
 
 
 class EntrarEntrada(BaseModel):
@@ -48,3 +48,32 @@ class TokenSaida(BaseModel):
     token: str
     tipo: str = "bearer"
     usuario: UsuarioSaida
+
+
+class RecuperarSenhaEntrada(BaseModel):
+    email: EmailStr
+
+
+class ValidarCodigoEntrada(BaseModel):
+    email: EmailStr
+    codigo: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+    @field_validator("codigo")
+    @classmethod
+    def validar_codigo_numerico(cls, valor: str) -> str:
+        if not valor.isdigit():
+            raise ValueError("O codigo deve conter apenas numeros.")
+        return valor
+
+
+class NovaSenhaEntrada(BaseModel):
+    email: EmailStr
+    codigo: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+    nova_senha: str = Field(min_length=6, max_length=128)
+
+    @field_validator("codigo")
+    @classmethod
+    def validar_codigo_numerico(cls, valor: str) -> str:
+        if not valor.isdigit():
+            raise ValueError("O codigo deve conter apenas numeros.")
+        return valor

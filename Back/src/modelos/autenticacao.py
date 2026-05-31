@@ -53,3 +53,19 @@ class Usuario(IdMixin, DatasMixin, table=True):
     depositos: list["Deposito"] = Relationship(back_populates="usuarios", link_model=UsuarioDeposito)
     pedidos: list["Pedido"] = Relationship(back_populates="usuario")
     movimentacoes: list["Movimentacao"] = Relationship(back_populates="usuario")
+    codigos_recuperacao: list["CodigoRecuperacao"] = Relationship(back_populates="usuario")
+
+
+class CodigoRecuperacao(IdMixin, DatasMixin, table=True):
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "codigos_recuperacao"
+
+    usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
+    codigo_hash: str = Field(max_length=128, index=True)
+    expira_em: datetime = Field(nullable=False)
+    usado: bool = Field(default=False)
+    tentativas: int = Field(default=0, ge=0)
+    bloqueado_ate: datetime | None = Field(default=None)
+
+    usuario: Usuario | None = Relationship(back_populates="codigos_recuperacao")

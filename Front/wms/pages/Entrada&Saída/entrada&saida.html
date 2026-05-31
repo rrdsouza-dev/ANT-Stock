@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/Entrada&Saída/entradas-saidas.css">
+    <title>Entradas e Saídas - ANT Stock</title>
+</head>
+<body>
+
+    <aside class="esquerda">
+        <div class="logo">
+            <div class="imgLogoPlaceholder">ANT</div>
+            <h1>ANT<br><span>Stock</span></h1>
+        </div>
+        <ul class="navList">
+            <li><a href="/ANT-Stock/Front/wms/pages/home/home.html">Home</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/estoque/estoque.html">Estoque</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/Entrada&Saída/entrada&saida.html">Entradas/Saídas</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.html">Relatórios</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/configuracoes/config.html">Configurações</a></li>
+        </ul>
+        <ul class="adicionais">
+            <li><a href="#" class="logout-btn">Log Out</a></li>
+        </ul>
+    </aside>
+
+    <main class="direita">
+        
+        <header class="main-header">
+            <div class="header-titulo">
+                <h2>Fluxo de Entradas & Saídas</h2>
+                <p class="data-atual">Gestão de Docas e Portarias</p>
+            </div>
+
+            <div class="dadosUser-header">
+                <a href="/pages/usuario/Usuário.html" class="user-header-link" title="Acessar meu perfil">
+                    <img src="/Front/wms/img/icon-7797704_640.png" alt="Foto do Usuário" id="imgUserHeader">
+                    <div class="user-header-text">
+                        <span class="user-name">Nome de Usuário</span>
+                        <span class="user-role">Operador WMS</span>
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <section class="kpi-container">
+            <div class="card-kpi entrada-card">
+                <h3>Recebidos (Hoje)</h3>
+                <p class="kpi-value">+ 1,420 <span class="kpi-sub">itens</span></p>
+            </div>
+            <div class="card-kpi saida-card">
+                <h3>Expedidos (Hoje)</h3>
+                <p class="kpi-value">- 890 <span class="kpi-sub">itens</span></p>
+            </div>
+            <div class="card-kpi docas-card">
+                <h3>Docas Ocupadas</h3>
+                <p class="kpi-value">2 <span class="kpi-sub">/ de 4</span></p>
+            </div>
+        </section>
+
+        <section class="registro-container">
+            <h3>Registrar Nova Movimentação</h3>
+            <form class="form-movimentacao" onsubmit="event.preventDefault();">
+                <div class="input-grupo">
+                    <label>Tipo de Operação</label>
+                    <select class="select-operacao">
+                        <option value="entrada">📥 Entrada (Recebimento / Fornecedor)</option>
+                        <option value="saida">📤 Saída (Expedição / Cliente)</option>
+                    </select>
+                </div>
+                <div class="input-grupo">
+                    <label>Código do Produto</label>
+                    <input type="text" placeholder="Ex: PRD-001">
+                </div>
+                <div class="input-grupo">
+                    <label>Quantidade</label>
+                    <input type="number" placeholder="Ex: 50">
+                </div>
+                <div class="input-grupo">
+                    <label>Doca / Localização</label>
+                    <select>
+                        <option value="doca1">Doca 01</option>
+                        <option value="doca2">Doca 02</option>
+                        <option value="doca3">Doca 03</option>
+                        <option value="doca4">Doca 04</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-lancar">Lançar Fluxo</button>
+            </form>
+        </section>
+
+        <section class="tabela-movimentacoes">
+            <div class="tabela-header">
+                <h3>Últimos Registros Processados</h3>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Operação</th>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th>Qtd.</th>
+                            <th>Doca</th>
+                            <th>Responsável</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>16:45</td>
+                            <td><span class="badge-fluxo entrada">Entrada</span></td>
+                            <td><strong>PRD-001</strong></td>
+                            <td>Caixa de Papelão A4</td>
+                            <td>+ 50 un</td>
+                            <td>Doca 02</td>
+                            <td>Nome de Usuário</td>
+                        </tr>
+                        <tr>
+                            <td>15:30</td>
+                            <td><span class="badge-fluxo saida">Saída</span></td>
+                            <td><strong>PRD-003</strong></td>
+                            <td>Palete de Madeira Padrão</td>
+                            <td>- 10 un</td>
+                            <td>Doca 01</td>
+                            <td>Nome de Usuário</td>
+                        </tr>
+                        <tr>
+                            <td>14:15</td>
+                            <td><span class="badge-fluxo entrada">Entrada</span></td>
+                            <td><strong>PRD-002</strong></td>
+                            <td>Fita Adesiva Transparente</td>
+                            <td>+ 100 un</td>
+                            <td>Doca 02</td>
+                            <td>Nome de Usuário</td>
+                        </tr>
+                        <tr>
+                            <td>11:02</td>
+                            <td><span class="badge-fluxo saida">Saída</span></td>
+                            <td><strong>PRD-004</strong></td>
+                            <td>Plástico Bolha 100m</td>
+                            <td>- 5 un</td>
+                            <td>Doca 04</td>
+                            <td>Carlos Silva</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+</html>

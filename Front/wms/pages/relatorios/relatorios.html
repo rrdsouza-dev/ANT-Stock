@@ -1,12 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>relatorios</title>
     <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.css">
+    <title>Relatórios - ANT Stock</title>
 </head>
 <body>
-    
-</body>
-</html>
+
+    <aside class="esquerda">
+        <div class="logo">
+            <div class="imgLogoPlaceholder">ANT</div>
+            <h1>ANT<br><span>Stock</span></h1>
+        </div>
+        <ul class="navList">
+            <li><a href="/ANT-Stock/Front/wms/pages/home/home.html">Home</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/estoque/estoque.html">Estoque</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/Entrada&Saída/entrada&saida.html">Entradas/Saídas</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.html">Relatórios</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/configuracoes/config.html">Configurações</a></li>
+        </ul>
+        <ul class="adicionais">
+            <li><a href="#" class="logout-btn">Log Out</a></li>
+        </ul>
+    </aside>
+
+    <main class="direita">
+        
+        <header class="main-header">
+            <div class="header-titulo">
+                <h2>Relatórios Logísticos</h2>
+            </div>
+
+            <div class="dadosUser-header">
+                <a href="/pages/usuario/Usuário.html" class="user-header-link" title="Acessar meu perfil">
+                    <img src="/img/icon-7797704_640.png" alt="Foto do Usuário" id="imgUserHeader">
+                    <div class="user-header-text">
+                        <span class="user-name">Nome de Usuário</span>
+                        <span class="user-role">Operador WMS</span>
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <section class="filtros-container">
+            <h3>Filtrar Relatório</h3>
+            <form class="form-filtros" onsubmit="event.preventDefault();">
+                <div class="input-grupo">
+                    <label>Tipo de Relatório</label>
+                    <select>
+                        <option value="movimentacao">Movimentação de Estoque (Entradas/Saídas)</option>
+                        <option value="giro">Giro de Estoque / Curva ABC</option>
+                        <option value="inventario">Posição de Inventário Atual</option>
+                        <option value="produtividade">Produtividade de Picking</option>
+                    </select>
+                </div>
+                <div class="input-grupo">
+                    <label>Data Inicial</label>
+                    <input type="date">
+                </div>
+                <div class="input-grupo">
+                    <label>Data Final</label>
+                    <input type="date">
+                </div>
+                <button type="submit" class="btn-gerar">Gerar Relatório</button>
+            </form>
+        </section>
+
+        <section class="kpi-container">
+            <div class="card-kpi">
+                <h3>Giro de Estoque</h3>
+                <p class="kpi-value">4.2 <span class="kpi-unidade">/mês</span></p>
+            </div>
+            <div class="card-kpi taxa">
+                <h3>Acuracidade de Inventário</h3>
+                <p class="kpi-value">99.4%</p>
+            </div>
+            <div class="card-kpi otif">
+                <h3>Taxa de OTIF (Pedidos)</h3>
+                <p class="kpi-value">96.8%</p>
+            </div>
+        </section>
+
+        <section class="tabela-relatorios">
+            <div class="tabela-header">
+                <h3>Exportar Relatórios Recentes</h3>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID do Relatório</th>
+                            <th>Nome do Arquivo</th>
+                            <th>Data de Geração</th>
+                            <th>Período Selecionado</th>
+                            <th>Formato</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>#REP-204</strong></td>
+                            <td>Inventario_Geral_Maio_2026</td>
+                            <td>Hoje às 16:20</td>
+                            <td>01/05/2026 a 31/05/2026</td>
+                            <td><span class="badge-formato pdf">PDF</span></td>
+                            <td><button class="btn-download">Baixar</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>#REP-203</strong></td>
+                            <td>Movimentacao_Entradas_Saidas_Semana22</td>
+                            <td>Ontem às 11:15</td>
+                            <td>18/05/2026 a 24/05/2026</td>
+                            <td><span class="badge-formato excel">EXCEL</span></td>
+                            <td><button class="btn-download">Baixar</button></td>
+                        </tr> 
+
+        <script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+   </body>  
+</html>                   

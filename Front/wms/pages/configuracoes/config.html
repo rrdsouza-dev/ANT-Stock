@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/configuracoes/configuracoes.css">
+    <title>Configurações - ANT Stock</title>
+</head>
+<body>
+
+    <aside class="esquerda">
+        <div class="logo">
+            <div class="imgLogoPlaceholder">ANT</div>
+            <h1>ANT<br><span>Stock</span></h1>
+        </div>
+        <ul class="navList">
+            <li><a href="/ANT-Stock/Front/wms/pages/home/home.html">Home</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/estoque/estoque.html">Estoque</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/Entrada&Saída/entrada&saida.html">Entradas/Saídas</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.html">Relatórios</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/configuracoes/config.html">Configurações</a></li>
+        </ul>
+        <ul class="adicionais">
+            <li><a href="#">Support</a></li>
+            <li><a href="#" class="logout-btn">Log Out</a></li>
+        </ul>
+    </aside>
+
+    <main class="direita">
+        
+        <header class="main-header">
+            <div class="header-titulo">
+                <h2>Configurações do Sistema</h2>
+                <p class="data-atual">Ajustes de preferências e interface</p>
+            </div>
+
+            <div class="dadosUser-header">
+                <a href="/pages/usuario/Usuário.html" class="user-header-link">
+                    <img src="/Front/wms/img/icon-7797704_640.png" alt="Foto do Usuário" id="imgUserHeader">
+                    <div class="user-header-text">
+                        <span class="user-name">Nome de Usuário</span>
+                        <span class="user-role">Operador WMS</span>
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <div class="config-grid">
+            
+            <section class="card-config">
+                <h3>Aparência do Painel</h3>
+                <div class="config-item">
+                    <div class="config-info">
+                        <h4>Modo Escuro (Dark Mode)</h4>
+                        <p>Altera o esquema de cores do WMS para tons mais escuros, reduzindo a fadiga visual.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="card-config disabled">
+                <h3>Notificações do Armazém</h3>
+                <div class="config-item">
+                    <div class="config-info">
+                        <h4>Alertas Sonoros</h4>
+                        <p>Emitir bipes sonoros ao detectar falhas críticas ou estoque zerado.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" disabled>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="/ANT-Stock/Front/wms/pages/configuracoes/configuracoes.js"></script>
+</body>
+</html>

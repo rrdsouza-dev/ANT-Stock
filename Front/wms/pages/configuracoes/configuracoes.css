@@ -1,0 +1,180 @@
+/* Variáveis Padrão (Light Mode) */
+:root {
+  --bg-sidebar: #1e2229;
+  --bg-main: #f4f6f9;
+  --text-main: #333333;
+  --text-light: #ffffff;
+  --text-muted: #8b95a5;
+  --primary: #2f80ed;
+  --primary-hover: #1b66ca;
+  --border-color: #e0e0e0;
+  --card-bg: #ffffff;
+}
+
+/* Variáveis para quando o MODO ESCURO estiver ativo */
+body.dark-mode {
+  --bg-main: #14171c;
+  --text-main: #f1f3f5;
+  --card-bg: #1e2229;
+  --border-color: #2d333f;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  display: flex;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+.imgLogoPlaceholder {
+  width: 45px;
+  height: 45px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.logo h1 {
+  font-size: 1.2rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.logo h1 span {
+  color: var(--primary);
+}
+
+/* --- SIDEBAR --- */
+.esquerda {
+  width: 260px;
+  background-color: #1e2229; /* Mantém escuro em ambos os modos */
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+.imgLogo { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; }
+.logo h1 { font-size: 1.2rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 1px; color: #fff;}
+.navList, .adicionais { list-style: none; width: 100%; }
+.navList li, .adicionais li { margin-bottom: 8px; }
+.navList a, .adicionais a { display: block; color: var(--text-muted); text-decoration: none; padding: 12px 16px; border-radius: 6px; font-size: 0.95rem; }
+.navList a:hover, .navList a.active { background-color: rgba(255, 255, 255, 0.05); color: #fff; }
+.navList a.active { border-left: 4px solid var(--primary); background-color: rgba(47, 128, 237, 0.1); }
+.logout-btn:hover { background-color: rgba(235, 87, 87, 0.1); color: #eb5757; }
+
+/* --- CONTEÚDO PRINCIPAL --- */
+.direita {
+  margin-left: 260px;
+  flex-grow: 1;
+  padding: 40px;
+  width: calc(100% - 260px);
+}
+
+/* Header */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: var(--card-bg);
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.header-titulo h2 { color: var(--text-main); font-size: 1.6rem; }
+.data-atual { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+.user-header-link { display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 6px 12px; border-radius: 6px; }
+.user-header-link:hover { background-color: rgba(0,0,0,0.05); }
+body.dark-mode .user-header-link:hover { background-color: rgba(255,255,255,0.05); }
+#imgUserHeader { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); background-color: #fff; }
+.user-header-text { display: flex; flex-direction: column; }
+.user-name { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+.user-role { color: var(--text-muted); font-size: 0.8rem; }
+
+/* Grid de Configurações */
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.card-config {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.card-config h3 {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.config-info h4 { font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }
+.config-info p { font-size: 0.88rem; color: var(--text-muted); max-width: 500px; }
+
+.card-config.disabled { opacity: 0.5; }
+
+/* --- COMPONENTE SWITCH TOGGLE (O botão Liga/Desliga) --- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 4px; bottom: 4px;
+  background-color: white;
+  transition: .3s;
+}
+
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(24px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }

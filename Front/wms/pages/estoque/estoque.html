@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/estoque/estoque.css">
+    <title>Estoque - ANT Stock</title>
+</head>
+<body>
+
+    <aside class="esquerda">
+        <div class="logo">
+            <div class="imgLogoPlaceholder">ANT</div>
+            <h1>ANT<br><span>Stock</span></h1>
+        </div>
+        <ul class="navList">
+            <li><a href="/ANT-Stock/Front/wms/pages/home/home.html">Home</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/estoque/estoque.html">Estoque</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/Entrada&Saída/entrada&saida.html">Entradas/Saídas</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.html">Relatórios</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/configuracoes/config.html">Configurações</a></li>
+        </ul>
+        <ul class="adicionais">
+            <li><a href="#" class="logout-btn">Log Out</a></li>
+        </ul>
+    </aside>
+
+    <main class="direita">
+        
+        <header class="main-header">
+            <div class="header-titulo">
+                <h2>Painel de Estoque</h2>
+                <button class="btn-primary">+ Novo Produto</button>
+            </div>
+
+            <div class="dadosUser-header">
+                <a href="/pages/usuario/Usuário.html" class="user-header-link" title="Acessar meu perfil">
+                    <img src="/img/icon-7797704_640.png" alt="Foto do Usuário" id="imgUserHeader">
+                    <div class="user-header-text">
+                        <span class="user-name">Nome de Usuário</span>
+                        <span class="user-role">Operador WMS</span>
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <section class="kpi-container">
+            <div class="card-kpi">
+                <h3>Total de Itens</h3>
+                <p class="kpi-value">207</p>
+            </div>
+            <div class="card-kpi alerta">
+                <h3>Alertas de Giro</h3>
+                <p class="kpi-value">1</p>
+            </div>
+            <div class="card-kpi critico">
+                <h3>Itens Esgotados</h3>
+                <p class="kpi-value">1</p>
+            </div>
+        </section>
+
+        <section class="tabela-estoque">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Qtd.</th>
+                            <th>Posição (Endereço)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PRD-001</strong></td>
+                            <td>Caixa de Papelão A4</td>
+                            <td>Embalagem</td>
+                            <td>150 unidades</td>
+                            <td><span class="badge-posicao">AL-01-A</span></td>
+                            <td><span class="status-badge em-estoque">Em Estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>PRD-002</strong></td>
+                            <td>Fita Adesiva Transparente</td>
+                            <td>Suprimentos</td>
+                            <td>12 unidades</td>
+                            <td><span class="badge-posicao">AL-01-B</span></td>
+                            <td><span class="status-badge estoque-baixo">Estoque Baixo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>PRD-003</strong></td>
+                            <td>Palete de Madeira Padrão</td>
+                            <td>Logística</td>
+                            <td>45 unidades</td>
+                            <td><span class="badge-posicao">ZONA-EXT</span></td>
+                            <td><span class="status-badge em-estoque">Em Estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>PRD-004</strong></td>
+                            <td>Plástico Bolha 100m</td>
+                            <td>Embalagem</td>
+                            <td>0 unidades</td>
+                            <td><span class="badge-posicao">AL-02-A</span></td>
+                            <td><span class="status-badge esgotado">Esgotado</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+</body>
+</html>

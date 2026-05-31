@@ -1,55 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Home</title>
+    <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/usuario/Usuário.css">
+    <title>Perfil do Usuário - ANT Stock</title>
 </head>
-
 <body>
-    <aside class='esquerda'>
-        <div class='logo'>
-            <img class='imgLogo' src="/img/ChatGPT Image 21 de mai. de 2026, 09_32_07.png" alt="logo" />
-            <h1>ANTStock</h1>
-        </div>
-        <ul class='navList'>
-            <li><a href="/pages/home/index.html">Home</a></li>
-            <li><a href="#">Estoque</a></li>
-            <li><a href="#">Entradas/Saídas</a></li>
-            <li><a href="#">Picking</a></li>
-            <li><a href="#">Relatórios logísticos</a></li>
-            <li><a href="#">Getão Escolar</a></li>
-            <li><a href="#">Estudantes</a></li>
-            <li><a href="#">Configurações</a></li>
-        </ul>
-        <ul class='adicionais'>
-            <li><a href="#">Support</a></li>
-            <li><a href="#">Log Out</a></li>
-        </ul>
 
+    <aside class="esquerda">
+        <div class="logo">
+            <div class="imgLogoPlaceholder">ANT</div>
+            <h1>ANT<br><span>Stock</span></h1>
+        </div>
+        <ul class="navList">
+            <li><a href="/ANT-Stock/Front/wms/pages/home/home.html">Home</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/estoque/estoque.html">Estoque</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/Entrada&Saída/entrada&saida.html">Entradas/Saídas</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.html">Relatórios</a></li>
+            <li><a href="/ANT-Stock/Front/wms/pages/configuracoes/config.html">Configurações</a></li>
+        </ul>
+        <ul class="adicionais">
+            <li><a href="#" class="logout-btn">Log Out</a></li>
+        </ul>
     </aside>
+
     <main class="direita">
         <header id="cabeçario">
-            <h2 id="Usuario">
-                Olá <br>
-                <p>seja bem vindo(a) ao seu perfil</p>
-            </h2>
-            <div style="color: transparent;">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</div>
-            <div class="dadosUser"><a style="color: #fff; text-decoration: none;" href="/pages/usuario/Usuário.html">
-                    <img src="/img/icon-7797704_640.png" alt="Usuario" id="imgUser">
-                    <p id="nome">Nome de Usuario</p>
-                    <p" id="email">Email: <a style="color: #0ed439;" href="">email@gmail</a></p>
+            <div id="Usuario-boasvindas">
+                <h2>Olá,</h2>
+                <p>seja bem-vindo(a) ao seu perfil</p>
+            </div>
+            
+            <div class="dadosUser">
+                <a href="/pages/usuario/Usuário.html" class="user-card-link">
+                    <img src="/ANT-Stock/Front/wms/img/icon-7797704_640.png" alt="Usuario" id="imgUser">
+                    <div class="user-text">
+                        <p id="nome">Nome de Usuário</p>
+                        <p id="email">Email: <span class="email-highlight">email@gmail.com</span></p>
+                    </div>
                 </a>
             </div>
-
         </header>
-        
 
+        <div class="perfil-grid">
+            
+            <section class="card-perfil">
+                <h3>Informações do Cadastro</h3>
+                <form class="form-perfil" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" value="Nome de Usuário" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail Corporativo</label>
+                        <input type="email" value="email@gmail.com" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cargo / Função</label>
+                            <input type="text" value="Operador de WMS" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" value="#ANT-2026" readonly>
+                        </div>
+                    </div>
+                </form>
+            </section>
 
+            <section class="card-perfil">
+                <h3>Segurança da Conta</h3>
+                <form class="form-perfil" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label>Senha Atual</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Nova Senha</label>
+                        <input type="password" placeholder="Digite a nova senha">
+                    </div>
+                    <button type="submit" class="btn-secondary">Atualizar Senha</button>
+                </form>
+            </section>
+
+            <section class="card-perfil full-width">
+                <h3>Sua Atividade Recente no Sistema</h3>
+                <div class="table-wrapper">
+                    <table class="tabela-atividades">
+                        <thead>
+                            <tr>
+                                <th>Ação / Operação</th>
+                                <th>Módulo</th>
+                                <th>Data/Hora</th>
+                                <th>Status do Processo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Entrada de Mercadoria: <strong>PRD-001</strong></td>
+                                <td>Recebimento</td>
+                                <td>Hoje às 14:32</td>
+                                <td><span class="badge-status concluido">Concluído</span></td>
+                            </tr>
+                            <tr>
+                                <td>Picking de Pedido: <strong>#45982</strong></td>
+                                <td>Expedição</td>
+                                <td>Ontem às 10:15</td>
+                                <td><span class="badge-status concluido">Concluído</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alteração de endereço da posição <strong>AL-01-A</strong></td>
+                                <td>Estoque</td>
+                                <td>28 Mai 2026</td>
+                                <td><span class="badge-status concluido">Concluído</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
     </main>
 
+    <script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
 </body>
-
 </html>

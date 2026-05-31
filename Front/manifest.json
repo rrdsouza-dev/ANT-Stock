@@ -1,0 +1,9 @@
+{
+  "name": "ANT Stock",
+  "short_name": "ANT Stock",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7f6",
+  "theme_color": "#12bd58",
+  "icons": []
+}

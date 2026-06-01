@@ -22,8 +22,9 @@ body.dark-mode {
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box; /* Garante que bordas e paddings não alterem o tamanho real do elemento */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
@@ -109,10 +110,11 @@ body {
   display: block;
   color: var(--text-muted);
   text-decoration: none;
-  padding: 12px 16px;
+  padding: 12px 16px; /* Padding padrão (cima/baixo 12px, esquerda/direita 16px) */
   border-radius: 6px;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  border-left: 4px solid transparent; /* IMPORTANTE: Deixa a borda invisível por padrão */
 }
 
 .navList a:hover, .navList a.active {
@@ -122,7 +124,7 @@ body {
 }
 
 .navList a.active {
-  border-left: 4px solid var(--primary);
+  border-left-color: var(--primary); /* Apenas acende a cor da borda que já existia */
   background-color: rgba(47, 128, 237, 0.1);
 }
 
@@ -137,6 +139,7 @@ body {
   flex-grow: 1;
   padding: 40px;
   width: calc(100% - 260px);
+  color: var(--text-main); /* Define a cor padrão do texto para a área principal */
 }
 
 /* Header Alinhado */
@@ -145,20 +148,21 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  background: white;
+  background: var(--card-bg); /* Mudado de white para variável */
   padding: 16px 24px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color); /* Borda de profundidade para o modo escuro */
 }
 
 .header-titulo h2 {
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   font-size: 1.6rem;
 }
 
 .data-atual {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
   margin-top: 2px;
 }
 
@@ -174,7 +178,11 @@ body {
 }
 
 .user-header-link:hover {
-  background-color: #f0f2f5;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .user-header-link:hover {
+  background-color: rgba(255, 255, 255, 0.05); /* Hover adaptativo para modo escuro */
 }
 
 #imgUserHeader {
@@ -182,7 +190,7 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 2px solid var(--primary);
-  background-color: #fff;
+  background-color: var(--card-bg); /* Mudado de #fff para variável */
 }
 
 .user-header-text {
@@ -191,13 +199,13 @@ body {
 }
 
 .user-name {
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   font-weight: 600;
   font-size: 0.95rem;
 }
 
 .user-role {
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
   font-size: 0.8rem;
 }
 
@@ -210,11 +218,14 @@ body {
 }
 
 .card-kpi {
-  background: white;
+  background: var(--card-bg); /* Mudado de white para variável */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   border-top: 4px solid var(--success);
+  border-left: 1px solid var(--border-color);   /* Bordas laterais para o modo escuro */
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .card-kpi.alerta { border-top-color: var(--warning); }
@@ -222,7 +233,7 @@ body {
 
 .card-kpi h3 {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
   text-transform: uppercase;
   margin-bottom: 10px;
 }
@@ -230,26 +241,27 @@ body {
 .kpi-value {
   font-size: 2rem;
   font-weight: bold;
-  color: #222;
+  color: var(--text-main); /* Mudado de #222 para variável */
 }
 
 .kpi-sub {
   font-size: 0.9rem;
   font-weight: normal;
-  color: #666;
+  color: var(--text-muted); /* Mudado de #666 para variável */
 }
 
 /* Seção de Notificações */
 #notificacoes-container {
-  background: white;
+  background: var(--card-bg); /* Mudado de white para variável */
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color);
 }
 
 #notificacoes-container h3 {
   font-size: 1.1rem;
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 12px;
@@ -267,14 +279,18 @@ body {
   gap: 16px;
   padding: 16px;
   border-radius: 6px;
-  background-color: #fafafa;
-  border-left: 4px solid #ccc;
+  background-color: var(--bg-main); /* Mudado de #fafafa para a cor base do layout (efeito de profundidade) */
+  border-left: 4px solid var(--text-muted); /* Mudado de #ccc para variável */
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   justify-content: space-between;
 }
 
-.item-notificacao.critica { border-left-color: var(--danger); background-color: rgba(235, 87, 87, 0.03); }
-.item-notificacao.aviso { border-left-color: var(--warning); background-color: rgba(242, 153, 74, 0.03); }
-.item-notificacao.sucesso { border-left-color: var(--success); background-color: rgba(39, 174, 96, 0.03); }
+/* Fundos das notificações com opacidade adaptável para ambos os modos */
+.item-notificacao.critica { border-left-color: var(--danger); background-color: rgba(235, 87, 87, 0.06); }
+.item-notificacao.aviso { border-left-color: var(--warning); background-color: rgba(242, 153, 74, 0.06); }
+.item-notificacao.sucesso { border-left-color: var(--success); background-color: rgba(39, 174, 96, 0.06); }
 
 .sino-icon {
   font-size: 1.4rem;
@@ -286,17 +302,17 @@ body {
 
 .notificacao-texto h4 {
   font-size: 0.95rem;
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   margin-bottom: 2px;
 }
 
 .notificacao-texto p {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-muted); /* Mudado de #666 para variável */
 }
 
 .notificacao-tempo {
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted); /* Mudado de #999 para variável */
   white-space: nowrap;
 }

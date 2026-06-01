@@ -24,6 +24,7 @@ body.dark-mode {
   padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
@@ -39,7 +40,7 @@ body {
   color: var(--text-light);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 24px;
   position: fixed;
   height: 100vh;
@@ -109,10 +110,11 @@ body {
   display: block;
   color: var(--text-muted);
   text-decoration: none;
-  padding: 12px 16px;
+  padding: 12px 16px; /* Padding padrão (cima/baixo 12px, esquerda/direita 16px) */
   border-radius: 6px;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  border-left: 4px solid transparent; /* IMPORTANTE: Deixa a borda invisível por padrão */
 }
 
 .navList a:hover, .navList a.active {
@@ -122,7 +124,7 @@ body {
 }
 
 .navList a.active {
-  border-left: 4px solid var(--primary);
+  border-left-color: var(--primary); /* Apenas acende a cor da borda que já existia */
   background-color: rgba(47, 128, 237, 0.1);
 }
 
@@ -137,6 +139,7 @@ body {
   flex-grow: 1;
   padding: 40px;
   width: calc(100% - 260px);
+  color: var(--text-main); /* Garante que o texto base herde a cor correta */
 }
 
 /* Header Alinhado */
@@ -145,20 +148,21 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  background: white;
+  background: var(--card-bg); /* Mudado de white para variável */
   padding: 16px 24px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color); /* Opcional: ajuda a dar destaque no dark mode */
 }
 
 .main-header h2 {
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   font-size: 1.6rem;
 }
 
 .data-atual {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
   margin-top: 2px;
 }
 
@@ -174,7 +178,10 @@ body {
 }
 
 .user-header-link:hover {
-  background-color: #f0f2f5;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+body.dark-mode .user-header-link:hover {
+  background-color: rgba(255, 255, 255, 0.05); /* Efeito hover adaptativo */
 }
 
 #imgUserHeader {
@@ -182,7 +189,7 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 2px solid var(--primary);
-  background-color: #fff;
+  background-color: var(--card-bg); /* Mudado de #fff para variável */
 }
 
 .user-header-text {
@@ -191,13 +198,13 @@ body {
 }
 
 .user-name {
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   font-weight: 600;
   font-size: 0.95rem;
 }
 
 .user-role {
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
   font-size: 0.8rem;
 }
 
@@ -210,10 +217,11 @@ body {
 }
 
 .card-kpi {
-  background: white;
+  background: var(--card-bg); /* Corrigido de "white var(--card-bg)" para apenas a variável */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color);
 }
 
 .card-kpi.entrada-card { border-top: 4px solid var(--success); }
@@ -222,7 +230,7 @@ body {
 
 .card-kpi h3 {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -230,27 +238,28 @@ body {
 .kpi-value {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #222;
+  color: var(--text-main); /* Mudado de #222 para variável */
 }
 
 .kpi-sub {
   font-size: 0.9rem;
   font-weight: normal;
-  color: #777;
+  color: var(--text-muted); /* Mudado de #777 para variável */
 }
 
 /* Seção do Formulário de Registro */
 .registro-container {
-  background: white;
+  background: var(--card-bg); /* Mudado de white para variável */
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   margin-bottom: 24px;
+  border: 1px solid var(--border-color);
 }
 
 .registro-container h3 {
   font-size: 1rem;
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
   margin-bottom: 16px;
 }
 
@@ -272,7 +281,7 @@ body {
 .input-grupo label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #666;
+  color: var(--text-muted); /* Mudado de #666 para variável */
 }
 
 .input-grupo select, .input-grupo input {
@@ -281,7 +290,8 @@ body {
   border-radius: 6px;
   outline: none;
   font-size: 0.9rem;
-  background-color: #fafafa;
+  background-color: var(--bg-main); /* O input fica levemente mais escuro que o card no dark mode */
+  color: var(--text-main); /* Garante que o texto digitado apareça no dark mode */
 }
 
 .btn-lancar {
@@ -301,10 +311,11 @@ body {
 
 /* Tabela de Movimentações */
 .tabela-movimentacoes {
-  background: white;
+  background: var(--card-bg); /* Mudado de white para variável */
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
 .tabela-header {
@@ -314,7 +325,7 @@ body {
 
 .tabela-header h3 {
   font-size: 1rem;
-  color: #333;
+  color: var(--text-main); /* Mudado de #333 para variável */
 }
 
 .table-wrapper {
@@ -329,8 +340,8 @@ table {
 }
 
 th {
-  background-color: #f8f9fa;
-  color: #555;
+  background-color: var(--bg-main); /* Mudado de #f8f9fa para variável */
+  color: var(--text-main); /* Mudado de #555 para variável */
   padding: 14px 24px;
   font-weight: 600;
   border-bottom: 2px solid var(--border-color);
@@ -339,11 +350,14 @@ th {
 td {
   padding: 14px 24px;
   border-bottom: 1px solid var(--border-color);
-  color: #444;
+  color: var(--text-main); /* Mudado de #444 para variável */
 }
 
 tr:hover {
-  background-color: #fdfdfd;
+  background-color: rgba(255, 255, 255, 0.02); /* Hover sutil que funciona bem no escuro */
+}
+body:not(.dark-mode) tr:hover {
+  background-color: #fdfdfd; /* Mantém o hover original no modo claro */
 }
 
 /* Badges de Fluxo (Entrada / Saída) */

@@ -24,7 +24,6 @@ body.dark-mode {
   padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
@@ -64,7 +63,6 @@ body {
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 24px;
   position: fixed;
   height: 100vh;
@@ -73,15 +71,53 @@ body {
   z-index: 10;
 }
 
-.logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
-.imgLogo { width: 40px; height: 40px; object-fit: contain; border-radius: 6px; }
-.logo h1 { font-size: 1.2rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 1px; color: #fff;}
-.navList, .adicionais { list-style: none; width: 100%; }
-.navList li, .adicionais li { margin-bottom: 8px; }
-.navList a, .adicionais a { display: block; color: var(--text-muted); text-decoration: none; padding: 12px 16px; border-radius: 6px; font-size: 0.95rem; }
-.navList a:hover, .navList a.active { background-color: rgba(255, 255, 255, 0.05); color: #fff; }
-.navList a.active { border-left: 4px solid var(--primary); background-color: rgba(47, 128, 237, 0.1); }
-.logout-btn:hover { background-color: rgba(235, 87, 87, 0.1); color: #eb5757; }
+.logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    margin-bottom: 35px;
+  }
+
+.imgLogo { 
+    width: 40px; 
+    height: 40px; 
+    object-fit: contain; 
+    border-radius: 6px; 
+  }
+.logo h1 {
+   font-size: 1.2rem; 
+   line-height: 1.1; 
+   text-transform: uppercase; 
+   letter-spacing: 1px; 
+   color: #fff;
+  }
+.navList, .adicionais { 
+  list-style: none; 
+  width: 100%; 
+}
+.navList li, .adicionais li { 
+  margin-bottom: 8px; 
+}
+.navList a, .adicionais a { 
+  display: block; 
+  color: var(--text-muted); 
+  text-decoration: none; 
+  padding: 12px 16px; 
+  border-radius: 6px; 
+  font-size: 0.95rem; 
+}
+.navList a:hover, .navList a.active { 
+  background-color: rgba(255, 255, 255, 0.05); 
+  color: #fff; 
+}
+.navList a.active { 
+  border-left: 4px solid var(--primary); 
+  background-color: rgba(47, 128, 237, 0.1); 
+}
+.logout-btn:hover { 
+   background-color: rgba(235, 87, 87, 0.1);
+   color: #eb5757; 
+  }
 
 /* --- CONTEÚDO PRINCIPAL --- */
 .direita {

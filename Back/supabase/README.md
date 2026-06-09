@@ -12,3 +12,4 @@ Use esta pasta para moldar o banco do ANT no Supabase sem depender do Alembic.
 O backend continua usando SQLAlchemy via `DATABASE_URL`. O cliente em `src/banco/supabase.py` serve para recursos da API Supabase, como Storage, Auth ou chamadas administrativas.
 
 A tabela `usuarios` possui `auth_id` como FK opcional para `auth.users(id)`, deixando a integracao futura com Supabase Auth preparada sem travar os demais atributos.
+  sssss#

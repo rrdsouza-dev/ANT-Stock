@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import PrimaryKeyConstraint
-from sqlalchemy.orm import declared_attr
 from sqlmodel import Field, Relationship, SQLModel
 
 from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, StatusCadastro, agora_utc
@@ -14,9 +13,7 @@ if TYPE_CHECKING:
 
 
 class Perfil(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "perfis"
+    __tablename__ = "perfis"
 
     codigo: PerfilCodigo = Field(unique=True, index=True)
     nome: str = Field(max_length=40)
@@ -25,11 +22,8 @@ class Perfil(IdMixin, DatasMixin, table=True):
 
 
 class UsuarioDeposito(SQLModel, table=True):
-    __table_args__: ClassVar[tuple[PrimaryKeyConstraint]] = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)
-
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "usuario_depositos"
+    __tablename__ = "usuario_depositos"
+    __table_args__ = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
@@ -37,9 +31,7 @@ class UsuarioDeposito(SQLModel, table=True):
 
 
 class Usuario(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "usuarios"
+    __tablename__ = "usuarios"
 
     auth_id: UUID | None = Field(default=None, unique=True, index=True)
     email: str = Field(unique=True, index=True, max_length=255)
@@ -57,9 +49,7 @@ class Usuario(IdMixin, DatasMixin, table=True):
 
 
 class CadastroPendente(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "cadastro_pendente"
+    __tablename__ = "cadastro_pendente"  # Nome original que você usou
 
     nome: str = Field(min_length=2, max_length=120)
     email: str = Field(unique=True, index=True, max_length=255)
@@ -69,9 +59,7 @@ class CadastroPendente(IdMixin, DatasMixin, table=True):
 
 
 class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "historico_aprovacoes"
+    __tablename__ = "historico_aprovacoes"
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     nome: str = Field(max_length=120)
@@ -81,9 +69,7 @@ class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
 
 
 class HistoricoRecusa(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "historico_recusas"
+    __tablename__ = "historico_recusas"
 
     nome: str = Field(max_length=120)
     email: str = Field(max_length=255, index=True)
@@ -93,9 +79,7 @@ class HistoricoRecusa(IdMixin, DatasMixin, table=True):
 
 
 class CodigoRecuperacao(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "codigos_recuperacao"
+    __tablename__ = "codigos_recuperacao"
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     codigo_hash: str = Field(max_length=128, index=True)

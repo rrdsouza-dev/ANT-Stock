@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, Any, ClassVar, Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import declared_attr
-from sqlmodel import Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from src.modelos.base import DatasMixin, IdMixin, StatusPedido
 
@@ -13,9 +12,7 @@ if TYPE_CHECKING:
 
 
 class Pedido(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "pedidos"
+    __tablename__ = "pedidos"  # type: ignore[assignment]  # ✅ Adicionado type ignore
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     usuario_id: UUID | None = Field(default=None, foreign_key="usuarios.id", index=True)
@@ -29,13 +26,10 @@ class Pedido(IdMixin, DatasMixin, table=True):
 
 
 class ItemPedido(IdMixin, DatasMixin, table=True):
-    __table_args__: ClassVar[tuple[UniqueConstraint]] = (
+    __tablename__ = "itens_pedido"  # type: ignore[assignment]  # ✅ Adicionado type ignore
+    __table_args__ = (  # type: ignore[assignment]  # ✅ Se necessário
         UniqueConstraint("deposito_id", "pedido_id", "produto_id", name="uq_itens_pedido_produto"),
     )
-
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "itens_pedido"
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     pedido_id: UUID = Field(foreign_key="pedidos.id", index=True)

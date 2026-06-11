@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, ClassVar, Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import declared_attr
 from sqlmodel import Field, Relationship
 
 from src.modelos.autenticacao import UsuarioDeposito
@@ -15,9 +14,7 @@ if TYPE_CHECKING:
 
 
 class Deposito(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "depositos"
+    __tablename__ = "depositos"  # ✅ Corrigido
 
     nome: str = Field(min_length=1, max_length=120, unique=True, index=True)
     tipo: TipoDeposito = Field(index=True)
@@ -35,9 +32,7 @@ class Deposito(IdMixin, DatasMixin, table=True):
 
 
 class Categoria(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "categorias"
+    __tablename__ = "categorias"  # ✅ Corrigido
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     nome: str = Field(min_length=1, max_length=120, index=True)
@@ -49,9 +44,7 @@ class Categoria(IdMixin, DatasMixin, table=True):
 
 
 class Localizacao(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "localizacoes"
+    __tablename__ = "localizacoes"  # ✅ Corrigido
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     nome: str = Field(min_length=1, max_length=120, index=True)
@@ -66,9 +59,7 @@ class Localizacao(IdMixin, DatasMixin, table=True):
 
 
 class Produto(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "produtos"
+    __tablename__ = "produtos"  # ✅ Corrigido
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     nome: str = Field(min_length=1, max_length=160, index=True)
@@ -87,13 +78,10 @@ class Produto(IdMixin, DatasMixin, table=True):
 
 
 class Estoque(IdMixin, DatasMixin, table=True):
-    __table_args__: ClassVar[tuple[UniqueConstraint]] = (
+    __tablename__ = "estoque"  # ✅ Corrigido
+    __table_args__ = (  # ✅ Removida anotação de tipo
         UniqueConstraint("deposito_id", "produto_id", "localizacao_id", name="uq_estoque_deposito_produto_local"),
     )
-
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "estoque"
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     produto_id: UUID = Field(foreign_key="produtos.id", index=True)
@@ -106,9 +94,7 @@ class Estoque(IdMixin, DatasMixin, table=True):
 
 
 class Movimentacao(IdMixin, DatasMixin, table=True):
-    @declared_attr.directive
-    def __tablename__(cls: type[Any]) -> str:
-        return "movimentacoes"
+    __tablename__ = "movimentacoes"  # ✅ Corrigido
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     produto_id: UUID = Field(foreign_key="produtos.id", index=True)

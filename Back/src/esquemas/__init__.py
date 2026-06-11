@@ -1,6 +1,11 @@
 from src.esquemas.autenticacao import (
+    AcaoCadastroMassaEntrada,
     CadastroEntrada,
+    CadastroPendenteSaida,
+    CadastroSolicitadoSaida,
     EntrarEntrada,
+    HistoricoAprovacaoSaida,
+    HistoricoRecusaSaida,
     NovaSenhaEntrada,
     RecuperarSenhaEntrada,
     TokenSaida,
@@ -36,7 +41,10 @@ from src.esquemas.pedido import (
 )
 
 __all__ = [
+    "AcaoCadastroMassaEntrada",
     "CadastroEntrada",
+    "CadastroPendenteSaida",
+    "CadastroSolicitadoSaida",
     "CategoriaAtualizar",
     "CategoriaEntrada",
     "CategoriaSaida",
@@ -67,3 +75,9 @@ __all__ = [
     "UsuarioSaida",
     "ValidarCodigoEntrada",
 ]
+    RecusarCadastroEntrada,
+    RecusarCadastroMassaEntrada,
+    "HistoricoAprovacaoSaida",
+    "HistoricoRecusaSaida",
+    "RecusarCadastroEntrada",
+    "RecusarCadastroMassaEntrada",

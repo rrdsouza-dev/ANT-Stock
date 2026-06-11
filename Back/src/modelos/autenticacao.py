@@ -6,7 +6,7 @@ from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy.orm import declared_attr
 from sqlmodel import Field, Relationship, SQLModel
 
-from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, agora_utc
+from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, StatusCadastro, agora_utc
 
 if TYPE_CHECKING:
     from src.modelos.estoque import Deposito, Movimentacao
@@ -41,7 +41,7 @@ class Usuario(IdMixin, DatasMixin, table=True):
     def __tablename__(cls: type[Any]) -> str:
         return "usuarios"
 
-    auth_id: UUID | None = Field(default=None, unique=True, index=True) 
+    auth_id: UUID | None = Field(default=None, unique=True, index=True)
     email: str = Field(unique=True, index=True, max_length=255)
     nome: str | None = Field(default=None, max_length=120)
     senha_hash: str | None = Field(default=None, max_length=255)
@@ -54,6 +54,42 @@ class Usuario(IdMixin, DatasMixin, table=True):
     pedidos: list["Pedido"] = Relationship(back_populates="usuario")
     movimentacoes: list["Movimentacao"] = Relationship(back_populates="usuario")
     codigos_recuperacao: list["CodigoRecuperacao"] = Relationship(back_populates="usuario")
+
+
+class CadastroPendente(IdMixin, DatasMixin, table=True):
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "cadastro_pendente"
+
+    nome: str = Field(min_length=2, max_length=120)
+    email: str = Field(unique=True, index=True, max_length=255)
+    senha_hash: str = Field(max_length=255)
+    perfil_solicitado: PerfilCodigo = Field(index=True)
+    status: StatusCadastro = Field(default=StatusCadastro.PENDENTE, index=True)
+
+
+class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "historico_aprovacoes"
+
+    usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
+    nome: str = Field(max_length=120)
+    email: str = Field(max_length=255, index=True)
+    perfil: PerfilCodigo = Field(index=True)
+    aprovado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
+
+
+class HistoricoRecusa(IdMixin, DatasMixin, table=True):
+    @declared_attr.directive
+    def __tablename__(cls: type[Any]) -> str:
+        return "historico_recusas"
+
+    nome: str = Field(max_length=120)
+    email: str = Field(max_length=255, index=True)
+    perfil_solicitado: PerfilCodigo = Field(index=True)
+    recusado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
+    motivo: str | None = Field(default=None, max_length=500)
 
 
 class CodigoRecuperacao(IdMixin, DatasMixin, table=True):

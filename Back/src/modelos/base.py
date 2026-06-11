@@ -6,8 +6,15 @@ from sqlmodel import Field, SQLModel
 
 
 class PerfilCodigo(StrEnum):
+    ADM = "adm"
     PROFESSOR = "professor"
     GESTAO = "gestao"
+
+
+class StatusCadastro(StrEnum):
+    PENDENTE = "pendente"
+    APROVADO = "aprovado"
+    RECUSADO = "recusado"
 
 
 class TipoMovimentacao(StrEnum):

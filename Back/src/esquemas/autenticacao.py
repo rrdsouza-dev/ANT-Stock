@@ -1,15 +1,79 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-from src.modelos import PerfilCodigo, Usuario
+from src.modelos import CadastroPendente, HistoricoAprovacao, HistoricoRecusa, PerfilCodigo, StatusCadastro, Usuario
 
 
 class CadastroEntrada(BaseModel):
-    nome: str | None = Field(default=None, min_length=2, max_length=120)
+    nome: str = Field(min_length=2, max_length=120)
     email: EmailStr
     senha: str = Field(min_length=8, max_length=128)
     perfil: PerfilCodigo = PerfilCodigo.PROFESSOR
+
+    @field_validator("perfil")
+    @classmethod
+    def validar_perfil_solicitado(cls, valor: PerfilCodigo) -> PerfilCodigo:
+        if valor == PerfilCodigo.ADM:
+            raise ValueError("O perfil ADM nao pode ser solicitado pelo cadastro publico.")
+        return valor
+
+
+class CadastroSolicitadoSaida(BaseModel):
+    mensagem: str
+    status: StatusCadastro = StatusCadastro.PENDENTE
+
+
+class CadastroPendenteSaida(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    nome: str
+    email: EmailStr
+    perfil_solicitado: PerfilCodigo
+    status: StatusCadastro
+    criado_em: datetime
+
+    @classmethod
+    def de_modelo(cls, cadastro: CadastroPendente) -> "CadastroPendenteSaida":
+        return cls.model_validate(cadastro)
+
+
+class HistoricoAprovacaoSaida(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    usuario_id: UUID
+    nome: str
+    email: EmailStr
+    perfil: PerfilCodigo
+    aprovado_por_id: UUID
+    criado_em: datetime
+
+
+class HistoricoRecusaSaida(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    nome: str
+    email: EmailStr
+    perfil_solicitado: PerfilCodigo
+    recusado_por_id: UUID
+    motivo: str | None = None
+    criado_em: datetime
+
+
+class AcaoCadastroMassaEntrada(BaseModel):
+    ids: list[UUID] = Field(min_length=1, max_length=100)
+
+
+class RecusarCadastroEntrada(BaseModel):
+    motivo: str | None = Field(default=None, max_length=500)
+
+
+class RecusarCadastroMassaEntrada(AcaoCadastroMassaEntrada):
+    motivo: str | None = Field(default=None, max_length=500)
 
 
 class EntrarEntrada(BaseModel):

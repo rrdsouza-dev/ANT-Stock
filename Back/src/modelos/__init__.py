@@ -1,9 +1,18 @@
-from src.modelos.autenticacao import CodigoRecuperacao, Perfil, Usuario, UsuarioDeposito
-from src.modelos.base import PerfilCodigo, StatusPedido, TipoDeposito, TipoMovimentacao
+from src.modelos.autenticacao import (
+    CadastroPendente,
+    CodigoRecuperacao,
+    HistoricoAprovacao,
+    HistoricoRecusa,
+    Perfil,
+    Usuario,
+    UsuarioDeposito,
+)
+from src.modelos.base import PerfilCodigo, StatusCadastro, StatusPedido, TipoDeposito, TipoMovimentacao
 from src.modelos.estoque import Categoria, Deposito, Estoque, Localizacao, Movimentacao, Produto
 from src.modelos.pedido import ItemPedido, Pedido
 
 __all__ = [
+    "CadastroPendente",
     "Categoria",
     "CodigoRecuperacao",
     "Deposito",
@@ -16,8 +25,11 @@ __all__ = [
     "PerfilCodigo",
     "Produto",
     "StatusPedido",
+    "StatusCadastro",
     "TipoDeposito",
     "TipoMovimentacao",
     "Usuario",
     "UsuarioDeposito",
 ]
+    "HistoricoAprovacao",
+    "HistoricoRecusa",

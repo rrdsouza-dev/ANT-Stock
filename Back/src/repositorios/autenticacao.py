@@ -6,7 +6,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlmodel import col
 
-from src.modelos import CodigoRecuperacao, Perfil, PerfilCodigo, Usuario, UsuarioDeposito
+from src.modelos import (
+    CadastroPendente,
+    CodigoRecuperacao,
+    HistoricoAprovacao,
+    HistoricoRecusa,
+    Perfil,
+    PerfilCodigo,
+    StatusCadastro,
+    Usuario,
+    UsuarioDeposito,
+)
 from src.repositorios.base import RepositorioSQL
 
 
@@ -35,6 +45,42 @@ class RepositorioUsuario(RepositorioSQL[Usuario]):
         )
         resultado = await self.sessao.execute(consulta)
         return resultado.scalar_one_or_none()
+
+
+class RepositorioCadastroPendente(RepositorioSQL[CadastroPendente]):
+    modelo = CadastroPendente
+
+    async def por_email(self, email: str) -> CadastroPendente | None:
+        consulta = select(CadastroPendente).where(col(CadastroPendente.email) == email.lower())
+        resultado = await self.sessao.execute(consulta)
+        return resultado.scalar_one_or_none()
+
+    async def pendente_por_email(self, email: str) -> CadastroPendente | None:
+        consulta = select(CadastroPendente).where(
+            col(CadastroPendente.email) == email.lower(),
+            col(CadastroPendente.status) == StatusCadastro.PENDENTE,
+        )
+        resultado = await self.sessao.execute(consulta)
+        return resultado.scalar_one_or_none()
+
+    async def listar_pendentes(self, inicio: int = 0, limite: int = 100) -> list[CadastroPendente]:
+        consulta = (
+            select(CadastroPendente)
+            .where(col(CadastroPendente.status) == StatusCadastro.PENDENTE)
+            .order_by(col(CadastroPendente.criado_em).desc())
+            .offset(inicio)
+            .limit(limite)
+        )
+        resultado = await self.sessao.execute(consulta)
+        return list(resultado.scalars().all())
+
+
+class RepositorioHistoricoAprovacao(RepositorioSQL[HistoricoAprovacao]):
+    modelo = HistoricoAprovacao
+
+
+class RepositorioHistoricoRecusa(RepositorioSQL[HistoricoRecusa]):
+    modelo = HistoricoRecusa
 
 
 class RepositorioUsuarioDeposito(RepositorioSQL[UsuarioDeposito]):

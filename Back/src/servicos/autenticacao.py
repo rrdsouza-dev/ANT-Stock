@@ -15,9 +15,9 @@ from src.esquemas.autenticacao import (
     ValidarCodigoEntrada,
 )
 from src.modelos import Perfil, PerfilCodigo, Usuario
+from src.modelos.base import agora_utc
 from src.nucleo.erros import ErroApp
 from src.nucleo.seguranca import checar_senha, criar_token, gerar_hash
-from src.modelos.base import agora_utc
 from src.repositorios.autenticacao import (
     RepositorioCodigoRecuperacao,
     RepositorioPerfil,

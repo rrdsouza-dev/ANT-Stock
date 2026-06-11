@@ -12,7 +12,7 @@ export function DashboardPage(root, ctx) {
     const head = el("div", { class: "page-head" }, [
       el("div", {}, [
         el("h1", { text: "Relatórios Logísticos" }),
-        el("p", { class: "muted", text: "Visão geral de estoque, picking e desempenho das turmas." }),
+        el("p", { class: "muted", text: "Visão geral de estoque, picking e desempenho operacional." }),
       ]),
     ]);
     const filters = el("div", { class: "filters-row" }, [
@@ -30,7 +30,7 @@ export function DashboardPage(root, ctx) {
       statCard("Itens em Estoque", "12.480", "+4.2%", "up", "package"),
       statCard("Picking Concluídos", "1.823", "+12%", "up", "check-circle-2"),
       statCard("Estoque Baixo", "37", "-3 itens", "down", "alert-triangle"),
-      statCard("Alunos Ativos", "156", "+8 novos", "up", "users"),
+      statCard("Professores Ativos", "24", "+2 novos", "up", "users"),
     ]);
 
     // Charts
@@ -42,7 +42,7 @@ export function DashboardPage(root, ctx) {
         legendItem("#bde9cb", "Móveis"),
       ]),
     );
-    const barCard = chartCard("Eficiência Picking por Aluno",
+    const barCard = chartCard("Eficiência Picking por Professor",
       el("div", { class: "chart-box" }, [el("canvas", { id: "chart-bar" })]),
     );
     const dash = el("div", { class: "dash-grid" }, [pieCard, barCard]);
@@ -118,7 +118,7 @@ function drawCharts() {
     new Chart(bar, {
       type: "bar",
       data: {
-        labels: ["João Silva", "Maria Santos", "Pedro Lima", "Ana Costa", "Bruno R.", "Carla M.", "Lucas A."],
+        labels: ["Professor 1", "Professor 2", "Professor 3", "Professor 4", "Professor 5", "Professor 6", "Professor 7"],
         datasets: [
           { label: "Picking", data: [32000, 28000, 35000, 22000, 30000, 36000, 25000], backgroundColor: "#10b981", borderRadius: 8, barThickness: 22 },
           { label: "Meta", data: [40000, 36000, 38000, 32000, 36000, 40000, 32000], backgroundColor: "#bde9cb", borderRadius: 8, barThickness: 22 },

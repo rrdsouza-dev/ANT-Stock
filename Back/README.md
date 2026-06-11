@@ -28,7 +28,7 @@ src/
 
 supabase/
 |-- migrations/
-|   `-- 202605120001_ant_stock.sql
+|   `-- 202606100001_schema_consolidado_professor_gestao.sql
 |-- README.md
 `-- seed.sql
 ```
@@ -54,13 +54,13 @@ SUPABASE_ANON_KEY=sua-chave-anon
 SUPABASE_SERVICE_ROLE_KEY=sua-chave-service-role
 ```
 
-Depois rode `Back/supabase/migrations/202605120001_ant_stock.sql` no SQL Editor do Supabase. O arquivo `Back/supabase/seed.sql` tem dados iniciais opcionais.
+Depois rode `Back/supabase/migrations/202606100001_schema_consolidado_professor_gestao.sql` no SQL Editor do Supabase. O arquivo `Back/supabase/seed.sql` tem dados iniciais opcionais.
 
 ## Modelagem
 
 Entidades principais:
 
-- `perfis`: Aluno, Professor e Gestao.
+- `perfis`: somente Professor e Gestao.
 - `usuarios`: preparado para Supabase Auth via `auth_id`.
 - `categorias`, `localizacoes`, `produtos`.
 - `estoque`: saldo por produto e localizacao.
@@ -72,12 +72,13 @@ Endpoints principais:
 - `GET /health`
 - `POST /api/v1/autenticacao/cadastro`
 - `POST /api/v1/autenticacao/entrar`
-- `GET /api/v1/produtos`
-- `GET /api/v1/categorias`
-- `GET /api/v1/localizacoes`
-- `GET /api/v1/estoque`
-- `GET /api/v1/movimentacoes`
-- `GET /api/v1/pedidos`
+- `GET /api/v1/depositos`
+- `GET /api/v1/{deposito_id}/produtos`
+- `GET /api/v1/{deposito_id}/categorias`
+- `GET /api/v1/{deposito_id}/localizacoes`
+- `GET /api/v1/{deposito_id}/estoque`
+- `GET /api/v1/{deposito_id}/movimentacoes`
+- `GET /api/v1/{deposito_id}/pedidos`
 
 ## Qualidade
 

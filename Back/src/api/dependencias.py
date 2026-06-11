@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.banco.sessao import abrir_sessao
-from src.modelos import Usuario
+from src.modelos import PerfilCodigo, Usuario
 from src.nucleo.erros import ErroApp
 from src.nucleo.seguranca import ler_token
 from src.repositorios.autenticacao import RepositorioUsuario
@@ -52,7 +52,20 @@ async def verificar_acesso_deposito(
     usuario: Usuario = Depends(usuario_atual),
     sessao: AsyncSession = Depends(sessao_db),
 ) -> tuple[Usuario, UUID]:
+    if usuario.perfil and usuario.perfil.codigo == PerfilCodigo.GESTAO:
+        return usuario, deposito_id
+
     tem_acesso = await ServicoAutenticacao(sessao).verificar_acesso(usuario.id, deposito_id)
     if not tem_acesso:
         raise ErroApp("Sem acesso a este deposito", status_code=403, codigo="sem_acesso_deposito")
     return usuario, deposito_id
+
+
+def exigir_perfis(*perfis: PerfilCodigo):
+    async def dependencia(usuario: Usuario = Depends(usuario_atual)) -> Usuario:
+        perfil_usuario = usuario.perfil.codigo if usuario.perfil else None
+        if perfil_usuario not in perfis:
+            raise ErroApp("Perfil sem permissao para esta operacao.", status_code=403, codigo="perfil_sem_permissao")
+        return usuario
+
+    return dependencia

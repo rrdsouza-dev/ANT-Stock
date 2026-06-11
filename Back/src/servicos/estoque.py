@@ -154,7 +154,11 @@ class ServicoEstoque:
         await self._exigir_acesso(usuario_id, deposito_id)
         produto = await self.produtos.repositorio.por_codigo(deposito_id, codigo)
         if produto is None:
-            raise ErroApp("Produto nao encontrado para este codigo.", status_code=404, codigo="produto_codigo_nao_encontrado")
+            raise ErroApp(
+                "Produto nao encontrado para este codigo.",
+                status_code=404,
+                codigo="produto_codigo_nao_encontrado",
+            )
         return produto
 
     async def criar_produto(self, usuario_id: UUID, deposito_id: UUID, dados: dict[str, Any]) -> Produto:

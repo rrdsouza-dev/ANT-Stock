@@ -4,7 +4,14 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from src.esquemas.base import SchemaComDatas
-from src.modelos import TipoMovimentacao
+from src.modelos import TipoDeposito, TipoMovimentacao
+
+
+class DepositoSaida(SchemaComDatas):
+    nome: str
+    tipo: TipoDeposito
+    descricao: str | None = None
+    ativo: bool
 
 
 class CategoriaEntrada(BaseModel):

@@ -52,9 +52,9 @@ export function LoginPage(root) {
     if (!gate.ok) { notify(`Muitas tentativas. Aguarde ${gate.lockSec}s.`, "error"); return; }
     submit.innerHTML = ""; submit.appendChild(el("span", { class: "spinner" }));
     try {
-      const { user } = await API.login(email, password);
+      const { user, token } = await API.login(email, password);
       clearLoginAttempts();
-      session.signIn(user);
+      session.signIn(user, token);
       notify(`Bem-vindo, ${user.name}!`);
       router.navigate("/dashboard");
     } catch (err) {
@@ -66,7 +66,7 @@ export function LoginPage(root) {
   const left = el("div", { class: "auth-left" }, [
     el("div", { class: "brand" }, [el("img", { src: "assets/images/logo-light.jpg", alt: "ANT Stock" })]),
     el("h1", { text: "Bem-vindo de volta!" }),
-    el("p", { class: "subtitle", text: "Simplifique sua gestão de estoque e impulsione a produtividade da turma de logística com o ANT Stock. Comece grátis." }),
+    el("p", { class: "subtitle", text: "Simplifique sua gestão de estoque e impulsione a produtividade operacional com o ANT Stock. Comece grátis." }),
     form,
     el("div", { class: "auth-footer" }, [
       "Não é membro? ", el("a", { href: "#/register", text: "Cadastre-se agora" }),

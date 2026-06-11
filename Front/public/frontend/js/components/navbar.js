@@ -8,7 +8,7 @@ export function Navbar({ onSearch } = {}) {
   const user = session.user || { name: "Convidado", role: "Usuário" };
   const search = el("div", { class: "search-bar" }, [
     el("i", { "data-lucide": "search" }),
-    el("input", { type: "text", placeholder: "Buscar produtos ou alunos" }),
+    el("input", { type: "text", placeholder: "Buscar produtos ou professores" }),
   ]);
   search.querySelector("input").addEventListener("input", debounce((e) => onSearch?.(e.target.value), 220));
 

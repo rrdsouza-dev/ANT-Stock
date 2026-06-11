@@ -1,42 +1,86 @@
-/**
- * API service. Currently returns mocked data. Replace `BASE_URL` and
- * implementations to talk to FastAPI later.
- */
+import { session } from "./store.js";
 
 export const API = {
-  BASE_URL: "/api",
+  BASE_URL: window.ANT_API_BASE_URL || "http://localhost:8000/api/v1",
 
   async request(path, { method = "GET", body, headers } = {}) {
+    const token = session.token;
     const res = await fetch(this.BASE_URL + path, {
       method,
-      headers: { "Content-Type": "application/json", ...(headers || {}) },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(headers || {}),
+      },
       body: body ? JSON.stringify(body) : undefined,
-      credentials: "include",
     });
-    if (!res.ok) throw new Error(`API ${res.status}`);
-    return res.json();
+    const data = await readJson(res);
+    if (!res.ok) throw new Error(data?.detail || data?.mensagem || `API ${res.status}`);
+    return data;
   },
 
-  /* --- Mock implementations (FRONT-END ONLY) --- */
-
   async login(email, password) {
-    await new Promise((r) => setTimeout(r, 600));
-    if (!email || !password) throw new Error("Credenciais inválidas");
-    return { user: { id: "u1", name: "Aluno Logística", email, role: "Coordenador" }, token: "mock.jwt.token" };
+    const data = await this.request("/autenticacao/entrar", {
+      method: "POST",
+      body: { email, senha: password },
+    });
+    return normalizeAuth(data);
   },
 
   async register(payload) {
-    await new Promise((r) => setTimeout(r, 800));
-    return { user: { id: "u2", ...payload }, token: "mock.jwt.token" };
+    const data = await this.request("/autenticacao/cadastro", {
+      method: "POST",
+      body: {
+        nome: payload.name,
+        email: payload.email,
+        senha: payload.password,
+        perfil: payload.profile || "professor",
+      },
+    });
+    return normalizeAuth(data);
   },
 
   async forgotPassword(email) {
-    await new Promise((r) => setTimeout(r, 600));
-    return { ok: true, sentTo: email };
+    return this.request("/autenticacao/recuperar-senha", { method: "POST", body: { email } });
   },
 
-  async resetPassword(_email, _code, _newPassword) {
-    await new Promise((r) => setTimeout(r, 500));
-    return { ok: true };
+  async resetPassword(email, code, newPassword) {
+    return this.request("/autenticacao/nova-senha", {
+      method: "PUT",
+      body: { email, codigo: code, nova_senha: newPassword },
+    });
+  },
+
+  async profile() {
+    const usuario = await this.request("/autenticacao/perfil");
+    return normalizeUser(usuario);
+  },
+
+  async deposits() {
+    return this.request("/depositos");
+  },
+
+  async products(depositId) {
+    return this.request(`/${depositId}/produtos`);
   },
 };
+
+async function readJson(res) {
+  const text = await res.text();
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return { mensagem: text }; }
+}
+
+function normalizeAuth(data) {
+  return { user: normalizeUser(data.usuario), token: data.token };
+}
+
+function normalizeUser(usuario) {
+  return {
+    id: usuario.id,
+    name: usuario.nome || usuario.email,
+    email: usuario.email,
+    role: usuario.perfil === "gestao" ? "Gestao" : "Professor",
+    profile: usuario.perfil,
+  };
+}

@@ -43,8 +43,13 @@ export function RegisterPage(root) {
     if (nErr || eErr || pErr || cErr) return;
     submit.innerHTML = ""; submit.appendChild(el("span", { class: "spinner" }));
     try {
-      const { user } = await API.register({ name: name.value.trim(), email: email.value.trim() });
-      session.signIn({ ...user, role: "Coordenador" });
+      const { user, token } = await API.register({
+        name: name.value.trim(),
+        email: email.value.trim(),
+        password: pass.value,
+        profile: "professor",
+      });
+      session.signIn(user, token);
       notify("Conta criada com sucesso!");
       router.navigate("/dashboard");
     } catch {

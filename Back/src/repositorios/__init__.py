@@ -6,6 +6,7 @@ from src.repositorios.autenticacao import (
 )
 from src.repositorios.estoque import (
     RepositorioCategoria,
+    RepositorioDeposito,
     RepositorioEstoque,
     RepositorioLocalizacao,
     RepositorioMovimentacao,
@@ -16,6 +17,7 @@ from src.repositorios.pedido import RepositorioItemPedido, RepositorioPedido
 __all__ = [
     "RepositorioCategoria",
     "RepositorioCodigoRecuperacao",
+    "RepositorioDeposito",
     "RepositorioEstoque",
     "RepositorioItemPedido",
     "RepositorioLocalizacao",

@@ -3,8 +3,24 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlmodel import col
 
-from src.modelos import Categoria, Estoque, Localizacao, Movimentacao, Produto
+from src.modelos import Categoria, Deposito, Estoque, Localizacao, Movimentacao, Produto, UsuarioDeposito
 from src.repositorios.base import RepositorioSQL
+
+
+class RepositorioDeposito(RepositorioSQL[Deposito]):
+    modelo = Deposito
+
+    async def por_usuario(self, usuario_id: UUID, inicio: int = 0, limite: int = 100) -> list[Deposito]:
+        consulta = (
+            select(Deposito)
+            .join(UsuarioDeposito, UsuarioDeposito.deposito_id == Deposito.id)
+            .where(col(UsuarioDeposito.usuario_id) == usuario_id)
+            .where(col(Deposito.ativo).is_(True))
+            .offset(inicio)
+            .limit(limite)
+        )
+        resultado = await self.sessao.execute(consulta)
+        return list(resultado.scalars().unique().all())
 
 
 class RepositorioCategoria(RepositorioSQL[Categoria]):

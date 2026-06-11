@@ -24,7 +24,7 @@ router.register("/products", ProductsPage);
 router.register("/inventory", PlaceholderPage("Entradas e Saídas", "Controle de movimentações de estoque.", "arrow-left-right"));
 router.register("/picking", PlaceholderPage("Picking", "Listas de separação e progresso da equipe.", "hand"));
 router.register("/reports", ReportsPage);
-router.register("/school", PlaceholderPage("Gestão Escolar", "Acompanhamento das turmas e atividades.", "graduation-cap"));
+router.register("/school", PlaceholderPage("Gestão Escolar", "Acompanhamento de depósitos e atividades.", "graduation-cap"));
 router.register("/users", PlaceholderPage("Usuários", "Gerenciamento de usuários e permissões.", "users"));
 router.register("/settings", SettingsPage);
 router.register("/profile", ProfilePage);

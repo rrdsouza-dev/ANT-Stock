@@ -8,7 +8,7 @@ import { guardedClick } from "../utils/security.js";
 
 export function ProfilePage(root, ctx) {
   AppShell(root, ctx.path, (content) => {
-    const user = session.user || { name: "Aluno Logística", email: "aluno@antstock.com", role: "Coordenador" };
+    const user = session.user || { name: "Professor ANT", email: "professor@antstock.com", role: "Professor" };
     const head = el("div", { class: "page-head" }, [
       el("div", {}, [el("h1", { text: "Perfil" }), el("p", { class: "muted", text: "Gerencie suas informações pessoais." })]),
     ]);

@@ -1,68 +1,30 @@
-# ANT Stock — Front-End
+# ANT Stock - Front-End
 
-Pure HTML/CSS/JavaScript front-end for the ANT Stock platform. No build step, no framework.
+Front-end estatico em HTML, CSS e JavaScript puro para o ANT Stock. Nao ha React, Vite, JSX, TSX ou etapa de build.
 
 ## Stack
 
-- HTML5 + CSS3 (custom design system in `css/variables.css`)
-- Vanilla JavaScript (ES Modules)
-- Lucide Icons, Chart.js and SheetJS via CDN
-- Hash-based router (`js/router.js`) with route guards
+- HTML5 + CSS3
+- JavaScript ES Modules
+- Lucide Icons, Chart.js e SheetJS via CDN
+- Roteador hash em `js/router.js`
+- Cliente FastAPI em `js/services/api.js`
 
-## Structure
+## Integracao
 
+Por padrao, o front consome `http://localhost:8000/api/v1`. Para trocar a URL sem build, defina `window.ANT_API_BASE_URL` antes de carregar `js/app.js`.
+
+Fluxos conectados:
+
+- Login: `POST /api/v1/autenticacao/entrar`
+- Cadastro de professor: `POST /api/v1/autenticacao/cadastro`
+- Recuperacao de senha: `POST /api/v1/autenticacao/recuperar-senha`
+- Produtos: lista o primeiro deposito de `GET /api/v1/depositos` e consome `GET /api/v1/{deposito_id}/produtos`
+
+## Executar
+
+Sirva esta pasta com qualquer servidor estatico. Exemplo:
+
+```bash
+python -m http.server 5173 --directory Front/public/frontend
 ```
-frontend/
-├── index.html
-├── assets/
-│   └── images/
-├── css/
-│   ├── variables.css
-│   ├── global.css
-│   ├── animations.css
-│   ├── components.css
-│   ├── login.css
-│   ├── dashboard.css
-│   └── responsive.css
-└── js/
-    ├── app.js           # Route registration + boot
-    ├── router.js        # Hash router with guards
-    ├── services/
-    │   ├── api.js       # API client (mocked, ready for FastAPI)
-    │   ├── supabase.js  # Supabase placeholder
-    │   └── store.js     # Session + demo data
-    ├── components/
-    │   ├── sidebar.js
-    │   ├── navbar.js
-    │   ├── table.js
-    │   ├── modal.js
-    │   ├── cards.js
-    │   └── notifications.js
-    ├── pages/
-    │   ├── login.js
-    │   ├── register.js
-    │   ├── forgot-password.js
-    │   ├── dashboard.js
-    │   ├── products.js
-    │   ├── reports.js
-    │   ├── profile.js
-    │   ├── settings.js
-    │   ├── exports.js
-    │   └── placeholder.js
-    └── utils/
-        ├── exportExcel.js
-        ├── exportTxt.js
-        ├── validators.js
-        ├── security.js
-        └── helpers.js
-```
-
-## Future integration
-
-- **FastAPI**: replace mocked functions in `js/services/api.js` and point `API.BASE_URL` to the FastAPI endpoint.
-- **Supabase**: replace the stub in `js/services/supabase.js` by instantiating the real `@supabase/supabase-js` client and wiring it into `session`.
-
-## Run
-
-Open `/frontend/` from any static server, or visit the published URL.
-The site root (`/`) redirects to `/frontend/index.html`.

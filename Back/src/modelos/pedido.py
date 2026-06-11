@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
 
 from src.modelos.base import DatasMixin, IdMixin, StatusPedido
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Pedido(IdMixin, DatasMixin, table=True):
-    __tablename__ = "pedidos"  # type: ignore[assignment]  # ✅ Adicionado type ignore
+    __tablename__ = "pedidos"  # type: ignore[assignment]
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     usuario_id: UUID | None = Field(default=None, foreign_key="usuarios.id", index=True)
@@ -26,8 +26,8 @@ class Pedido(IdMixin, DatasMixin, table=True):
 
 
 class ItemPedido(IdMixin, DatasMixin, table=True):
-    __tablename__ = "itens_pedido"  # type: ignore[assignment]  # ✅ Adicionado type ignore
-    __table_args__ = (  # type: ignore[assignment]  # ✅ Se necessário
+    __tablename__ = "itens_pedido"  # type: ignore[assignment]
+    __table_args__ = (  # type: ignore[assignment]
         UniqueConstraint("deposito_id", "pedido_id", "produto_id", name="uq_itens_pedido_produto"),
     )
 

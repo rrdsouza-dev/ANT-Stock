@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Perfil(IdMixin, DatasMixin, table=True):
-    __tablename__ = "perfis"
+    __tablename__ = "perfis"  # type: ignore[assignment]
 
     codigo: PerfilCodigo = Field(unique=True, index=True)
     nome: str = Field(max_length=40)
@@ -22,8 +22,8 @@ class Perfil(IdMixin, DatasMixin, table=True):
 
 
 class UsuarioDeposito(SQLModel, table=True):
-    __tablename__ = "usuario_depositos"
-    __table_args__ = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)
+    __tablename__ = "usuario_depositos"  # type: ignore[assignment]
+    __table_args__ = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)  # type: ignore[assignment]
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
@@ -31,7 +31,7 @@ class UsuarioDeposito(SQLModel, table=True):
 
 
 class Usuario(IdMixin, DatasMixin, table=True):
-    __tablename__ = "usuarios"
+    __tablename__ = "usuarios"  # type: ignore[assignment]
 
     auth_id: UUID | None = Field(default=None, unique=True, index=True)
     email: str = Field(unique=True, index=True, max_length=255)
@@ -49,7 +49,7 @@ class Usuario(IdMixin, DatasMixin, table=True):
 
 
 class CadastroPendente(IdMixin, DatasMixin, table=True):
-    __tablename__ = "cadastro_pendente"  # Nome original que você usou
+    __tablename__ = "cadastro_pendente"  # type: ignore[assignment]
 
     nome: str = Field(min_length=2, max_length=120)
     email: str = Field(unique=True, index=True, max_length=255)
@@ -59,7 +59,7 @@ class CadastroPendente(IdMixin, DatasMixin, table=True):
 
 
 class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
-    __tablename__ = "historico_aprovacoes"
+    __tablename__ = "historico_aprovacoes"  # type: ignore[assignment]
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     nome: str = Field(max_length=120)
@@ -69,7 +69,7 @@ class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
 
 
 class HistoricoRecusa(IdMixin, DatasMixin, table=True):
-    __tablename__ = "historico_recusas"
+    __tablename__ = "historico_recusas"  # type: ignore[assignment]
 
     nome: str = Field(max_length=120)
     email: str = Field(max_length=255, index=True)
@@ -79,7 +79,7 @@ class HistoricoRecusa(IdMixin, DatasMixin, table=True):
 
 
 class CodigoRecuperacao(IdMixin, DatasMixin, table=True):
-    __tablename__ = "codigos_recuperacao"
+    __tablename__ = "codigos_recuperacao"  # type: ignore[assignment]
 
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     codigo_hash: str = Field(max_length=128, index=True)

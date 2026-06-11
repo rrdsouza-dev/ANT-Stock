@@ -1,11 +1,11 @@
 -- Schema consolidado ANT Stock para PostgreSQL/Supabase.
--- Perfis permitidos: professor e gestao.
+-- Perfis permitidos: adm, professor e gestao.
 
 create extension if not exists "pgcrypto";
 
 do $$
 begin
-    create type public.perfil_codigo as enum ('professor', 'gestao');
+    create type public.perfil_codigo as enum ('adm', 'professor', 'gestao');
 exception when duplicate_object then null;
 end $$;
 
@@ -158,30 +158,48 @@ create table if not exists public.codigos_recuperacao (
     bloqueado_ate timestamptz
 );
 
+-- Unique constraints com deposito_id
 create unique index if not exists uq_categorias_nome_deposito on public.categorias(deposito_id, nome);
 create unique index if not exists uq_localizacoes_nome_deposito on public.localizacoes(deposito_id, nome);
 create unique index if not exists uq_produtos_codigo_deposito on public.produtos(deposito_id, codigo) where codigo is not null;
 create unique index if not exists uq_estoque_deposito_produto_local on public.estoque(deposito_id, produto_id, localizacao_id);
 create unique index if not exists uq_itens_pedido_produto on public.itens_pedido(deposito_id, pedido_id, produto_id);
 
+-- Índices para performance
+create index if not exists ix_perfis_codigo on public.perfis(codigo);
 create index if not exists ix_usuarios_auth_id on public.usuarios(auth_id);
 create index if not exists ix_usuarios_email on public.usuarios(email);
 create index if not exists ix_usuarios_perfil_id on public.usuarios(perfil_id);
+create index if not exists ix_depositos_tipo on public.depositos(tipo);
 create index if not exists ix_usuario_depositos_usuario_id on public.usuario_depositos(usuario_id);
 create index if not exists ix_usuario_depositos_deposito_id on public.usuario_depositos(deposito_id);
 create index if not exists ix_categorias_deposito_id on public.categorias(deposito_id);
+create index if not exists ix_categorias_nome on public.categorias(nome);
 create index if not exists ix_localizacoes_deposito_id on public.localizacoes(deposito_id);
+create index if not exists ix_localizacoes_nome on public.localizacoes(nome);
 create index if not exists ix_produtos_deposito_id on public.produtos(deposito_id);
+create index if not exists ix_produtos_nome on public.produtos(nome);
+create index if not exists ix_produtos_codigo on public.produtos(codigo);
 create index if not exists ix_produtos_categoria_id on public.produtos(categoria_id);
 create index if not exists ix_produtos_localizacao_id on public.produtos(localizacao_id);
 create index if not exists ix_estoque_deposito_id on public.estoque(deposito_id);
 create index if not exists ix_estoque_produto_id on public.estoque(produto_id);
+create index if not exists ix_estoque_localizacao_id on public.estoque(localizacao_id);
 create index if not exists ix_pedidos_deposito_id on public.pedidos(deposito_id);
+create index if not exists ix_pedidos_usuario_id on public.pedidos(usuario_id);
+create index if not exists ix_pedidos_status on public.pedidos(status);
+create index if not exists ix_itens_pedido_deposito_id on public.itens_pedido(deposito_id);
+create index if not exists ix_itens_pedido_pedido_id on public.itens_pedido(pedido_id);
+create index if not exists ix_itens_pedido_produto_id on public.itens_pedido(produto_id);
 create index if not exists ix_movimentacoes_deposito_id on public.movimentacoes(deposito_id);
 create index if not exists ix_movimentacoes_produto_id on public.movimentacoes(produto_id);
+create index if not exists ix_movimentacoes_usuario_id on public.movimentacoes(usuario_id);
+create index if not exists ix_movimentacoes_pedido_id on public.movimentacoes(pedido_id);
+create index if not exists ix_movimentacoes_tipo on public.movimentacoes(tipo);
 create index if not exists ix_codigos_recuperacao_usuario_id on public.codigos_recuperacao(usuario_id);
 create index if not exists ix_codigos_recuperacao_codigo_hash on public.codigos_recuperacao(codigo_hash);
 
+-- Função de trigger para atualizado_em
 create or replace function public.definir_atualizado_em()
 returns trigger
 language plpgsql
@@ -192,6 +210,7 @@ begin
 end;
 $$;
 
+-- Aplicar trigger em todas as tabelas
 do $$
 declare
     tabela text;
@@ -205,14 +224,17 @@ begin
         execute format('drop trigger if exists definir_%s_atualizado_em on public.%I', tabela, tabela);
         execute format(
             'create trigger definir_%s_atualizado_em before update on public.%I for each row execute function public.definir_atualizado_em()',
-            tabela,
-            tabela
+            tabela, tabela
         );
     end loop;
 end $$;
 
+-- Dados iniciais
 insert into public.perfis (codigo, nome)
-values ('professor', 'Professor'), ('gestao', 'Gestao')
+values
+    ('adm', 'Administrador'),
+    ('professor', 'Professor'),
+    ('gestao', 'Gestao')
 on conflict (codigo) do update set nome = excluded.nome;
 
 insert into public.depositos (nome, tipo, descricao)
@@ -222,6 +244,7 @@ values
     ('Estoque Didatico B', 'didatico', 'Ambiente didatico para simulacoes de estoque')
 on conflict (nome) do update set tipo = excluded.tipo, descricao = excluded.descricao;
 
+-- Row Level Security
 alter table public.perfis enable row level security;
 alter table public.usuarios enable row level security;
 alter table public.depositos enable row level security;

@@ -23,6 +23,8 @@ __all__ = [
     "RepositorioCodigoRecuperacao",
     "RepositorioDeposito",
     "RepositorioEstoque",
+    "RepositorioHistoricoAprovacao",
+    "RepositorioHistoricoRecusa",
     "RepositorioItemPedido",
     "RepositorioLocalizacao",
     "RepositorioMovimentacao",
@@ -32,5 +34,3 @@ __all__ = [
     "RepositorioUsuario",
     "RepositorioUsuarioDeposito",
 ]
-    "RepositorioHistoricoAprovacao",
-    "RepositorioHistoricoRecusa",

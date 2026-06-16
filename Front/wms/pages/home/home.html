@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/home/home.css">
+    <link rel="icon" href="/ANT-Stock/Front/wms/img/favicon.png" type="image/png">
     <title>Home - ANT Stock</title>
 </head>
 <body>
@@ -30,15 +31,15 @@
         <header class="main-header">
             <div class="header-titulo">
                 <h2>Painel de Controle</h2>
-                <p class="data-atual">Indicadores de Hoje</p>
+                <p class="data-atual">-</p>
             </div>
 
             <div class="dadosUser-header">
                 <a href="/ANT-Stock/Front/wms/pages/usuario/Usuario.html" class="user-header-link" title="Acessar meu perfil">
                     <img src="/ANT-Stock/Front/wms/img/icon-7797704_640.png" alt="Foto do Usuário" id="imgUserHeader">
                     <div class="user-header-text">
-                        <span class="user-name">Nome de Usuário</span>
-                        <span class="user-role">Operador WMS</span>
+                        <span class="user-name">-</span>
+                        <span class="user-role">-</span>
                     </div>
                 </a>
             </div>
@@ -47,46 +48,29 @@
         <section class="kpi-container">
             <div class="card-kpi">
                 <h3>Recebimento (Hoje)</h3>
-                <p class="kpi-value">12 <span class="kpi-sub">paletes</span></p>
+                <p class="kpi-value">- <span class="kpi-sub">-</span></p>
             </div>
             <div class="card-kpi alerta">
                 <h3>Expedição Pendente</h3>
-                <p class="kpi-value">5 <span class="kpi-sub">pedidos</span></p>
+                <p class="kpi-value">- <span class="kpi-sub">-</span></p>
             </div>
             <div class="card-kpi capacidade">
                 <h3>Ocupação do Armazém</h3>
-                <p class="kpi-value">78%</p>
+                <p class="kpi-value">-</p>
             </div>
         </section>
 
         <section id="notificacoes-container">
             <h3>Alertas e Notificações do Sistema</h3>
             <div class="lista-notificacoes">
-                <div class="item-notificacao critica">
-                    <span class="sino-icon">⚠️</span>
+                <!-- Os itens de notificação podem ser gerados dinamicamente via JS -->
+                <div class="item-notificacao">
+                    <span class="sino-icon">-</span>
                     <div class="notificacao-texto">
-                        <h4>Estoque Crítico Detectado</h4>
-                        <p>O produto <strong>PRD-004 (Plástico Bolha)</strong> atingiu a quantidade zero no endereço AL-02-A.</p>
+                        <h4></h4>
+                        <p></p>
                     </div>
-                    <span class="notificacao-tempo">Agora mesmo</span>
-                </div>
-                
-                <div class="item-notificacao aviso">
-                    <span class="sino-icon">📦</span>
-                    <div class="notificacao-texto">
-                        <h4>Nova Ordem de Recebimento</h4>
-                        <p>Aguardando descarga do fornecedor XPTO Logística na <strong>Doca 02</strong>.</p>
-                    </div>
-                    <span class="notificacao-tempo">Há 15 min</span>
-                </div>
-
-                <div class="item-notificacao sucesso">
-                    <span class="sino-icon">✅</span>
-                    <div class="notificacao-texto">
-                        <h4>Inventário Concluído</h4>
-                        <p>O relatório de acuracidade do setor de Embalagens foi fechado com sucesso.</p>
-                    </div>
-                    <span class="notificacao-tempo">Há 2 horas</span>
+                    <span class="notificacao-tempo">-</span>
                 </div>
             </div>
         </section>

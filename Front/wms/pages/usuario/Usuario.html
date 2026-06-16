@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/usuario/Usuário.css">
+    <link rel="icon" href="/ANT-Stock/Front/wms/img/favicon.png" type="image/png">
     <title>Perfil do Usuário - ANT Stock</title>
 </head>
 <body>
@@ -36,8 +37,8 @@
                 <a href="/pages/usuario/Usuário.html" class="user-card-link">
                     <img src="/ANT-Stock/Front/wms/img/icon-7797704_640.png" alt="Usuario" id="imgUser">
                     <div class="user-text">
-                        <p id="nome">Nome de Usuário</p>
-                        <p id="email">Email: <span class="email-highlight">email@gmail.com</span></p>
+                        <p id="nome">-</p>
+                        <p id="email">Email: <span class="email-highlight">-</span></p>
                     </div>
                 </a>
             </div>
@@ -50,20 +51,20 @@
                 <form class="form-perfil" onsubmit="event.preventDefault();">
                     <div class="form-group">
                         <label>Nome Completo</label>
-                        <input type="text" value="Nome de Usuário" readonly>
+                        <input type="text" value="-" readonly>
                     </div>
                     <div class="form-group">
                         <label>E-mail Corporativo</label>
-                        <input type="email" value="email@gmail.com" readonly>
+                        <input type="email" value="-" readonly>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Cargo / Função</label>
-                            <input type="text" value="Operador de WMS" readonly>
+                            <input type="text" value="-" readonly>
                         </div>
                         <div class="form-group">
                             <label>Matrícula</label>
-                            <input type="text" value="#ANT-2026" readonly>
+                            <input type="text" value="-" readonly>
                         </div>
                     </div>
                 </form>
@@ -97,23 +98,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- Linhas inseridas dinamicamente conforme as ações do usuário em tempo real -->
                             <tr>
-                                <td>Entrada de Mercadoria: <strong>PRD-001</strong></td>
-                                <td>Recebimento</td>
-                                <td>Hoje às 14:32</td>
-                                <td><span class="badge-status concluido">Concluído</span></td>
-                            </tr>
-                            <tr>
-                                <td>Picking de Pedido: <strong>#45982</strong></td>
-                                <td>Expedição</td>
-                                <td>Ontem às 10:15</td>
-                                <td><span class="badge-status concluido">Concluído</span></td>
-                            </tr>
-                            <tr>
-                                <td>Alteração de endereço da posição <strong>AL-01-A</strong></td>
-                                <td>Estoque</td>
-                                <td>28 Mai 2026</td>
-                                <td><span class="badge-status concluido">Concluído</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td><span class="badge-status">-</span></td>
                             </tr>
                         </tbody>
                     </table>

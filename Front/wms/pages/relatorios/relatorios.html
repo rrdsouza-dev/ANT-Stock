@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.css">
+    <link class="favicon" rel="stylesheet" href="/ANT-Stock/Front/wms/pages/relatorios/relatorios.css">
+    <link rel="icon" href="/ANT-Stock/Front/wms/img/favicon.png" type="image/png">
     <title>Relatórios - ANT Stock</title>
 </head>
 <body>
@@ -36,8 +37,8 @@
                 <a href="/ANT-Stock/Front/wms/pages/usuario/Usuario.html" class="user-header-link" title="Acessar meu perfil">
                     <img src="/ANT-Stock/Front/wms/img/icon-7797704_640.png" alt="Foto do Usuário" id="imgUserHeader">
                     <div class="user-header-text">
-                        <span class="user-name">Nome de Usuário</span>
-                        <span class="user-role">Operador WMS</span>
+                        <span class="user-name">-</span>
+                        <span class="user-role">-</span>
                     </div>
                 </a>
             </div>
@@ -70,15 +71,15 @@
         <section class="kpi-container">
             <div class="card-kpi">
                 <h3>Giro de Estoque</h3>
-                <p class="kpi-value">4.2 <span class="kpi-unidade">/mês</span></p>
+                <p class="kpi-value">- <span class="kpi-unidade">-</span></p>
             </div>
             <div class="card-kpi taxa">
                 <h3>Acuracidade de Inventário</h3>
-                <p class="kpi-value">99.4%</p>
+                <p class="kpi-value">-</p>
             </div>
             <div class="card-kpi otif">
                 <h3>Taxa de OTIF (Pedidos)</h3>
-                <p class="kpi-value">96.8%</p>
+                <p class="kpi-value">-</p>
             </div>
         </section>
 
@@ -99,27 +100,25 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Linhas geradas dinamicamente via JS após a consulta -->
                         <tr>
-                            <td><strong>#REP-204</strong></td>
-                            <td>Inventario_Geral_Maio_2026</td>
-                            <td>Hoje às 16:20</td>
-                            <td>01/05/2026 a 31/05/2026</td>
-                            <td><span class="badge-formato pdf">PDF</span></td>
-                            <td><button class="btn-download">Baixar</button></td>
+                            <td><strong>-</strong></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><span class="badge-formato">-</span></td>
+                            <td><button class="btn-download" disabled>Baixar</button></td>
                         </tr>
-                        <tr>
-                            <td><strong>#REP-203</strong></td>
-                            <td>Movimentacao_Entradas_Saidas_Semana22</td>
-                            <td>Ontem às 11:15</td>
-                            <td>18/05/2026 a 24/05/2026</td>
-                            <td><span class="badge-formato excel">EXCEL</span></td>
-                            <td><button class="btn-download">Baixar</button></td>
-                        </tr> 
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-        <script>
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-    }
-</script>
-   </body>  
-</html>                   
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>  
+</html>

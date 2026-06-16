@@ -7,6 +7,8 @@ import { RegisterPage } from "./pages/register.js";
 import { ForgotPasswordPage } from "./pages/forgot-password.js";
 import { DashboardPage } from "./pages/dashboard.js";
 import { ProductsPage } from "./pages/products.js";
+import { InventoryPage } from "./pages/inventory.js";
+import { PickingPage } from "./pages/picking.js";
 import { ReportsPage } from "./pages/reports.js";
 import { ProfilePage } from "./pages/profile.js";
 import { SettingsPage } from "./pages/settings.js";
@@ -21,8 +23,8 @@ router.register("/forgot-password", ForgotPasswordPage, { public: true });
 // Authenticated routes
 router.register("/dashboard", DashboardPage);
 router.register("/products", ProductsPage);
-router.register("/inventory", PlaceholderPage("Entradas e Saídas", "Controle de movimentações de estoque.", "arrow-left-right"));
-router.register("/picking", PlaceholderPage("Picking", "Listas de separação e progresso da equipe.", "hand"));
+router.register("/inventory", InventoryPage);
+router.register("/picking", PickingPage);
 router.register("/reports", ReportsPage);
 router.register("/school", PlaceholderPage("Gestão Escolar", "Acompanhamento de depósitos e atividades.", "graduation-cap"));
 router.register("/users", PlaceholderPage("Usuários", "Gerenciamento de usuários e permissões.", "users"));
@@ -56,5 +58,4 @@ if (document.readyState === "loading") {
   boot();
 }
 
-// Render icons after dynamic imports of lucide CDN finish loading
 window.addEventListener("load", () => renderIcons());

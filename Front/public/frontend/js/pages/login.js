@@ -69,7 +69,7 @@ export function LoginPage(root) {
     ]),
     submit,
     el("div", { class: "alt-link" }, [
-      el("span", { text: "Não é membro?" }),
+      el("span", { text: "Não é membro? " }),
       el("a", { href: "#/register", text: "Cadastre-se agora" }),
     ]),
   );

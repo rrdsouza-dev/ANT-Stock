@@ -183,3 +183,108 @@ table.data tbody tr:last-child td { border-bottom: none; }
 .strength.s2 span:nth-child(-n+2) { background: var(--warning); }
 .strength.s3 span:nth-child(-n+3) { background: var(--green-400); }
 .strength.s4 span { background: var(--green-500); }
+/* ═══════════════════════════════════════════════════════════
+   FASES 1-6 — Novos componentes ANT Stock
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Modal extensions ────────────────────────────────────── */
+.modal-lg { max-width: 680px; width: 95vw; }
+.modal-header { margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.modal-section { margin-bottom: 22px; }
+.modal-section-title {
+  font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--green-700); margin-bottom: 12px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.product-modal-body { display: flex; flex-direction: column; gap: 10px; max-height: 64vh; overflow-y: auto; padding-right: 4px; }
+.form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.field-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--fg-2); margin-bottom: 4px; }
+
+/* ── Location badge on product card ─────────────────────── */
+.location-badge {
+  display: inline-flex; align-items: center; font-size: 0.72rem;
+  color: var(--green-700); background: var(--green-50);
+  border-radius: 6px; padding: 2px 8px; margin-top: 4px; gap: 2px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── Barcode scanner widget ──────────────────────────────── */
+.barcode-scanner-widget { display: flex; flex-direction: column; gap: 10px; }
+.barcode-row { display: flex; align-items: center; gap: 8px; }
+.barcode-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--green-50); color: var(--green-700);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.barcode-input { font-family: monospace; letter-spacing: 0.1em; flex: 1; }
+.barcode-status {
+  font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+  transition: background .3s, color .3s;
+}
+.barcode-status.scanning { background: var(--green-50); color: var(--green-700); font-weight: 600; }
+.barcode-history { margin-top: 4px; }
+.barcode-history-title { font-size: 0.75rem; margin-bottom: 6px; }
+.barcode-history-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.barcode-history-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; background: var(--surface);
+}
+.barcode-history-item.not-found { opacity: .55; }
+.barcode-code { font-family: monospace; font-weight: 600; min-width: 90px; }
+.barcode-product { flex: 1; }
+.barcode-time { font-size: 0.72rem; color: var(--fg-3); }
+
+/* ── Roles grid (users page) ─────────────────────────────── */
+.roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.role-card {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px; background: var(--surface);
+}
+.role-card.active-role { border-color: var(--green-600, #16a34a); box-shadow: 0 0 0 1px var(--green-600, #16a34a); }
+.role-header { margin-bottom: 6px; }
+.perm-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.perm-badge {
+  font-size: 0.7rem; font-weight: 600; padding: 2px 7px;
+  border-radius: 4px; background: var(--green-50); color: var(--green-700);
+  border: 1px solid var(--green-100, #d1fae5);
+}
+
+/* ── chip extras ─────────────────────────────────────────── */
+.chip-danger { background: #fee2e2; color: #b91c1c; }
+.chip-info   { background: #dbeafe; color: #1d4ed8; }
+
+/* ── Settings switch ──────────────────────────────────────── */
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-row h4 { margin: 0 0 2px; font-size: 0.9rem; }
+.setting-row p { margin: 0; font-size: 0.8rem; color: var(--fg-3); }
+.switch {
+  width: 42px; height: 24px; border-radius: 12px; background: var(--border);
+  cursor: pointer; transition: background .2s; position: relative; flex-shrink: 0;
+}
+.switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s;
+}
+.switch.on { background: var(--green-600, #16a34a); }
+.switch.on::after { transform: translateX(18px); }
+
+/* ── Profile page ────────────────────────────────────────── */
+.profile-grid { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; }
+.profile-side {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; padding: 28px 20px; text-align: center;
+}
+.avatar-lg { width: 72px; height: 72px; font-size: 1.4rem; border-radius: 50%; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) {
+  .profile-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr; }
+  .form-grid-2 { grid-template-columns: 1fr; }
+}

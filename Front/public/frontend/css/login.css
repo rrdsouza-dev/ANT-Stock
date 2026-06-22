@@ -72,7 +72,7 @@
 }
 
 .auth-right {
-    background: var(--green-50);
+    background: #3ecd8a;
     border-radius: 28px;
     display: flex;
     flex-direction: column;
@@ -97,7 +97,7 @@
     font-family: var(--font-display);
 }
 .auth-right .tag b {
-    color: var(--green-700);
+    color: white;
 }
 
 /* Stand-alone auth pages (register/forgot) - single centered card */
@@ -126,7 +126,7 @@
     margin-bottom: 22px;
 }
 .auth-card .brand img {
-    height: 40px;
+    height: 80px;
 }
 .auth-card h2 {
     text-align: center;
@@ -160,7 +160,7 @@
 .steps .step {
     flex: 1;
     height: 6px;
-    background: #e6ebe8;
+    background: white;
     border-radius: 999px;
     transition: background var(--dur) var(--ease);
 }

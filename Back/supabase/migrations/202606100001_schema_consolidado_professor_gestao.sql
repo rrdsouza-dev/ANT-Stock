@@ -3,6 +3,7 @@
 
 create extension if not exists "pgcrypto";
 
+-- ENUMS
 do $$
 begin
     create type public.perfil_codigo as enum ('adm', 'professor', 'gestao');
@@ -27,6 +28,7 @@ begin
 exception when duplicate_object then null;
 end $$;
 
+-- PERFIS
 create table if not exists public.perfis (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -35,11 +37,12 @@ create table if not exists public.perfis (
     nome varchar(40) not null
 );
 
+-- USUARIOS
 create table if not exists public.usuarios (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
     atualizado_em timestamptz not null default now(),
-    auth_id uuid unique references auth.users(id) on delete set null,
+    auth_id uuid unique references auth.users(id) on delete cascade,
     email varchar(255) not null unique,
     nome varchar(120),
     senha_hash varchar(255),
@@ -48,6 +51,7 @@ create table if not exists public.usuarios (
     ativo boolean not null default true
 );
 
+-- DEPOSITOS
 create table if not exists public.depositos (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -58,6 +62,7 @@ create table if not exists public.depositos (
     ativo boolean not null default true
 );
 
+-- USUARIO_DEPOSITOS
 create table if not exists public.usuario_depositos (
     usuario_id uuid not null references public.usuarios(id) on delete cascade,
     deposito_id uuid not null references public.depositos(id) on delete cascade,
@@ -65,6 +70,7 @@ create table if not exists public.usuario_depositos (
     primary key (usuario_id, deposito_id)
 );
 
+-- CATEGORIAS
 create table if not exists public.categorias (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -75,6 +81,7 @@ create table if not exists public.categorias (
     ativo boolean not null default true
 );
 
+-- LOCALIZACOES
 create table if not exists public.localizacoes (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -87,6 +94,7 @@ create table if not exists public.localizacoes (
     ativo boolean not null default true
 );
 
+-- PRODUTOS
 create table if not exists public.produtos (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -100,6 +108,7 @@ create table if not exists public.produtos (
     ativo boolean not null default true
 );
 
+-- ESTOQUE
 create table if not exists public.estoque (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -110,6 +119,7 @@ create table if not exists public.estoque (
     quantidade integer not null default 0 check (quantidade >= 0)
 );
 
+-- PEDIDOS
 create table if not exists public.pedidos (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -120,6 +130,7 @@ create table if not exists public.pedidos (
     observacao varchar(500)
 );
 
+-- ITENS_PEDIDO
 create table if not exists public.itens_pedido (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -130,6 +141,7 @@ create table if not exists public.itens_pedido (
     quantidade integer not null check (quantidade > 0)
 );
 
+-- MOVIMENTACOES
 create table if not exists public.movimentacoes (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -146,6 +158,7 @@ create table if not exists public.movimentacoes (
     movimentado_em timestamptz not null default now()
 );
 
+-- CODIGOS_RECUPERACAO
 create table if not exists public.codigos_recuperacao (
     id uuid primary key default gen_random_uuid(),
     criado_em timestamptz not null default now(),
@@ -158,59 +171,83 @@ create table if not exists public.codigos_recuperacao (
     bloqueado_ate timestamptz
 );
 
--- Unique constraints com deposito_id
-create unique index if not exists uq_categorias_nome_deposito on public.categorias(deposito_id, nome);
-create unique index if not exists uq_localizacoes_nome_deposito on public.localizacoes(deposito_id, nome);
-create unique index if not exists uq_produtos_codigo_deposito on public.produtos(deposito_id, codigo) where codigo is not null;
-create unique index if not exists uq_estoque_deposito_produto_local on public.estoque(deposito_id, produto_id, localizacao_id);
-create unique index if not exists uq_itens_pedido_produto on public.itens_pedido(deposito_id, pedido_id, produto_id);
+-- UNIQUE INDEXES
+create unique index if not exists uq_categorias_nome_deposito
+on public.categorias(deposito_id, nome);
 
--- Índices para performance
+create unique index if not exists uq_localizacoes_nome_deposito
+on public.localizacoes(deposito_id, nome);
+
+create unique index if not exists uq_produtos_codigo_deposito
+on public.produtos(deposito_id, codigo)
+where codigo is not null and codigo <> '';
+
+create unique index if not exists uq_estoque_deposito_produto_local
+on public.estoque(
+    deposito_id,
+    produto_id,
+    coalesce(localizacao_id, '00000000-0000-0000-0000-000000000000')
+);
+
+create unique index if not exists uq_itens_pedido_produto
+on public.itens_pedido(pedido_id, produto_id);
+
+-- PERFORMANCE INDEXES
 create index if not exists ix_perfis_codigo on public.perfis(codigo);
 create index if not exists ix_usuarios_auth_id on public.usuarios(auth_id);
 create index if not exists ix_usuarios_email on public.usuarios(email);
 create index if not exists ix_usuarios_perfil_id on public.usuarios(perfil_id);
+
 create index if not exists ix_depositos_tipo on public.depositos(tipo);
+
 create index if not exists ix_usuario_depositos_usuario_id on public.usuario_depositos(usuario_id);
 create index if not exists ix_usuario_depositos_deposito_id on public.usuario_depositos(deposito_id);
+
 create index if not exists ix_categorias_deposito_id on public.categorias(deposito_id);
 create index if not exists ix_categorias_nome on public.categorias(nome);
+
 create index if not exists ix_localizacoes_deposito_id on public.localizacoes(deposito_id);
 create index if not exists ix_localizacoes_nome on public.localizacoes(nome);
+
 create index if not exists ix_produtos_deposito_id on public.produtos(deposito_id);
 create index if not exists ix_produtos_nome on public.produtos(nome);
 create index if not exists ix_produtos_codigo on public.produtos(codigo);
 create index if not exists ix_produtos_categoria_id on public.produtos(categoria_id);
 create index if not exists ix_produtos_localizacao_id on public.produtos(localizacao_id);
+
 create index if not exists ix_estoque_deposito_id on public.estoque(deposito_id);
 create index if not exists ix_estoque_produto_id on public.estoque(produto_id);
 create index if not exists ix_estoque_localizacao_id on public.estoque(localizacao_id);
+
 create index if not exists ix_pedidos_deposito_id on public.pedidos(deposito_id);
 create index if not exists ix_pedidos_usuario_id on public.pedidos(usuario_id);
 create index if not exists ix_pedidos_status on public.pedidos(status);
+
 create index if not exists ix_itens_pedido_deposito_id on public.itens_pedido(deposito_id);
 create index if not exists ix_itens_pedido_pedido_id on public.itens_pedido(pedido_id);
 create index if not exists ix_itens_pedido_produto_id on public.itens_pedido(produto_id);
+
 create index if not exists ix_movimentacoes_deposito_id on public.movimentacoes(deposito_id);
 create index if not exists ix_movimentacoes_produto_id on public.movimentacoes(produto_id);
 create index if not exists ix_movimentacoes_usuario_id on public.movimentacoes(usuario_id);
 create index if not exists ix_movimentacoes_pedido_id on public.movimentacoes(pedido_id);
 create index if not exists ix_movimentacoes_tipo on public.movimentacoes(tipo);
+
 create index if not exists ix_codigos_recuperacao_usuario_id on public.codigos_recuperacao(usuario_id);
 create index if not exists ix_codigos_recuperacao_codigo_hash on public.codigos_recuperacao(codigo_hash);
 
--- Função de trigger para atualizado_em
+-- TRIGGER UPDATED_EM
 create or replace function public.definir_atualizado_em()
 returns trigger
 language plpgsql
 as $$
 begin
-    new.atualizado_em = now();
+    new.atualizado_em := now();
     return new;
 end;
 $$;
 
--- Aplicar trigger em todas as tabelas
+-- APPLY TRIGGERS
 do $$
 declare
     tabela text;
@@ -222,14 +259,18 @@ begin
     ]
     loop
         execute format('drop trigger if exists definir_%s_atualizado_em on public.%I', tabela, tabela);
+
         execute format(
-            'create trigger definir_%s_atualizado_em before update on public.%I for each row execute function public.definir_atualizado_em()',
+            'create trigger definir_%s_atualizado_em
+             before update on public.%I
+             for each row
+             execute function public.definir_atualizado_em()',
             tabela, tabela
         );
     end loop;
 end $$;
 
--- Dados iniciais
+-- DADOS INICIAIS
 insert into public.perfis (codigo, nome)
 values
     ('adm', 'Administrador'),
@@ -244,7 +285,7 @@ values
     ('Estoque Didatico B', 'didatico', 'Ambiente didatico para simulacoes de estoque')
 on conflict (nome) do update set tipo = excluded.tipo, descricao = excluded.descricao;
 
--- Row Level Security
+-- RLS
 alter table public.perfis enable row level security;
 alter table public.usuarios enable row level security;
 alter table public.depositos enable row level security;
@@ -258,6 +299,7 @@ alter table public.itens_pedido enable row level security;
 alter table public.movimentacoes enable row level security;
 alter table public.codigos_recuperacao enable row level security;
 
+-- POLICIES (SERVICE ROLE ONLY)
 do $$
 declare
     tabela text;
@@ -269,6 +311,15 @@ begin
     ]
     loop
         execute format('drop policy if exists "servico backend" on public.%I', tabela);
-        execute format('create policy "servico backend" on public.%I for all to service_role using (true) with check (true)', tabela);
+
+        execute format(
+            'create policy "servico backend"
+             on public.%I
+             for all
+             to service_role
+             using (true)
+             with check (true)',
+            tabela
+        );
     end loop;
 end $$;

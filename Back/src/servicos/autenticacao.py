@@ -51,6 +51,7 @@ class ServicoAutenticacao:
                 "senha_hash": gerar_hash(dados.senha),
                 "provedor": "local",
                 "perfil_id": perfil.id,
+                "sala": dados.sala if dados.perfil == PerfilCodigo.PROFESSOR else None,
                 "ativo": True,
             }
         )

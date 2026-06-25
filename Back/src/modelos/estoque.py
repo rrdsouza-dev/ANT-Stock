@@ -48,6 +48,7 @@ class Localizacao(IdMixin, DatasMixin, table=True):
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     nome: str = Field(min_length=1, max_length=120, index=True)
+    torre: str | None = Field(default=None, max_length=50)
     corredor: str | None = Field(default=None, max_length=50)
     prateleira: str | None = Field(default=None, max_length=50)
     posicao: str | None = Field(default=None, max_length=50)
@@ -67,6 +68,10 @@ class Produto(IdMixin, DatasMixin, table=True):
     categoria_id: UUID | None = Field(default=None, foreign_key="categorias.id", index=True)
     localizacao_id: UUID | None = Field(default=None, foreign_key="localizacoes.id", index=True)
     quantidade_minima: int = Field(default=0, ge=0)
+    unidade_medida: str | None = Field(default=None, max_length=30)
+    quantidade_por_caixa: int | None = Field(default=None, ge=1)
+    validade: str | None = Field(default=None, max_length=20)
+    observacoes: str | None = Field(default=None, max_length=500)
     ativo: bool = Field(default=True)
 
     deposito: Deposito | None = Relationship(back_populates="produtos")

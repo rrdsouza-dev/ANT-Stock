@@ -10,13 +10,66 @@ export function RegisterPage(root) {
   document.body.classList.add("app-bg");
 
   const form = el("form", { class: "auth-form", novalidate: true });
-  const errs = { name: el("div", { class: "error-text" }), email: el("div", { class: "error-text" }), pass: el("div", { class: "error-text" }), conf: el("div", { class: "error-text" }) };
+  const errs = {
+    name: el("div", { class: "error-text" }),
+    email: el("div", { class: "error-text" }),
+    pass: el("div", { class: "error-text" }),
+    conf: el("div", { class: "error-text" }),
+  };
   const strength = el("div", { class: "strength" }, [el("span"), el("span"), el("span"), el("span")]);
 
-  const name = el("input", { class: "input", name: "name", placeholder: "Nome completo" });
+  const name  = el("input", { class: "input", name: "name", placeholder: "Nome completo" });
   const email = el("input", { class: "input", type: "email", name: "email", placeholder: "Email" });
-  const pass = el("input", { class: "input", type: "password", name: "password", placeholder: "Senha (mín. 8 caracteres)" });
-  const conf = el("input", { class: "input", type: "password", name: "confirm", placeholder: "Confirmar senha" });
+  const pass  = el("input", { class: "input", type: "password", name: "password", placeholder: "Senha (mín. 8 caracteres)" });
+  const conf  = el("input", { class: "input", type: "password", name: "confirm", placeholder: "Confirmar senha" });
+
+  // ── Perfil ──────────────────────────────────────────────────
+  const perfilGroup = el("div", { class: "perfil-selector" });
+
+  const perfis = [
+    { value: "professor", label: "Professor" },
+    { value: "gestao",    label: "Gestão" },
+  ];
+
+  let perfilSelecionado = "professor";
+
+  perfis.forEach(({ value, label }) => {
+    const btn = el("button", {
+      type: "button",
+      class: "btn-perfil" + (value === perfilSelecionado ? " active" : ""),
+      "data-value": value,
+      text: label,
+    });
+    btn.addEventListener("click", () => {
+      perfilSelecionado = value;
+      perfilGroup.querySelectorAll(".btn-perfil").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderSalaSection();
+    });
+    perfilGroup.appendChild(btn);
+  });
+
+  // ── Sala (only for professor) ────────────────────────────────
+  const salaSection = el("div", { class: "sala-section" });
+
+  const salaSelect = el("select", { class: "select" }, [
+    el("option", { value: "", text: "Selecione a sala" }),
+    el("option", { value: "2ano", text: "2º Ano" }),
+    el("option", { value: "3ano", text: "3º Ano" }),
+  ]);
+
+  function renderSalaSection() {
+    salaSection.innerHTML = "";
+    if (perfilSelecionado === "professor") {
+      salaSection.appendChild(
+        el("div", { class: "field" }, [
+          el("label", { class: "field-label", text: "Sala" }),
+          salaSelect,
+        ])
+      );
+    }
+  }
+  renderSalaSection();
 
   pass.addEventListener("input", () => {
     const s = passwordScore(pass.value);
@@ -30,6 +83,11 @@ export function RegisterPage(root) {
     el("div", { class: "field" }, [email, errs.email]),
     el("div", { class: "field" }, [pass, strength, errs.pass]),
     el("div", { class: "field" }, [conf, errs.conf]),
+    el("div", { class: "field" }, [
+      el("label", { class: "field-label", text: "Perfil" }),
+      perfilGroup,
+    ]),
+    salaSection,
     submit,
   );
 
@@ -41,19 +99,25 @@ export function RegisterPage(root) {
     const cErr = pass.value !== conf.value ? "As senhas não conferem." : null;
     errs.conf.textContent = cErr || "";
     if (nErr || eErr || pErr || cErr) return;
+
     submit.innerHTML = ""; submit.appendChild(el("span", { class: "spinner" }));
     try {
-      const { user, token } = await API.register({
-        name: name.value.trim(),
+      const payload = {
+        nome: name.value.trim(),
         email: email.value.trim(),
-        password: pass.value,
-        profile: "professor",
-      });
-      session.signIn(user, token);
+        senha: pass.value,
+        perfil: perfilSelecionado,
+      };
+      if (perfilSelecionado === "professor" && salaSelect.value) {
+        payload.sala = salaSelect.value;
+      }
+
+      const result = await API.register(payload);
+      session.signIn(result.usuario, result.token);
       notify("Conta criada com sucesso!");
       router.navigate("/dashboard");
-    } catch {
-      notify("Não foi possível criar a conta.", "error");
+    } catch (err) {
+      notify(err?.message || "Não foi possível criar a conta.", "error");
       submit.textContent = "Criar conta";
     }
   }));

@@ -39,6 +39,7 @@ class Usuario(IdMixin, DatasMixin, table=True):
     senha_hash: str | None = Field(default=None, max_length=255)
     provedor: str = Field(default="local", max_length=40)
     perfil_id: UUID = Field(foreign_key="perfis.id", index=True)
+    sala: str | None = Field(default=None, max_length=30)
     ativo: bool = Field(default=True)
 
     perfil: Perfil | None = Relationship(back_populates="usuarios")

@@ -41,6 +41,26 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
   const statusEl = el("div", { class: "barcode-status muted", text: "Aguardando leitura…" });
   const historyList = el("ul", { class: "barcode-history-list" });
 
+  // ── Sample codes for simulation ──────────────────────────────
+  const SAMPLE_CODES = ["7891234567890", "7898765432100", "7890001122334", "SIM-TEST-001", "SIM-TEST-002"];
+  let simIdx = 0;
+
+  const simBtn = el("button", {
+    type: "button",
+    class: "btn btn-soft btn-simulate",
+    title: "Simular escaneamento (para testes sem leitor físico)",
+  }, [
+    el("i", { "data-lucide": "scan-line" }),
+    " Simular Escaneamento",
+  ]);
+
+  simBtn.addEventListener("click", () => {
+    const code = SAMPLE_CODES[simIdx % SAMPLE_CODES.length];
+    simIdx++;
+    input.value = code;
+    handleCode(code);
+  });
+
   const wrapper = el("div", { class: "barcode-scanner-widget" }, [
     el("label", { class: "field-label", text: label }),
     el("div", { class: "barcode-row" }, [
@@ -52,6 +72,7 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
         onclick: () => { input.value = ""; input.focus(); statusEl.textContent = "Aguardando leitura…"; },
       }, [el("i", { "data-lucide": "x" })]),
     ]),
+    el("div", { class: "barcode-simulate-row" }, [simBtn]),
     statusEl,
     el("div", { class: "barcode-history" }, [
       el("div", { class: "barcode-history-title muted", text: "Últimas leituras" }),

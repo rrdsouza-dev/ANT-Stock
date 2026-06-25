@@ -11,6 +11,7 @@ class CadastroEntrada(BaseModel):
     email: EmailStr
     senha: str = Field(min_length=8, max_length=128)
     perfil: PerfilCodigo = PerfilCodigo.PROFESSOR
+    sala: str | None = Field(default=None, max_length=30)
 
     @field_validator("perfil")
     @classmethod
@@ -91,6 +92,7 @@ class UsuarioSaida(BaseModel):
     provedor: str
     perfil_id: UUID
     perfil: PerfilCodigo | None = None
+    sala: str | None = None
     ativo: bool
 
     @classmethod
@@ -104,6 +106,7 @@ class UsuarioSaida(BaseModel):
             provedor=usuario.provedor,
             perfil_id=usuario.perfil_id,
             perfil=perfil,
+            sala=usuario.sala,
             ativo=usuario.ativo,
         )
 

@@ -32,10 +32,11 @@ export const API = {
     const data = await this.request("/autenticacao/cadastro", {
       method: "POST",
       body: {
-        nome: payload.name,
+        nome: payload.nome || payload.name,
         email: payload.email,
-        senha: payload.password,
-        perfil: payload.profile || "professor",
+        senha: payload.senha || payload.password,
+        perfil: payload.perfil || payload.profile || "professor",
+        sala: payload.sala || undefined,
       },
     });
     return normalizeAuth(data);

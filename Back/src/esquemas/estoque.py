@@ -31,6 +31,7 @@ class CategoriaSaida(CategoriaEntrada, SchemaComDatas):
 
 class LocalizacaoEntrada(BaseModel):
     nome: str = Field(min_length=1, max_length=120)
+    torre: str | None = Field(default=None, max_length=50)
     corredor: str | None = Field(default=None, max_length=50)
     prateleira: str | None = Field(default=None, max_length=50)
     posicao: str | None = Field(default=None, max_length=50)
@@ -38,6 +39,7 @@ class LocalizacaoEntrada(BaseModel):
 
 class LocalizacaoAtualizar(BaseModel):
     nome: str | None = Field(default=None, min_length=1, max_length=120)
+    torre: str | None = Field(default=None, max_length=50)
     corredor: str | None = Field(default=None, max_length=50)
     prateleira: str | None = Field(default=None, max_length=50)
     posicao: str | None = Field(default=None, max_length=50)
@@ -54,6 +56,10 @@ class ProdutoEntrada(BaseModel):
     categoria_id: UUID | None = None
     localizacao_id: UUID | None = None
     quantidade_minima: int = Field(default=0, ge=0)
+    unidade_medida: str | None = Field(default=None, max_length=30)
+    quantidade_por_caixa: int | None = Field(default=None, ge=1)
+    validade: str | None = Field(default=None, max_length=20)
+    observacoes: str | None = Field(default=None, max_length=500)
 
 
 class ProdutoAtualizar(BaseModel):
@@ -62,6 +68,10 @@ class ProdutoAtualizar(BaseModel):
     categoria_id: UUID | None = None
     localizacao_id: UUID | None = None
     quantidade_minima: int | None = Field(default=None, ge=0)
+    unidade_medida: str | None = Field(default=None, max_length=30)
+    quantidade_por_caixa: int | None = Field(default=None, ge=1)
+    validade: str | None = Field(default=None, max_length=20)
+    observacoes: str | None = Field(default=None, max_length=500)
     ativo: bool | None = None
 
 

@@ -215,22 +215,53 @@ export function CategoriesPage(root, ctx) {
 
     function openLocModal(loc) {
       const isEdit = !!loc;
+
+      // Standardized options
+      const TORRES     = ["Torre A", "Torre B", "Torre C"];
+      const CORREDORES = ["1", "2", "3", "4"];
+      const PRATELEIRAS = ["1", "2", "3", "4", "5"];
+      const POSICOES   = ["A1", "A2", "A3", "B1", "B2", "B3"];
+
+      function makeSelect(opts, val, emptyLabel) {
+        return el("select", { class: "select" }, [
+          el("option", { value: "", text: emptyLabel }),
+          ...opts.map(o => {
+            const opt = el("option", { value: o, text: o });
+            if (o === val) opt.selected = true;
+            return opt;
+          }),
+        ]);
+      }
+
+      const nomeEl = el("input", { class: "input", value: loc?.nome || "", placeholder: "Nome da localização (ex: Torre A / Corredor 1 / Prateleira 2 / A1)" });
       const f = {
-        nome:       el("input", { class: "input", value: loc?.nome || "", placeholder: "Nome da localização" }),
-        corredor:   el("input", { class: "input", value: loc?.corredor || "", placeholder: "Corredor" }),
-        prateleira: el("input", { class: "input", value: loc?.prateleira || "", placeholder: "Prateleira" }),
-        posicao:    el("input", { class: "input", value: loc?.posicao || "", placeholder: "Posição" }),
+        torre:      makeSelect(TORRES,      loc?.torre || "",      "Selecione a torre"),
+        corredor:   makeSelect(CORREDORES,  loc?.corredor || "",   "Selecione o corredor"),
+        prateleira: makeSelect(PRATELEIRAS, loc?.prateleira || "", "Selecione a prateleira"),
+        posicao:    makeSelect(POSICOES,    loc?.posicao || "",    "Selecione a posição"),
       };
       const errEl = el("div", { class: "error-text" });
-      const saveBtn = el("button", { class: "btn btn-primary" }, [el("i", { "data-lucide": "save" }), isEdit ? "Salvar" : "Criar"]);
+      const saveBtn = el("button", { class: "btn btn-primary" }, [el("i", { "data-lucide": "save" }), isEdit ? " Salvar" : " Criar"]);
       const cancelBtn = el("button", { class: "btn btn-ghost", text: "Cancelar" });
+
+      // Auto-fill nome when selects change
+      function autoNome() {
+        const parts = [f.torre.value, f.corredor.value ? "Corredor " + f.corredor.value : "",
+          f.prateleira.value ? "Prateleira " + f.prateleira.value : "", f.posicao.value].filter(Boolean);
+        if (parts.length > 0 && !nomeEl.value) nomeEl.value = parts.join(" / ");
+      }
+      [f.torre, f.corredor, f.prateleira, f.posicao].forEach(s => s.addEventListener("change", autoNome));
 
       const card = el("div", { class: "modal" }, [
         el("div", { class: "modal-header" }, [el("h3", { text: isEdit ? "Editar localização" : "Nova localização" })]),
         el("div", { class: "product-modal-body" }, [
-          el("div", { class: "form-grid-2" }, Object.entries({ "Nome *": f.nome, Corredor: f.corredor, Prateleira: f.prateleira, Posição: f.posicao }).map(([l, inp]) =>
-            el("div", { class: "field" }, [el("label", { class: "field-label", text: l }), inp])
-          )),
+          el("div", { class: "field" }, [el("label", { class: "field-label", text: "Nome da localização *" }), nomeEl]),
+          el("div", { class: "form-grid-2" }, [
+            el("div", { class: "field" }, [el("label", { class: "field-label", text: "Torre" }), f.torre]),
+            el("div", { class: "field" }, [el("label", { class: "field-label", text: "Corredor" }), f.corredor]),
+            el("div", { class: "field" }, [el("label", { class: "field-label", text: "Prateleira" }), f.prateleira]),
+            el("div", { class: "field" }, [el("label", { class: "field-label", text: "Posição" }), f.posicao]),
+          ]),
           errEl,
         ]),
         el("div", { class: "modal-actions" }, [cancelBtn, saveBtn]),
@@ -242,15 +273,16 @@ export function CategoriesPage(root, ctx) {
       cancelBtn.addEventListener("click", close);
 
       saveBtn.addEventListener("click", async () => {
-        const nome = f.nome.value.trim();
+        const nome = nomeEl.value.trim();
         if (!nome) { errEl.textContent = "Nome é obrigatório."; return; }
         errEl.textContent = ""; saveBtn.disabled = true;
         try {
           const payload = {
             nome,
-            corredor: f.corredor.value.trim() || undefined,
-            prateleira: f.prateleira.value.trim() || undefined,
-            posicao: f.posicao.value.trim() || undefined,
+            torre:      f.torre.value || undefined,
+            corredor:   f.corredor.value || undefined,
+            prateleira: f.prateleira.value || undefined,
+            posicao:    f.posicao.value || undefined,
           };
           if (isEdit) await API.updateLocation(depositId, loc.id, payload);
           else await API.createLocation(depositId, payload);
@@ -263,7 +295,7 @@ export function CategoriesPage(root, ctx) {
 
       document.body.appendChild(backdrop);
       renderIcons(backdrop);
-      setTimeout(() => f.nome.focus(), 80);
+      setTimeout(() => nomeEl.focus(), 80);
     }
 
     async function deleteLoc(loc) {

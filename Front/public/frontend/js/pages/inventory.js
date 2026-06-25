@@ -5,14 +5,13 @@ import { el, renderIcons } from "../utils/helpers.js";
 import { AppShell } from "./_shell.js";
 import { API } from "../services/api.js";
 import { session } from "../services/store.js";
-import { LocalDB } from "../services/localInventoryStore.js";
 import { DataTable } from "../components/table.js";
 import { notify } from "../components/notifications.js";
 import { guardedClick } from "../utils/security.js";
 import { exportExcel } from "../utils/exportExcel.js";
 import { exportTxt } from "../utils/exportTxt.js";
 import { BarcodeScanner } from "../components/barcodeScanner.js";
-import { openMovementModal } from "../components/productModal.js";
+import { openMovementModal, openPreviewCard, openEntryModal, openExitModal, openScanModal } from "../components/productModal.js";
 
 export function InventoryPage(root, ctx) {
   AppShell(root, ctx.path, (content) => {
@@ -26,13 +25,20 @@ export function InventoryPage(root, ctx) {
         el("p", { class: "muted", text: "Registre e acompanhe movimentações de estoque. Use leitor de código de barras ou busca manual." }),
       ]),
       el("div", { class: "exports" }, [
-        el("button", { class: "btn btn-soft", onclick: guardedClick(openMovModal) }, [
-          el("i", { "data-lucide": "plus" }), "Registrar",
+        el("button", { class: "btn btn-ghost btn-sm", title: "Visualiza o card que abre após escaneamento real — sem criar movimentações",
+          onclick: guardedClick(() => openPreviewCard({ depositId, products: products.map(p => ({...p, nome: p.name, codigo: p.code})), categories: [], onSave: loadMovements })) }, [
+          el("i", { "data-lucide": "eye" }), " Visualizar Card",
+        ]),
+        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openEntryModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), onSave: loadMovements }); }) }, [
+          el("i", { "data-lucide": "arrow-down-circle" }), " Entrada",
+        ]),
+        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openExitModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), onSave: loadMovements }); }) }, [
+          el("i", { "data-lucide": "arrow-up-circle" }), " Saída",
         ]),
         el("button", { class: "btn btn-primary", onclick: guardedClick(() => { exportTxt(movementsData, "movimentacoes.txt"); notify("TXT exportado.", "success"); }) },
-          [el("i", { "data-lucide": "file-text" }), "TXT"]),
+          [el("i", { "data-lucide": "file-text" }), " TXT"]),
         el("button", { class: "btn btn-primary", onclick: guardedClick(() => { exportExcel(movementsData, "movimentacoes.xlsx", "Movimentações"); notify("Excel exportado.", "success"); }) },
-          [el("i", { "data-lucide": "sheet" }), "Excel"]),
+          [el("i", { "data-lucide": "sheet" }), " Excel"]),
       ]),
     ]);
 
@@ -60,42 +66,32 @@ export function InventoryPage(root, ctx) {
       if (!depositId) { notify("Aguarde — carregando depósito…", "warning"); return; }
       try {
         // Try to find product by barcode via API
-        const product = await API.productByCode(depositId, code).catch(() => null);
-        if (product) {
-          LocalDB.logScan(code, true, product.nome);
-          refreshHistory?.();
-          notify(`Produto encontrado: ${product.nome}`, "success");
-          openMovementModal({
-            depositId,
-            products,
-            onSave: loadMovements,
-            initialCode: code,
-          });
-        } else {
-          // Try local match
-          const localMatch = products.find(p =>
-            p.code === code || p.name.toLowerCase().includes(code.toLowerCase())
-          );
-          if (localMatch) {
-            LocalDB.logScan(code, true, localMatch.name);
-            refreshHistory?.();
-            notify(`Produto: ${localMatch.name}`, "success");
-            openMovementModal({ depositId, products, onSave: loadMovements, initialCode: code });
-          } else {
-            LocalDB.logScan(code, false);
-            refreshHistory?.();
-            notify(`Código não encontrado: ${code}`, "warning");
-          }
-        }
+        const allCats = await API.categories(depositId, { limite: 200 }).catch(() => []);
+        const allProds = await API.products(depositId, { limite: 200 }).catch(() => products.map(p => ({id:p.id, nome:p.name, codigo:p.code})));
+        const locs = await API.locations(depositId, { limite: 200 }).catch(() => []);
+
+        // Get stock quantities for each product
+        const stockData = await API.stock(depositId, { limite: 500 }).catch(() => []);
+        const stockMap = {};
+        for (const s of stockData) stockMap[s.produto_id] = (stockMap[s.produto_id] || 0) + s.quantidade;
+        const prodsWithQty = allProds.map(p => ({ ...p, quantidade: stockMap[p.id] || 0 }));
+
+        refreshHistory?.();
+        openScanModal({
+          depositId,
+          code,
+          products: prodsWithQty,
+          categories: allCats,
+          locations: locs,
+          onSave: loadMovements,
+        });
       } catch (err) {
         notify(err.message || "Erro na leitura.", "error");
       }
     }
 
-    function openMovModal() {
-      if (!depositId) { notify("Aguarde — carregando…", "warning"); return; }
-      openMovementModal({ depositId, products, onSave: loadMovements });
-    }
+    // legacy compat
+    function openMovModal() {}
 
     function renderTable(rows) {
       tableContainer.innerHTML = "";

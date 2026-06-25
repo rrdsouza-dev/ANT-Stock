@@ -7,6 +7,7 @@ Execute APÓS conectar o .env ao Supabase:
 import asyncio
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from src.nucleo.seguranca import gerar_hash
@@ -15,6 +16,7 @@ from src.modelos.autenticacao import Perfil, Usuario, UsuarioDeposito
 from src.modelos.estoque import Deposito
 from src.modelos.base import PerfilCodigo
 from sqlalchemy import text, select
+
 
 EMAIL = "gestao@antstock.local"
 NOME  = "Gestão ANT"

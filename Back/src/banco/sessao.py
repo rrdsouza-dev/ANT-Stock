@@ -4,14 +4,30 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from src.nucleo.configuracao import configuracao
 
-config = configuracao()
 
-engine = create_async_engine(
-    config.url_banco,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-)
+def _criar_engine():
+    config = configuracao()
+    url = config.url_banco
+
+    # asyncpg não aceita ?ssl=require na query string — precisa de connect_args
+    connect_args = {}
+    if "ssl=require" in url or "supabase.co" in url:
+        import ssl as _ssl
+        ctx = _ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = _ssl.CERT_NONE  # Supabase usa certificado auto-assinado no pooler
+        connect_args["ssl"] = ctx
+
+    return create_async_engine(
+        url.split("?")[0],  # remove query string — asyncpg não a suporta
+        connect_args=connect_args,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+    )
+
+
+engine = _criar_engine()
 
 SessaoLocal = async_sessionmaker(
     bind=engine,

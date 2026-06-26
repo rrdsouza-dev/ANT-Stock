@@ -18,8 +18,11 @@ import { notify } from "./notifications.js";
 const BarcodeHistory = {
   _key: "antstock:localdb:barcodeHistory",
   list() {
-    try { return Object.values(JSON.parse(localStorage.getItem(this._key) || "{}")); }
-    catch { return []; }
+    try {
+      return Object.values(JSON.parse(localStorage.getItem(this._key) || "{}"));
+    } catch {
+      return [];
+    }
   },
   save(entry) {
     try {
@@ -29,12 +32,14 @@ const BarcodeHistory = {
       const keys = Object.keys(table).sort();
       if (keys.length > 20) delete table[keys[0]];
       localStorage.setItem(this._key, JSON.stringify(table));
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
   },
 };
 
-const SCANNER_MIN_SPEED_MS = 60;   // tempo máximo entre chars de um scanner
-const SCANNER_MIN_LEN = 3;         // tamanho mínimo para considerar código válido
+const SCANNER_MIN_SPEED_MS = 60; // tempo máximo entre chars de um scanner
+const SCANNER_MIN_LEN = 3; // tamanho mínimo para considerar código válido
 
 /**
  * Cria um widget de leitura de código de barras.
@@ -45,7 +50,12 @@ const SCANNER_MIN_LEN = 3;         // tamanho mínimo para considerar código v�
  *   opts.background {boolean} captura globalmente sem campo visível (default false)
  *   opts.label      {string}  texto do campo
  */
-export function BarcodeScanner({ onScan, autoFocus = true, background = false, label = "Código de barras / QR" } = {}) {
+export function BarcodeScanner({
+  onScan,
+  autoFocus = true,
+  background = false,
+  label = "Código de barras / QR",
+} = {}) {
   let buffer = "";
   let lastKeyTime = 0;
 
@@ -57,21 +67,31 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
     spellcheck: "false",
   });
 
-  const statusEl = el("div", { class: "barcode-status muted", text: "Aguardando leitura…" });
+  const statusEl = el("div", {
+    class: "barcode-status muted",
+    text: "Aguardando leitura…",
+  });
   const historyList = el("ul", { class: "barcode-history-list" });
 
   // ── Sample codes for simulation ──────────────────────────────
-  const SAMPLE_CODES = ["7891234567890", "7898765432100", "7890001122334", "SIM-TEST-001", "SIM-TEST-002"];
+  const SAMPLE_CODES = [
+    "7891234567890",
+    "7898765432100",
+    "7890001122334",
+    "SIM-TEST-001",
+    "SIM-TEST-002",
+  ];
   let simIdx = 0;
 
-  const simBtn = el("button", {
-    type: "button",
-    class: "btn btn-soft btn-simulate",
-    title: "Simular escaneamento (para testes sem leitor físico)",
-  }, [
-    el("i", { "data-lucide": "scan-line" }),
-    " Simular Escaneamento",
-  ]);
+  const simBtn = el(
+    "button",
+    {
+      type: "button",
+      class: "btn btn-soft btn-simulate",
+      title: "Simular escaneamento (para testes sem leitor físico)",
+    },
+    [el("i", { "data-lucide": "scan-line" }), " Simular Escaneamento"],
+  );
 
   simBtn.addEventListener("click", () => {
     const code = SAMPLE_CODES[simIdx % SAMPLE_CODES.length];
@@ -83,18 +103,31 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
   const wrapper = el("div", { class: "barcode-scanner-widget" }, [
     el("label", { class: "field-label", text: label }),
     el("div", { class: "barcode-row" }, [
-      el("div", { class: "barcode-icon" }, [el("i", { "data-lucide": "scan-barcode" })]),
+      el("div", { class: "barcode-icon" }, [
+        el("i", { "data-lucide": "scan-barcode" }),
+      ]),
       input,
-      el("button", {
-        class: "btn btn-soft",
-        title: "Limpar",
-        onclick: () => { input.value = ""; input.focus(); statusEl.textContent = "Aguardando leitura…"; },
-      }, [el("i", { "data-lucide": "x" })]),
+      el(
+        "button",
+        {
+          class: "btn btn-soft",
+          title: "Limpar",
+          onclick: () => {
+            input.value = "";
+            input.focus();
+            statusEl.textContent = "Aguardando leitura…";
+          },
+        },
+        [el("i", { "data-lucide": "x" })],
+      ),
     ]),
     el("div", { class: "barcode-simulate-row" }, [simBtn]),
     statusEl,
     el("div", { class: "barcode-history" }, [
-      el("div", { class: "barcode-history-title muted", text: "Últimas leituras" }),
+      el("div", {
+        class: "barcode-history-title muted",
+        text: "Últimas leituras",
+      }),
       historyList,
     ]),
   ]);
@@ -108,15 +141,29 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
       .slice(0, 6);
     historyList.innerHTML = "";
     if (history.length === 0) {
-      historyList.appendChild(el("li", { class: "muted", style: "padding:6px 0;font-size:0.82em" }, ["Nenhuma leitura ainda."]));
+      historyList.appendChild(
+        el("li", { class: "muted", style: "padding:6px 0;font-size:0.82em" }, [
+          "Nenhuma leitura ainda.",
+        ]),
+      );
       return;
     }
     for (const h of history) {
-      const li = el("li", { class: "barcode-history-item" + (h.found ? "" : " not-found") }, [
-        el("span", { class: "barcode-code", text: h.code }),
-        el("span", { class: "barcode-product", text: h.found ? h.productName : "Não encontrado" }),
-        el("span", { class: "barcode-time muted", text: h.timestamp.slice(11, 19) }),
-      ]);
+      const li = el(
+        "li",
+        { class: "barcode-history-item" + (h.found ? "" : " not-found") },
+        [
+          el("span", { class: "barcode-code", text: h.code }),
+          el("span", {
+            class: "barcode-product",
+            text: h.found ? h.productName : "Não encontrado",
+          }),
+          el("span", {
+            class: "barcode-time muted",
+            text: h.timestamp.slice(11, 19),
+          }),
+        ],
+      );
       historyList.appendChild(li);
     }
   }
@@ -124,6 +171,7 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
   refreshHistory();
 
   // ── Core scan handler ──────────────────────────────────────
+  //
   function handleCode(code) {
     code = code.trim();
     if (code.length < SCANNER_MIN_LEN) return;
@@ -163,7 +211,11 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
     let globalTimer = null;
     document.addEventListener("keydown", (e) => {
       // Ignore if focus is on a different input
-      if (document.activeElement !== document.body && document.activeElement !== wrapper) return;
+      if (
+        document.activeElement !== document.body &&
+        document.activeElement !== wrapper
+      )
+        return;
       const now = Date.now();
       if (now - lastKeyTime > 300) globalBuffer = "";
       lastKeyTime = now;

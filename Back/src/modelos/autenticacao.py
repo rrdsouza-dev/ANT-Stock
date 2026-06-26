@@ -2,8 +2,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy import PrimaryKeyConstraint
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Column, Field, Relationship, SQLModel
 
 from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, StatusCadastro, agora_utc
 
@@ -15,7 +16,16 @@ if TYPE_CHECKING:
 class Perfil(IdMixin, DatasMixin, table=True):
     __tablename__ = "perfis"  # type: ignore[assignment]
 
-    codigo: PerfilCodigo = Field(unique=True, index=True)
+    # name="perfil_codigo" matches the PostgreSQL type created in the migration.
+    # create_type=False tells SQLAlchemy NOT to issue CREATE TYPE — it already exists.
+    codigo: PerfilCodigo = Field(
+        sa_column=Column(
+            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
+            nullable=False,
+            unique=True,
+            index=True,
+        )
+    )
     nome: str = Field(max_length=40)
 
     usuarios: list["Usuario"] = Relationship(back_populates="perfil")
@@ -55,8 +65,21 @@ class CadastroPendente(IdMixin, DatasMixin, table=True):
     nome: str = Field(min_length=2, max_length=120)
     email: str = Field(unique=True, index=True, max_length=255)
     senha_hash: str = Field(max_length=255)
-    perfil_solicitado: PerfilCodigo = Field(index=True)
-    status: StatusCadastro = Field(default=StatusCadastro.PENDENTE, index=True)
+    perfil_solicitado: PerfilCodigo = Field(
+        sa_column=Column(
+            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
+            nullable=False,
+            index=True,
+        )
+    )
+    status: StatusCadastro = Field(
+        sa_column=Column(
+            SAEnum(StatusCadastro, name="status_cadastro", create_type=False),
+            nullable=False,
+            default=StatusCadastro.PENDENTE,
+            index=True,
+        )
+    )
 
 
 class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
@@ -65,7 +88,13 @@ class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     nome: str = Field(max_length=120)
     email: str = Field(max_length=255, index=True)
-    perfil: PerfilCodigo = Field(index=True)
+    perfil: PerfilCodigo = Field(
+        sa_column=Column(
+            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
+            nullable=False,
+            index=True,
+        )
+    )
     aprovado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
 
 
@@ -74,7 +103,13 @@ class HistoricoRecusa(IdMixin, DatasMixin, table=True):
 
     nome: str = Field(max_length=120)
     email: str = Field(max_length=255, index=True)
-    perfil_solicitado: PerfilCodigo = Field(index=True)
+    perfil_solicitado: PerfilCodigo = Field(
+        sa_column=Column(
+            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
+            nullable=False,
+            index=True,
+        )
+    )
     recusado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
     motivo: str | None = Field(default=None, max_length=500)
 

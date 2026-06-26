@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy import UniqueConstraint
-from sqlmodel import Field, Relationship
+from sqlmodel import Column, Field, Relationship
 
 from src.modelos.base import DatasMixin, IdMixin, StatusPedido
 
@@ -16,7 +17,14 @@ class Pedido(IdMixin, DatasMixin, table=True):
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     usuario_id: UUID | None = Field(default=None, foreign_key="usuarios.id", index=True)
-    status: StatusPedido = Field(default=StatusPedido.ABERTO, index=True)
+    status: StatusPedido = Field(
+        sa_column=Column(
+            SAEnum(StatusPedido, name="status_pedido", create_type=False),
+            nullable=False,
+            default=StatusPedido.ABERTO,
+            index=True,
+        )
+    )
     observacao: str | None = Field(default=None, max_length=500)
 
     deposito: Optional["Deposito"] = Relationship(back_populates="pedidos")

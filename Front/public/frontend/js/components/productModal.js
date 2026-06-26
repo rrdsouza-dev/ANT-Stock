@@ -346,7 +346,7 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
 }
 
 // ── Modal de Entrada ──────────────────────────────────────────────
-export function openEntryModal({ depositId, product = null, products = [], locations = [], onSave }) {
+export function openEntryModal({ depositId, product = null, products = [], categories = [], locations = [], onSave }) {
   const productSelect = product ? null : mkSelect(
     products.map(p => ({ id: p.id || p.id, nome: `${p.nome || p.name} (${p.codigo || p.code || ""})` })),
     null, "Selecione o produto *"
@@ -357,6 +357,7 @@ export function openEntryModal({ depositId, product = null, products = [], locat
     lote:       el("input", { class: "input", placeholder: "Número do lote" }),
     qty_caixa:  el("input", { class: "input", type: "number", min: "1", placeholder: "Qtd. por caixa" }),
     validade:   el("input", { class: "input", placeholder: "Validade (MM/AAAA)" }),
+    categoria:  mkSelect(categories, product?.categoria_id || null, "Sem categoria"),
     obs:        el("input", { class: "input", placeholder: "Observação (opcional)" }),
     torre:      mkSelect(TORRES,      "", "Torre"),
     corredor:   mkSelect(CORREDORES,  "", "Corredor"),
@@ -379,6 +380,7 @@ export function openEntryModal({ depositId, product = null, products = [], locat
       field("Qtd. por caixa", f.qty_caixa),
       field("Validade", f.validade),
     ]),
+    field("Categoria", f.categoria),
     el("div", { class: "modal-section" }, [
       el("h4", { class: "modal-section-title", text: "Localização" }),
       el("div", { class: "form-grid-2" }, [
@@ -419,13 +421,16 @@ export function openEntryModal({ depositId, product = null, products = [], locat
         observacao: f.obs.value.trim() || undefined,
       });
 
-      // Update product fields if filled
-      if (product?.id && (f.validade.value || f.qty_caixa.value || f.lote.value)) {
-        await API.updateProduct(depositId, product.id, {
-          lote: f.lote.value.trim() || undefined,
-          validade: f.validade.value.trim() || undefined,
-          quantidade_por_caixa: parseInt(f.qty_caixa.value) || undefined,
-        }).catch(() => {});
+      // Update product fields if filled (categoria, lote, validade, qty_caixa)
+      if (product?.id) {
+        const updates = {};
+        if (f.categoria.value) updates.categoria_id = f.categoria.value;
+        if (f.lote.value.trim()) updates.lote = f.lote.value.trim();
+        if (f.validade.value.trim()) updates.validade = f.validade.value.trim();
+        if (f.qty_caixa.value) updates.quantidade_por_caixa = parseInt(f.qty_caixa.value);
+        if (Object.keys(updates).length > 0) {
+          await API.updateProduct(depositId, product.id, updates).catch(() => {});
+        }
       }
 
       notify("Entrada registrada com sucesso!", "success");
@@ -442,16 +447,17 @@ export function openEntryModal({ depositId, product = null, products = [], locat
 }
 
 // ── Modal de Saída ────────────────────────────────────────────────
-export function openExitModal({ depositId, product = null, products = [], onSave }) {
+export function openExitModal({ depositId, product = null, products = [], categories = [], onSave }) {
   const productSelect = product ? null : mkSelect(
     products.map(p => ({ id: p.id, nome: `${p.nome || p.name} (${p.codigo || p.code || ""})` })),
     null, "Selecione o produto *"
   );
 
   const f = {
-    qty:     el("input", { class: "input", type: "number", min: "1", value: "1", placeholder: "Quantidade retirada *" }),
-    destino: el("input", { class: "input", placeholder: "Destino (ex: Sala 3, Professor João)" }),
-    obs:     el("input", { class: "input", placeholder: "Observação (opcional)" }),
+    qty:      el("input", { class: "input", type: "number", min: "1", value: "1", placeholder: "Quantidade retirada *" }),
+    categoria: mkSelect(categories, product?.categoria_id || null, "Sem categoria"),
+    destino:  el("input", { class: "input", placeholder: "Destino (ex: Sala 3, Professor João)" }),
+    obs:      el("input", { class: "input", placeholder: "Observação (opcional)" }),
   };
 
   const errEl = el("div", { class: "error-text" });
@@ -462,6 +468,7 @@ export function openExitModal({ depositId, product = null, products = [], onSave
   if (productSelect) bodyChildren.push(field("Produto *", productSelect));
   bodyChildren.push(
     field("Quantidade retirada *", f.qty),
+    field("Categoria", f.categoria),
     field("Destino", f.destino),
     field("Observação", f.obs),
     errEl,
@@ -492,6 +499,13 @@ export function openExitModal({ depositId, product = null, products = [], onSave
         destino_texto: f.destino.value.trim() || undefined,
         observacao: f.obs.value.trim() || undefined,
       });
+
+      // Update product category if user selected one
+      if (product?.id && f.categoria.value) {
+        await API.updateProduct(depositId, product.id, {
+          categoria_id: f.categoria.value,
+        }).catch(() => {});
+      }
       notify("Saída registrada com sucesso!", "success");
       close();
       onSave?.();
@@ -506,12 +520,12 @@ export function openExitModal({ depositId, product = null, products = [], onSave
 }
 
 // ── openMovementModal (compat com inventory.js) ───────────────────
-export function openMovementModal({ depositId, products = [], onSave, initialCode }) {
+export function openMovementModal({ depositId, products = [], categories = [], onSave, initialCode }) {
   const matched = initialCode ? products.find(p => p.code === initialCode || p.codigo === initialCode) : null;
   if (matched) {
-    _openFoundCard({ depositId, product: matched, catMap: {}, products, categories: [], onSave });
+    _openFoundCard({ depositId, product: matched, catMap: Object.fromEntries(categories.map(c => [c.id, c.nome])), products, categories, onSave });
   } else {
-    openEntryModal({ depositId, products, onSave });
+    openEntryModal({ depositId, products, categories, onSave });
   }
 }
 

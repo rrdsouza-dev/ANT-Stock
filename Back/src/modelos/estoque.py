@@ -2,8 +2,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy import UniqueConstraint
-from sqlmodel import Field, Relationship
+from sqlmodel import Column, Field, Relationship
 
 from src.modelos.autenticacao import UsuarioDeposito
 from src.modelos.base import DatasMixin, IdMixin, TipoDeposito, TipoMovimentacao, agora_utc
@@ -17,7 +18,13 @@ class Deposito(IdMixin, DatasMixin, table=True):
     __tablename__ = "depositos"  # type: ignore[assignment]
 
     nome: str = Field(min_length=1, max_length=120, unique=True, index=True)
-    tipo: TipoDeposito = Field(index=True)
+    tipo: TipoDeposito = Field(
+        sa_column=Column(
+            SAEnum(TipoDeposito, name="tipo_deposito", create_type=False),
+            nullable=False,
+            index=True,
+        )
+    )
     descricao: str | None = Field(default=None, max_length=500)
     ativo: bool = Field(default=True)
 
@@ -108,7 +115,13 @@ class Movimentacao(IdMixin, DatasMixin, table=True):
     pedido_id: UUID | None = Field(default=None, foreign_key="pedidos.id", index=True)
     origem_id: UUID | None = Field(default=None, foreign_key="localizacoes.id", index=True)
     destino_id: UUID | None = Field(default=None, foreign_key="localizacoes.id", index=True)
-    tipo: TipoMovimentacao = Field(index=True)
+    tipo: TipoMovimentacao = Field(
+        sa_column=Column(
+            SAEnum(TipoMovimentacao, name="tipo_movimentacao", create_type=False),
+            nullable=False,
+            index=True,
+        )
+    )
     quantidade: int = Field(gt=0)
     lote: str | None = Field(default=None, max_length=80)
     validade_lote: str | None = Field(default=None, max_length=20)

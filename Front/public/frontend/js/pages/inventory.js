@@ -17,6 +17,7 @@ export function InventoryPage(root, ctx) {
   AppShell(root, ctx.path, (content) => {
     let movementsData = [];
     let products = [];
+    let categories = [];
     let depositId = null;
 
     const head = el("div", { class: "page-head" }, [
@@ -29,10 +30,10 @@ export function InventoryPage(root, ctx) {
           onclick: guardedClick(() => openPreviewCard({ depositId, products: products.map(p => ({...p, nome: p.name, codigo: p.code})), categories: [], onSave: loadMovements })) }, [
           el("i", { "data-lucide": "eye" }), " Visualizar Card",
         ]),
-        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openEntryModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), onSave: loadMovements }); }) }, [
+        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openEntryModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), categories, onSave: loadMovements }); }) }, [
           el("i", { "data-lucide": "arrow-down-circle" }), " Entrada",
         ]),
-        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openExitModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), onSave: loadMovements }); }) }, [
+        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openExitModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), categories, onSave: loadMovements }); }) }, [
           el("i", { "data-lucide": "arrow-up-circle" }), " Saída",
         ]),
         el("button", { class: "btn btn-primary", onclick: guardedClick(() => { exportTxt(movementsData, "movimentacoes.txt"); notify("TXT exportado.", "success"); }) },
@@ -128,12 +129,14 @@ export function InventoryPage(root, ctx) {
           session.setDepositId(depositId);
         }
 
-        // Load movements AND products (for scanner lookup)
-        const [movements, prods] = await Promise.all([
+        // Load movements, products AND categories (for scan and manual entry/exit modals)
+        const [movements, prods, cats] = await Promise.all([
           API.movements(depositId, { limite: 200 }),
           API.products(depositId, { limite: 200 }).catch(() => []),
+          API.categories(depositId, { limite: 200 }).catch(() => []),
         ]);
         products = prods.map(p => ({ id: p.id, code: p.codigo || p.id.slice(0, 8), name: p.nome }));
+        categories = cats;
 
         movementsData = movements.map(m => ({
           id: m.id,

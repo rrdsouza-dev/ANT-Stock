@@ -12,7 +12,26 @@
 
 import { el, renderIcons } from "../utils/helpers.js";
 import { notify } from "./notifications.js";
-import { LocalDB } from "../services/localInventoryStore.js";
+
+// Safe wrapper: barcodeScanner uses only barcodeHistory from localInventoryStore
+// We define it inline to avoid crash if localInventoryStore has issues
+const BarcodeHistory = {
+  _key: "antstock:localdb:barcodeHistory",
+  list() {
+    try { return Object.values(JSON.parse(localStorage.getItem(this._key) || "{}")); }
+    catch { return []; }
+  },
+  save(entry) {
+    try {
+      const table = JSON.parse(localStorage.getItem(this._key) || "{}");
+      table[entry.id] = entry;
+      // keep last 20
+      const keys = Object.keys(table).sort();
+      if (keys.length > 20) delete table[keys[0]];
+      localStorage.setItem(this._key, JSON.stringify(table));
+    } catch { /* silent */ }
+  },
+};
 
 const SCANNER_MIN_SPEED_MS = 60;   // tempo máximo entre chars de um scanner
 const SCANNER_MIN_LEN = 3;         // tamanho mínimo para considerar código válido
@@ -84,7 +103,7 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
 
   // Load history
   function refreshHistory() {
-    const history = LocalDB.barcodeHistory.list()
+    const history = BarcodeHistory.list()
       .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
       .slice(0, 6);
     historyList.innerHTML = "";
@@ -111,6 +130,15 @@ export function BarcodeScanner({ onScan, autoFocus = true, background = false, l
 
     statusEl.textContent = `Lido: ${code}`;
     statusEl.className = "barcode-status scanning";
+
+    // Save to local history
+    BarcodeHistory.save({
+      id: Date.now().toString(),
+      code,
+      timestamp: new Date().toISOString(),
+      found: false,
+      productName: "",
+    });
 
     onScan?.({ code, refresh: refreshHistory });
 

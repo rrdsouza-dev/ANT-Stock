@@ -70,6 +70,7 @@ class Produto(IdMixin, DatasMixin, table=True):
     quantidade_minima: int = Field(default=0, ge=0)
     unidade_medida: str | None = Field(default=None, max_length=30)
     quantidade_por_caixa: int | None = Field(default=None, ge=1)
+    lote: str | None = Field(default=None, max_length=80)
     validade: str | None = Field(default=None, max_length=20)
     observacoes: str | None = Field(default=None, max_length=500)
     ativo: bool = Field(default=True)
@@ -109,6 +110,9 @@ class Movimentacao(IdMixin, DatasMixin, table=True):
     destino_id: UUID | None = Field(default=None, foreign_key="localizacoes.id", index=True)
     tipo: TipoMovimentacao = Field(index=True)
     quantidade: int = Field(gt=0)
+    lote: str | None = Field(default=None, max_length=80)
+    validade_lote: str | None = Field(default=None, max_length=20)
+    destino_texto: str | None = Field(default=None, max_length=200)
     observacao: str | None = Field(default=None, max_length=500)
     movimentado_em: datetime = Field(default_factory=agora_utc)
 

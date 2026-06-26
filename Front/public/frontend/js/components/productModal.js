@@ -59,6 +59,7 @@ export function openProductModal({ depositId, product = null, categories = [], l
   const f = {
     nome:       el("input", { class: "input", value: product?.nome || "", placeholder: "Nome do produto *" }),
     codigo:     el("input", { class: "input", value: product?.codigo || "", placeholder: "EAN / SKU / QR Code" }),
+    lote:       el("input", { class: "input", value: product?.lote || "", placeholder: "Número do lote" }),
     qtd_min:    el("input", { class: "input", type: "number", min: "0", value: String(product?.quantidade_minima ?? 0) }),
     unidade:    mkSelect(UNIDADES, product?.unidade_medida || "", "Unidade de medida"),
     qty_caixa:  el("input", { class: "input", type: "number", min: "1", value: product?.quantidade_por_caixa || "" }),
@@ -85,12 +86,12 @@ export function openProductModal({ depositId, product = null, categories = [], l
         field("Nome *", f.nome),
         field("Código (EAN / SKU / QR)", f.codigo),
         el("div", { class: "form-grid-2" }, [
+          field("Lote", f.lote),
           field("Unidade de medida", f.unidade),
-          field("Qtd. por caixa", f.qty_caixa),
         ]),
         el("div", { class: "form-grid-2" }, [
+          field("Qtd. por caixa", f.qty_caixa),
           field("Validade", f.validade),
-          field("Qtd. mínima alerta", f.qtd_min),
         ]),
         field("Categoria", f.categoria),
         field("Observações", f.obs),
@@ -127,6 +128,7 @@ export function openProductModal({ depositId, product = null, categories = [], l
         localizacao_id:      f.localizacao.value || undefined,
         unidade_medida:      f.unidade.value || undefined,
         quantidade_por_caixa: parseInt(f.qty_caixa.value) || undefined,
+        lote:                f.lote.value.trim() || undefined,
         validade:            f.validade.value.trim() || undefined,
         observacoes:         f.obs.value.trim() || undefined,
       };
@@ -189,6 +191,7 @@ function _openFoundCard({ depositId, product, catMap, products, categories, loca
         infoRow("Categoria",        catMap[product.categoria_id] || "—"),
         infoRow("Quantidade",       qty),
         infoRow("Unidade de medida", product.unidade_medida || "—"),
+        infoRow("Lote",             product.lote || "—"),
         infoRow("Validade",          product.validade || "—"),
         infoRow("Localização",       product.localizacao_id || "—"),
         infoRow("Observações",       product.observacoes || "—"),
@@ -225,6 +228,7 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
     codigo:    el("input", { class: "input", value: code, placeholder: "Código" }),
     categoria: mkSelect(categories, null, "Sem categoria"),
     unidade:   mkSelect(UNIDADES, "", "Unidade de medida"),
+    lote:      el("input", { class: "input", placeholder: "Número do lote" }),
     qty_caixa: el("input", { class: "input", type: "number", min: "1", placeholder: "Qtd. por caixa" }),
     quantidade: el("input", { class: "input", type: "number", min: "0", value: "1", placeholder: "Quantidade inicial" }),
     validade:  el("input", { class: "input", placeholder: "Validade (MM/AAAA)" }),
@@ -263,7 +267,10 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
         field("Unidade de medida", f.unidade),
       ]),
       el("div", { class: "form-grid-2" }, [
+        field("Lote", f.lote),
         field("Qtd. por caixa", f.qty_caixa),
+      ]),
+      el("div", { class: "form-grid-2" }, [
         field("Validade", f.validade),
       ]),
       el("div", { class: "modal-section" }, [
@@ -308,6 +315,7 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
         categoria_id:        f.categoria.value || undefined,
         unidade_medida:      f.unidade.value || undefined,
         quantidade_por_caixa: parseInt(f.qty_caixa.value) || undefined,
+        lote:                f.lote.value.trim() || undefined,
         validade:            f.validade.value.trim() || undefined,
         observacoes:         f.obs.value.trim() || undefined,
       });
@@ -345,14 +353,15 @@ export function openEntryModal({ depositId, product = null, products = [], locat
   );
 
   const f = {
-    qty:       el("input", { class: "input", type: "number", min: "1", value: "1", placeholder: "Quantidade recebida *" }),
-    qty_caixa: el("input", { class: "input", type: "number", min: "1", placeholder: "Qtd. por caixa" }),
-    validade:  el("input", { class: "input", placeholder: "Validade (MM/AAAA)" }),
-    obs:       el("input", { class: "input", placeholder: "Observação (opcional)" }),
-    torre:     mkSelect(TORRES,      "", "Torre"),
-    corredor:  mkSelect(CORREDORES,  "", "Corredor"),
-    prateleira:mkSelect(PRATELEIRAS, "", "Prateleira"),
-    posicao:   mkSelect(POSICOES,    "", "Posição"),
+    qty:        el("input", { class: "input", type: "number", min: "1", value: "1", placeholder: "Quantidade recebida *" }),
+    lote:       el("input", { class: "input", placeholder: "Número do lote" }),
+    qty_caixa:  el("input", { class: "input", type: "number", min: "1", placeholder: "Qtd. por caixa" }),
+    validade:   el("input", { class: "input", placeholder: "Validade (MM/AAAA)" }),
+    obs:        el("input", { class: "input", placeholder: "Observação (opcional)" }),
+    torre:      mkSelect(TORRES,      "", "Torre"),
+    corredor:   mkSelect(CORREDORES,  "", "Corredor"),
+    prateleira: mkSelect(PRATELEIRAS, "", "Prateleira"),
+    posicao:    mkSelect(POSICOES,    "", "Posição"),
   };
 
   const errEl = el("div", { class: "error-text" });
@@ -364,9 +373,12 @@ export function openEntryModal({ depositId, product = null, products = [], locat
   bodyChildren.push(
     el("div", { class: "form-grid-2" }, [
       field("Quantidade recebida *", f.qty),
-      field("Qtd. por caixa", f.qty_caixa),
+      field("Lote", f.lote),
     ]),
-    field("Validade", f.validade),
+    el("div", { class: "form-grid-2" }, [
+      field("Qtd. por caixa", f.qty_caixa),
+      field("Validade", f.validade),
+    ]),
     el("div", { class: "modal-section" }, [
       el("h4", { class: "modal-section-title", text: "Localização" }),
       el("div", { class: "form-grid-2" }, [
@@ -402,12 +414,15 @@ export function openEntryModal({ depositId, product = null, products = [], locat
       await API.stockEntry(depositId, {
         produto_id: productId,
         quantidade: qty,
+        lote: f.lote.value.trim() || undefined,
+        validade_lote: f.validade.value.trim() || undefined,
         observacao: f.obs.value.trim() || undefined,
       });
 
       // Update product fields if filled
-      if (product?.id && (f.validade.value || f.qty_caixa.value)) {
+      if (product?.id && (f.validade.value || f.qty_caixa.value || f.lote.value)) {
         await API.updateProduct(depositId, product.id, {
+          lote: f.lote.value.trim() || undefined,
           validade: f.validade.value.trim() || undefined,
           quantidade_por_caixa: parseInt(f.qty_caixa.value) || undefined,
         }).catch(() => {});
@@ -471,11 +486,11 @@ export function openExitModal({ depositId, product = null, products = [], onSave
     errEl.textContent = "";
     saveBtn.disabled = true;
     try {
-      const obs = [f.destino.value.trim() ? "Destino: " + f.destino.value.trim() : "", f.obs.value.trim()].filter(Boolean).join(" | ");
       await API.stockExit(depositId, {
         produto_id: productId,
         quantidade: qty,
-        observacao: obs || undefined,
+        destino_texto: f.destino.value.trim() || undefined,
+        observacao: f.obs.value.trim() || undefined,
       });
       notify("Saída registrada com sucesso!", "success");
       close();

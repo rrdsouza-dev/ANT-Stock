@@ -94,6 +94,7 @@ create table if not exists public.produtos (
     quantidade_minima    integer not null default 0 check (quantidade_minima >= 0),
     unidade_medida       varchar(30),
     quantidade_por_caixa integer check (quantidade_por_caixa >= 1),
+    lote                 varchar(80),
     validade             varchar(20),
     observacoes          varchar(500),
     ativo                boolean not null default true
@@ -145,6 +146,9 @@ create table if not exists public.movimentacoes (
     destino_id      uuid references public.localizacoes(id) on delete set null,
     tipo            public.tipo_movimentacao not null,
     quantidade      integer not null check (quantidade > 0),
+    lote            varchar(80),
+    validade_lote   varchar(20),
+    destino_texto   varchar(200),
     observacao      varchar(500),
     movimentado_em  timestamptz not null default now()
 );

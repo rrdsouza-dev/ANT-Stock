@@ -20,6 +20,16 @@
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  CONFIGURAÇÃO DA API — EDITE ESTA LINHA ANTES DE PUBLICAR   ║
+       ║  Coloque o endereço do backend (Railway, VPS, etc.)         ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <script>
+    // Em desenvolvimento local: deixe como está (usa localhost:8000)
+    // Em produção (Hostinger + Railway): troque pelo URL do seu backend
+    // Exemplo: window.ANT_API_BASE_URL = "https://ant-stock.up.railway.app/api/v1";
+    window.ANT_API_BASE_URL = window.ANT_API_BASE_URL || "http://localhost:8000/api/v1";
+  </script>
 </head>
 <body>
   <div id="app"></div>

@@ -5,12 +5,11 @@ import { el, renderIcons, debounce } from "../utils/helpers.js";
 import { AppShell } from "./_shell.js";
 import { API } from "../services/api.js";
 import { session } from "../services/store.js";
-import { LocalDB } from "../services/localInventoryStore.js";
 import { notify } from "../components/notifications.js";
 import { guardedClick, sanitize } from "../utils/security.js";
 import { exportExcel } from "../utils/exportExcel.js";
 import { exportTxt } from "../utils/exportTxt.js";
-import { openProductModal, LocationDetailBadge, openMovementModal } from "../components/productModal.js";
+import { openProductModal, openMovementModal } from "../components/productModal.js";
 import { openModal } from "../components/modal.js";
 
 export function ProductsPage(root, ctx) {
@@ -74,15 +73,12 @@ export function ProductsPage(root, ctx) {
       const statusClass = p.status === "Em estoque" ? "chip-success"
         : p.status === "Estoque baixo" ? "chip-warning" : "chip-danger";
 
-      const locBadge = LocationDetailBadge(p.id);
-
       const card = el("article", { class: "product-card" }, [
         el("div", { class: "pc-head" }, [
           el("div", {}, [
             el("div", { class: "pc-code", text: p.code }),
             el("div", { class: "pc-name", text: p.name }),
             el("div", { class: "pc-cat", text: p.category }),
-            locBadge || el("span"),
           ]),
           el("span", { class: `chip ${statusClass}`, text: p.status }),
         ]),
@@ -118,13 +114,18 @@ export function ProductsPage(root, ctx) {
     }
 
     function openEdit(p) {
-      // Rebuild raw product object expected by modal
       const raw = {
         id: p.id,
         nome: p.name,
         codigo: p.code !== p.id.slice(0, 8) ? p.code : undefined,
         quantidade_minima: p.minQuantity,
         categoria_id: allCategories.find(c => c.nome === p.category)?.id,
+        unidade_medida: p.unidade_medida,
+        quantidade_por_caixa: p.quantidade_por_caixa,
+        lote: p.lote,
+        validade: p.validade,
+        observacoes: p.observacoes,
+        localizacao_id: p.localizacao_id,
       };
       openProductModal({
         depositId,
@@ -147,9 +148,6 @@ export function ProductsPage(root, ctx) {
         danger: true,
         onConfirm: async () => {
           await API.deleteProduct(depositId, p.id);
-          LocalDB.locationDetails.list()
-            .filter(d => d.product_id === p.id)
-            .forEach(d => LocalDB.locationDetails.delete(d.id));
           notify("Produto removido.", "warning");
           loadProducts();
         },
@@ -206,6 +204,12 @@ export function ProductsPage(root, ctx) {
             category: catName,
             quantity: totalQty,
             minQuantity: item.quantidade_minima,
+            unidade_medida: item.unidade_medida,
+            quantidade_por_caixa: item.quantidade_por_caixa,
+            lote: item.lote,
+            validade: item.validade,
+            observacoes: item.observacoes,
+            localizacao_id: item.localizacao_id,
             status,
             updated: item.atualizado_em ? item.atualizado_em.slice(0, 10) : "",
           };

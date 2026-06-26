@@ -58,6 +58,7 @@ class ProdutoEntrada(BaseModel):
     quantidade_minima: int = Field(default=0, ge=0)
     unidade_medida: str | None = Field(default=None, max_length=30)
     quantidade_por_caixa: int | None = Field(default=None, ge=1)
+    lote: str | None = Field(default=None, max_length=80)
     validade: str | None = Field(default=None, max_length=20)
     observacoes: str | None = Field(default=None, max_length=500)
 
@@ -70,6 +71,7 @@ class ProdutoAtualizar(BaseModel):
     quantidade_minima: int | None = Field(default=None, ge=0)
     unidade_medida: str | None = Field(default=None, max_length=30)
     quantidade_por_caixa: int | None = Field(default=None, ge=1)
+    lote: str | None = Field(default=None, max_length=80)
     validade: str | None = Field(default=None, max_length=20)
     observacoes: str | None = Field(default=None, max_length=500)
     ativo: bool | None = None
@@ -102,6 +104,9 @@ class MovimentacaoEntrada(BaseModel):
     pedido_id: UUID | None = None
     origem_id: UUID | None = None
     destino_id: UUID | None = None
+    lote: str | None = Field(default=None, max_length=80)
+    validade_lote: str | None = Field(default=None, max_length=20)
+    destino_texto: str | None = Field(default=None, max_length=200)
     observacao: str | None = Field(default=None, max_length=500)
 
 
@@ -112,6 +117,9 @@ class MovimentacaoOperacaoEntrada(BaseModel):
     pedido_id: UUID | None = None
     origem_id: UUID | None = None
     destino_id: UUID | None = None
+    lote: str | None = Field(default=None, max_length=80)
+    validade_lote: str | None = Field(default=None, max_length=20)
+    destino_texto: str | None = Field(default=None, max_length=200)
     observacao: str | None = Field(default=None, max_length=500)
 
 
@@ -123,6 +131,9 @@ class MovimentacaoCodigoEntrada(BaseModel):
     pedido_id: UUID | None = None
     origem_id: UUID | None = None
     destino_id: UUID | None = None
+    lote: str | None = Field(default=None, max_length=80)
+    validade_lote: str | None = Field(default=None, max_length=20)
+    destino_texto: str | None = Field(default=None, max_length=200)
     observacao: str | None = Field(default=None, max_length=500)
 
 

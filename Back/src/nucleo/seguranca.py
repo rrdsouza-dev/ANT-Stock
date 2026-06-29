@@ -6,15 +6,15 @@ from jwt import InvalidTokenError
 from passlib.context import CryptContext
 from src.nucleo.configuracao import configuracao
 
-contexto_senha = CryptContext(schemes=["bcrypt"], deprecated="auto")
+_ctx_senha = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def gerar_hash(senha: str) -> str:
-    return cast(str, contexto_senha.hash(senha))
+    return cast(str, _ctx_senha.hash(senha))
 
 
 def checar_senha(senha: str, senha_hash: str) -> bool:
-    return cast(bool, contexto_senha.verify(senha, senha_hash))
+    return cast(bool, _ctx_senha.verify(senha, senha_hash))
 
 
 def criar_token(usuario_id: str, dados: dict[str, Any] | None = None) -> str:

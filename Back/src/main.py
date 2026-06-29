@@ -24,11 +24,10 @@ from src.nucleo.logs import configurar_logs
 
 config = configuracao()
 configurar_logs(config)
-ExceptionHandler = Any
 
 
 @asynccontextmanager
-async def ciclo_vida(_: FastAPI) -> AsyncIterator[None]:
+async def _ciclo_vida(_: FastAPI) -> AsyncIterator[None]:
     yield
     await engine.dispose()
 
@@ -36,21 +35,22 @@ async def ciclo_vida(_: FastAPI) -> AsyncIterator[None]:
 def criar_app() -> FastAPI:
     app = FastAPI(
         title=config.nome_app,
-        description="Backend leve do sistema WMS ANT.",
+        description="Backend WMS ANT Stock.",
         version=config.versao_app,
         debug=config.depurar,
-        lifespan=ciclo_vida,
+        lifespan=_ciclo_vida,
     )
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origem) for origem in config.origens_cors],
+        allow_origins=[str(o) for o in config.origens_cors],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
     app.middleware("http")(id_requisicao)
 
+    ExceptionHandler = Any
     app.add_exception_handler(ErroApp, cast(ExceptionHandler, tratar_erro_app))
     app.add_exception_handler(StarletteHTTPException, cast(ExceptionHandler, tratar_erro_http))
     app.add_exception_handler(ValidationError, cast(ExceptionHandler, tratar_validacao))

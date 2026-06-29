@@ -12,18 +12,22 @@ if TYPE_CHECKING:
     from src.modelos.estoque import Deposito, Movimentacao, Produto
 
 
+def _enum_status_pedido() -> SAEnum:
+    return SAEnum(
+        StatusPedido,
+        name="status_pedido",
+        create_type=False,
+        values_callable=lambda e: [m.value for m in e],
+    )
+
+
 class Pedido(IdMixin, DatasMixin, table=True):
     __tablename__ = "pedidos"  # type: ignore[assignment]
 
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     usuario_id: UUID | None = Field(default=None, foreign_key="usuarios.id", index=True)
     status: StatusPedido = Field(
-        sa_column=Column(
-            SAEnum(StatusPedido, name="status_pedido", create_type=False),
-            nullable=False,
-            default=StatusPedido.ABERTO,
-            index=True,
-        )
+        sa_column=Column(_enum_status_pedido(), nullable=False, default=StatusPedido.ABERTO, index=True)
     )
     observacao: str | None = Field(default=None, max_length=500)
 

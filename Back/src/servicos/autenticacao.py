@@ -25,9 +25,10 @@ from src.repositorios.autenticacao import (
     RepositorioUsuarioDeposito,
 )
 
-NOMES_PERFIL = {
+_NOMES_PERFIL = {
     PerfilCodigo.PROFESSOR: "Professor",
     PerfilCodigo.GESTAO: "Gestao",
+    PerfilCodigo.ADM: "Administrador",
 }
 
 
@@ -39,24 +40,21 @@ class ServicoAutenticacao:
         self.codigos = RepositorioCodigoRecuperacao(sessao)
 
     async def cadastrar(self, dados: CadastroEntrada) -> TokenSaida:
-        existente = await self.usuarios.por_email(str(dados.email))
-        if existente:
+        if await self.usuarios.por_email(str(dados.email)):
             raise ErroApp("Email ja cadastrado.", status_code=409, codigo="email_em_uso")
 
-        perfil = await self._perfil(dados.perfil)
-        usuario = await self.usuarios.criar(
-            {
-                "email": str(dados.email).lower(),
-                "nome": dados.nome,
-                "senha_hash": gerar_hash(dados.senha),
-                "provedor": "local",
-                "perfil_id": perfil.id,
-                "sala": dados.sala if dados.perfil == PerfilCodigo.PROFESSOR else None,
-                "ativo": True,
-            }
-        )
+        perfil = await self._obter_ou_criar_perfil(dados.perfil)
+        usuario = await self.usuarios.criar({
+            "email": str(dados.email).lower(),
+            "nome": dados.nome,
+            "senha_hash": gerar_hash(dados.senha),
+            "provedor": "local",
+            "perfil_id": perfil.id,
+            "sala": dados.sala if dados.perfil == PerfilCodigo.PROFESSOR else None,
+            "ativo": True,
+        })
         usuario.perfil = perfil
-        return self._resposta_token(usuario)
+        return self._gerar_token(usuario)
 
     async def entrar(self, dados: EntrarEntrada) -> TokenSaida:
         usuario = await self.usuarios.por_email(str(dados.email))
@@ -64,7 +62,7 @@ class ServicoAutenticacao:
             raise ErroApp("Email ou senha invalidos.", status_code=401, codigo="credenciais_invalidas")
         if not usuario.ativo:
             raise ErroApp("Usuario inativo.", status_code=403, codigo="usuario_inativo")
-        return self._resposta_token(usuario)
+        return self._gerar_token(usuario)
 
     async def recuperar_senha(self, dados: RecuperarSenhaEntrada) -> str:
         usuario = await self.usuarios.por_email(str(dados.email))
@@ -72,60 +70,63 @@ class ServicoAutenticacao:
             return "Se o email existir, um codigo sera enviado."
 
         codigo = f"{randbelow(1_000_000):06d}"
-        await self.codigos.criar(
-            {
-                "usuario_id": usuario.id,
-                "codigo_hash": self._hash_codigo(codigo),
-                "expira_em": agora_utc() + timedelta(minutes=15),
-                "usado": False,
-                "tentativas": 0,
-            }
-        )
-        # Em producao, este codigo deve ser enviado por email. A resposta facilita testes locais.
+        await self.codigos.criar({
+            "usuario_id": usuario.id,
+            "codigo_hash": self._hash_codigo(codigo),
+            "expira_em": agora_utc() + timedelta(minutes=15),
+            "usado": False,
+            "tentativas": 0,
+        })
+        # Em producao enviar por email. Retorno facilita testes locais.
         return f"Codigo de recuperacao gerado. Use {codigo} em ambiente local."
 
     async def validar_codigo(self, dados: ValidarCodigoEntrada) -> None:
-        usuario, registro = await self._registro_codigo(str(dados.email), dados.codigo)
+        usuario, registro = await self._validar_registro(str(dados.email), dados.codigo)
         if registro.usuario_id != usuario.id:
             raise ErroApp("Codigo invalido.", status_code=400, codigo="codigo_invalido")
 
     async def nova_senha(self, dados: NovaSenhaEntrada) -> None:
-        usuario, registro = await self._registro_codigo(str(dados.email), dados.codigo)
+        usuario, registro = await self._validar_registro(str(dados.email), dados.codigo)
         await self.usuarios.editar(usuario, {"senha_hash": gerar_hash(dados.nova_senha)})
         await self.codigos.editar(registro, {"usado": True})
 
-    async def _perfil(self, codigo: PerfilCodigo) -> Perfil:
+    async def verificar_acesso(self, usuario_id: UUID, deposito_id: UUID) -> bool:
+        return await self.usuario_depositos.existe(usuario_id, deposito_id)
+
+    # ── Métodos privados ────────────────────────────────────────
+
+    async def _obter_ou_criar_perfil(self, codigo: PerfilCodigo) -> Perfil:
         perfil = await self.perfis.por_codigo(codigo)
         if perfil:
             return perfil
-        return await self.perfis.criar({"codigo": codigo, "nome": NOMES_PERFIL[codigo]})
+        return await self.perfis.criar({"codigo": codigo, "nome": _NOMES_PERFIL[codigo]})
 
-    async def _registro_codigo(self, email: str, codigo: str):
+    async def _validar_registro(self, email: str, codigo: str):
         usuario = await self.usuarios.por_email(email)
         if not usuario:
             raise ErroApp("Codigo invalido.", status_code=400, codigo="codigo_invalido")
+
         registro = await self.codigos.ultimo_ativo(usuario.id)
         agora = agora_utc()
+
         if not registro or registro.expira_em < agora:
             raise ErroApp("Codigo expirado.", status_code=400, codigo="codigo_expirado")
         if registro.bloqueado_ate and registro.bloqueado_ate > agora:
             raise ErroApp("Codigo temporariamente bloqueado.", status_code=429, codigo="codigo_bloqueado")
         if registro.codigo_hash != self._hash_codigo(codigo):
             tentativas = registro.tentativas + 1
-            dados = {"tentativas": tentativas}
+            patch = {"tentativas": tentativas}
             if tentativas >= 3:
-                dados["bloqueado_ate"] = agora + timedelta(minutes=5)
-            await self.codigos.editar(registro, dados)
+                patch["bloqueado_ate"] = agora + timedelta(minutes=5)
+            await self.codigos.editar(registro, patch)
             raise ErroApp("Codigo invalido.", status_code=400, codigo="codigo_invalido")
+
         return usuario, registro
 
     def _hash_codigo(self, codigo: str) -> str:
-        return sha256(codigo.encode("utf-8")).hexdigest()
+        return sha256(codigo.encode()).hexdigest()
 
-    async def verificar_acesso(self, usuario_id: UUID, deposito_id: UUID) -> bool:
-        return await self.usuario_depositos.existe(usuario_id, deposito_id)
-
-    def _resposta_token(self, usuario: Usuario) -> TokenSaida:
+    def _gerar_token(self, usuario: Usuario) -> TokenSaida:
         perfil = usuario.perfil.codigo if usuario.perfil else None
         token = criar_token(str(usuario.id), {"email": usuario.email, "perfil": perfil})
         return TokenSaida(token=token, usuario=UsuarioSaida.de_modelo(usuario))

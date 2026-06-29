@@ -1,3 +1,4 @@
+import ssl
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -5,21 +6,20 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from src.nucleo.configuracao import configuracao
 
 
+def _ssl_context() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
 def _criar_engine():
-    config = configuracao()
-    url = config.url_banco
-
-    # asyncpg não aceita ?ssl=require na query string — precisa de connect_args
+    url = configuracao().url_banco.split("?")[0]
     connect_args = {}
-    if "ssl=require" in url or "supabase.co" in url:
-        import ssl as _ssl
-        ctx = _ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = _ssl.CERT_NONE  # Supabase usa certificado auto-assinado no pooler
-        connect_args["ssl"] = ctx
-
+    if "supabase.co" in url or "pooler.supabase" in url:
+        connect_args["ssl"] = _ssl_context()
     return create_async_engine(
-        url.split("?")[0],  # remove query string — asyncpg não a suporta
+        url,
         connect_args=connect_args,
         pool_pre_ping=True,
         pool_size=5,

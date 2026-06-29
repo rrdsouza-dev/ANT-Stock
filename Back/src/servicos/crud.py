@@ -34,8 +34,8 @@ class ServicoCrud(Generic[ModeloT]):
 
     async def editar(self, item_id: UUID, dados: dict[str, Any]) -> ModeloT:
         item = await self.buscar(item_id)
-        dados_limpos = {campo: valor for campo, valor in dados.items() if valor is not None}
-        return await self.repositorio.editar(item, dados_limpos)
+        limpos = {k: v for k, v in dados.items() if v is not None}
+        return await self.repositorio.editar(item, limpos)
 
     async def remover(self, item_id: UUID) -> None:
         item = await self.buscar(item_id)

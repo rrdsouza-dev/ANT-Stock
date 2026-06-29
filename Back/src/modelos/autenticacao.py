@@ -13,19 +13,32 @@ if TYPE_CHECKING:
     from src.modelos.pedido import Pedido
 
 
+# Reutilizado em todas as colunas que referenciam o tipo perfil_codigo do PostgreSQL.
+# values_callable garante que o SQLAlchemy use o .value do StrEnum ("gestao")
+# em vez do .name ("GESTAO"), evitando o erro:
+#   invalid input value for enum perfil_codigo: "GESTAO"
+def _enum_perfil() -> SAEnum:
+    return SAEnum(
+        PerfilCodigo,
+        name="perfil_codigo",
+        create_type=False,
+        values_callable=lambda e: [m.value for m in e],
+    )
+
+
+def _enum_status_cadastro() -> SAEnum:
+    return SAEnum(
+        StatusCadastro,
+        name="status_cadastro",
+        create_type=False,
+        values_callable=lambda e: [m.value for m in e],
+    )
+
+
 class Perfil(IdMixin, DatasMixin, table=True):
     __tablename__ = "perfis"  # type: ignore[assignment]
 
-    # name="perfil_codigo" matches the PostgreSQL type created in the migration.
-    # create_type=False tells SQLAlchemy NOT to issue CREATE TYPE — it already exists.
-    codigo: PerfilCodigo = Field(
-        sa_column=Column(
-            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
-            nullable=False,
-            unique=True,
-            index=True,
-        )
-    )
+    codigo: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, unique=True, index=True))
     nome: str = Field(max_length=40)
 
     usuarios: list["Usuario"] = Relationship(back_populates="perfil")
@@ -65,16 +78,10 @@ class CadastroPendente(IdMixin, DatasMixin, table=True):
     nome: str = Field(min_length=2, max_length=120)
     email: str = Field(unique=True, index=True, max_length=255)
     senha_hash: str = Field(max_length=255)
-    perfil_solicitado: PerfilCodigo = Field(
-        sa_column=Column(
-            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
-            nullable=False,
-            index=True,
-        )
-    )
+    perfil_solicitado: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, index=True))
     status: StatusCadastro = Field(
         sa_column=Column(
-            SAEnum(StatusCadastro, name="status_cadastro", create_type=False),
+            _enum_status_cadastro(),
             nullable=False,
             default=StatusCadastro.PENDENTE,
             index=True,
@@ -88,13 +95,7 @@ class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     nome: str = Field(max_length=120)
     email: str = Field(max_length=255, index=True)
-    perfil: PerfilCodigo = Field(
-        sa_column=Column(
-            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
-            nullable=False,
-            index=True,
-        )
-    )
+    perfil: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, index=True))
     aprovado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
 
 
@@ -103,13 +104,7 @@ class HistoricoRecusa(IdMixin, DatasMixin, table=True):
 
     nome: str = Field(max_length=120)
     email: str = Field(max_length=255, index=True)
-    perfil_solicitado: PerfilCodigo = Field(
-        sa_column=Column(
-            SAEnum(PerfilCodigo, name="perfil_codigo", create_type=False),
-            nullable=False,
-            index=True,
-        )
-    )
+    perfil_solicitado: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, index=True))
     recusado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
     motivo: str | None = Field(default=None, max_length=500)
 

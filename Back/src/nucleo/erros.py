@@ -42,10 +42,10 @@ async def tratar_validacao(_: Request, exc: ValidationError) -> ORJSONResponse:
 
 
 async def tratar_integridade(_: Request, exc: IntegrityError) -> ORJSONResponse:
-    logger.warning("Erro de integridade no banco: {}", exc.orig)
+    logger.warning("Erro de integridade: {}", exc.orig)
     return ORJSONResponse(
         status_code=status.HTTP_409_CONFLICT,
-        content={"detalhe": "Registro duplicado ou relacionado a dados invalidos.", "codigo": "erro_integridade"},
+        content={"detalhe": "Registro duplicado ou violacao de integridade.", "codigo": "erro_integridade"},
     )
 
 

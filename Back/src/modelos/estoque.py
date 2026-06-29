@@ -14,17 +14,29 @@ if TYPE_CHECKING:
     from src.modelos.pedido import ItemPedido, Pedido
 
 
+def _enum_tipo_deposito() -> SAEnum:
+    return SAEnum(
+        TipoDeposito,
+        name="tipo_deposito",
+        create_type=False,
+        values_callable=lambda e: [m.value for m in e],
+    )
+
+
+def _enum_tipo_movimentacao() -> SAEnum:
+    return SAEnum(
+        TipoMovimentacao,
+        name="tipo_movimentacao",
+        create_type=False,
+        values_callable=lambda e: [m.value for m in e],
+    )
+
+
 class Deposito(IdMixin, DatasMixin, table=True):
     __tablename__ = "depositos"  # type: ignore[assignment]
 
     nome: str = Field(min_length=1, max_length=120, unique=True, index=True)
-    tipo: TipoDeposito = Field(
-        sa_column=Column(
-            SAEnum(TipoDeposito, name="tipo_deposito", create_type=False),
-            nullable=False,
-            index=True,
-        )
-    )
+    tipo: TipoDeposito = Field(sa_column=Column(_enum_tipo_deposito(), nullable=False, index=True))
     descricao: str | None = Field(default=None, max_length=500)
     ativo: bool = Field(default=True)
 
@@ -115,13 +127,7 @@ class Movimentacao(IdMixin, DatasMixin, table=True):
     pedido_id: UUID | None = Field(default=None, foreign_key="pedidos.id", index=True)
     origem_id: UUID | None = Field(default=None, foreign_key="localizacoes.id", index=True)
     destino_id: UUID | None = Field(default=None, foreign_key="localizacoes.id", index=True)
-    tipo: TipoMovimentacao = Field(
-        sa_column=Column(
-            SAEnum(TipoMovimentacao, name="tipo_movimentacao", create_type=False),
-            nullable=False,
-            index=True,
-        )
-    )
+    tipo: TipoMovimentacao = Field(sa_column=Column(_enum_tipo_movimentacao(), nullable=False, index=True))
     quantidade: int = Field(gt=0)
     lote: str | None = Field(default=None, max_length=80)
     validade_lote: str | None = Field(default=None, max_length=20)

@@ -15,7 +15,7 @@ export const API = {
       body: body ? JSON.stringify(body) : undefined,
     });
     const data = await readJson(res);
-    if (!res.ok) throw new Error(data?.detail || data?.mensagem || `API ${res.status}`);
+    if (!res.ok) throw new Error(data?.detalhe || data?.detail || data?.mensagem || `API ${res.status}`);
     return data;
   },
 

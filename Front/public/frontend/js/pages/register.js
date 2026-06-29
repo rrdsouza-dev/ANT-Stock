@@ -113,7 +113,7 @@ export function RegisterPage(root) {
       }
 
       const result = await API.register(payload);
-      session.signIn(result.usuario, result.token);
+      session.signIn(result.user, result.token);
       notify("Conta criada com sucesso!");
       router.navigate("/dashboard");
     } catch (err) {

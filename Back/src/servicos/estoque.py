@@ -75,9 +75,9 @@ class ServicoEstoque:
     ) -> ModeloCrudT:
         await self._exigir_acesso(usuario_id, deposito_id)
         item = await self._buscar_no_deposito(crud, item_id, deposito_id)
+        # Remove deposito_id dos dados (não pode ser alterado pelo usuário)
         dados = {campo: valor for campo, valor in dados.items() if campo != "deposito_id"}
-        dados_limpos = {campo: valor for campo, valor in dados.items() if valor is not None}
-        return await crud.repositorio.editar(item, dados_limpos)
+        return await crud.repositorio.editar(item, dados)
 
     async def _remover_no_deposito(
         self,

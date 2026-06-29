@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy import PrimaryKeyConstraint, String
 from sqlmodel import Column, Field, Relationship, SQLModel
 
 from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, StatusCadastro, agora_utc
@@ -11,8 +11,6 @@ from src.modelos.base import DatasMixin, IdMixin, PerfilCodigo, StatusCadastro, 
 if TYPE_CHECKING:
     from src.modelos.estoque import Deposito, Movimentacao
     from src.modelos.pedido import Pedido
-
-
 # Reutilizado em todas as colunas que referenciam o tipo perfil_codigo do PostgreSQL.
 # values_callable garante que o SQLAlchemy use o .value do StrEnum ("gestao")
 # em vez do .name ("GESTAO"), evitando o erro:
@@ -24,17 +22,6 @@ def _enum_perfil() -> SAEnum:
         create_type=False,
         values_callable=lambda e: [m.value for m in e],
     )
-
-
-def _enum_status_cadastro() -> SAEnum:
-    return SAEnum(
-        StatusCadastro,
-        name="status_cadastro",
-        create_type=False,
-        values_callable=lambda e: [m.value for m in e],
-    )
-
-
 class Perfil(IdMixin, DatasMixin, table=True):
     __tablename__ = "perfis"  # type: ignore[assignment]
 
@@ -42,8 +29,6 @@ class Perfil(IdMixin, DatasMixin, table=True):
     nome: str = Field(max_length=40)
 
     usuarios: list["Usuario"] = Relationship(back_populates="perfil")
-
-
 class UsuarioDeposito(SQLModel, table=True):
     __tablename__ = "usuario_depositos"  # type: ignore[assignment]
     __table_args__ = (PrimaryKeyConstraint("usuario_id", "deposito_id"),)  # type: ignore[assignment]
@@ -51,8 +36,6 @@ class UsuarioDeposito(SQLModel, table=True):
     usuario_id: UUID = Field(foreign_key="usuarios.id", index=True)
     deposito_id: UUID = Field(foreign_key="depositos.id", index=True)
     criado_em: datetime = Field(default_factory=agora_utc, nullable=False)
-
-
 class Usuario(IdMixin, DatasMixin, table=True):
     __tablename__ = "usuarios"  # type: ignore[assignment]
 
@@ -70,8 +53,6 @@ class Usuario(IdMixin, DatasMixin, table=True):
     pedidos: list["Pedido"] = Relationship(back_populates="usuario")
     movimentacoes: list["Movimentacao"] = Relationship(back_populates="usuario")
     codigos_recuperacao: list["CodigoRecuperacao"] = Relationship(back_populates="usuario")
-
-
 class CadastroPendente(IdMixin, DatasMixin, table=True):
     __tablename__ = "cadastro_pendente"  # type: ignore[assignment]
 
@@ -79,16 +60,10 @@ class CadastroPendente(IdMixin, DatasMixin, table=True):
     email: str = Field(unique=True, index=True, max_length=255)
     senha_hash: str = Field(max_length=255)
     perfil_solicitado: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, index=True))
+    # Ambas as migrations criam status como varchar(20), não como enum PostgreSQL.
     status: StatusCadastro = Field(
-        sa_column=Column(
-            _enum_status_cadastro(),
-            nullable=False,
-            default=StatusCadastro.PENDENTE,
-            index=True,
-        )
+        sa_column=Column(String(20), nullable=False, default=StatusCadastro.PENDENTE, index=True)
     )
-
-
 class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
     __tablename__ = "historico_aprovacoes"  # type: ignore[assignment]
 
@@ -97,8 +72,6 @@ class HistoricoAprovacao(IdMixin, DatasMixin, table=True):
     email: str = Field(max_length=255, index=True)
     perfil: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, index=True))
     aprovado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
-
-
 class HistoricoRecusa(IdMixin, DatasMixin, table=True):
     __tablename__ = "historico_recusas"  # type: ignore[assignment]
 
@@ -107,8 +80,6 @@ class HistoricoRecusa(IdMixin, DatasMixin, table=True):
     perfil_solicitado: PerfilCodigo = Field(sa_column=Column(_enum_perfil(), nullable=False, index=True))
     recusado_por_id: UUID = Field(foreign_key="usuarios.id", index=True)
     motivo: str | None = Field(default=None, max_length=500)
-
-
 class CodigoRecuperacao(IdMixin, DatasMixin, table=True):
     __tablename__ = "codigos_recuperacao"  # type: ignore[assignment]
 

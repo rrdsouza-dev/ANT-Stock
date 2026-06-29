@@ -123,7 +123,7 @@ export function LoginPage(root) {
 
   const right = el("div", { class: "auth-right" }, [
     el("img", {
-      src: "Banner-green.png",
+      src: "assets/images/Banner-green.png",
       class: "illu",
       alt: "Ilustração ANT Stock",
     }),

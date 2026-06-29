@@ -17,6 +17,7 @@ dependencies = [
     "fastapi[standard]>=0.115.0",
     "httpx>=0.28.0",
     "loguru>=0.7.3",
+    "orjson>=3.10.0",
     "orjson>=3.10.18",
     "passlib[bcrypt]>=1.7.4",
     "pydantic-settings>=2.9.0",

@@ -4,6 +4,7 @@ from typing import Any, cast
 import jwt
 from jwt import InvalidTokenError
 from passlib.context import CryptContext
+
 from src.nucleo.configuracao import configuracao
 
 _ctx_senha = CryptContext(schemes=["bcrypt"], deprecated="auto")

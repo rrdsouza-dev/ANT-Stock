@@ -18,8 +18,11 @@ class PedidoAtualizar(BaseModel):
     observacao: str | None = Field(default=None, max_length=500)
 
 
-class PedidoSaida(PedidoEntrada, SchemaComDatas):
-    pass
+class PedidoSaida(SchemaComDatas):
+    deposito_id: UUID
+    usuario_id: UUID | None = None
+    status: StatusPedido
+    observacao: str | None = None
 
 
 class ItemPedidoEntrada(BaseModel):
@@ -27,5 +30,8 @@ class ItemPedidoEntrada(BaseModel):
     quantidade: int = Field(gt=0)
 
 
-class ItemPedidoSaida(ItemPedidoEntrada, SchemaComDatas):
+class ItemPedidoSaida(SchemaComDatas):
+    deposito_id: UUID
     pedido_id: UUID
+    produto_id: UUID
+    quantidade: int

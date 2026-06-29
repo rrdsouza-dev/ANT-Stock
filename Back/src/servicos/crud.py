@@ -33,9 +33,9 @@ class ServicoCrud(Generic[ModeloT]):
         return await self.repositorio.criar(dados)
 
     async def editar(self, item_id: UUID, dados: dict[str, Any]) -> ModeloT:
+        # Passa todos os dados sem filtrar None — permite desassociar campos opcionais.
         item = await self.buscar(item_id)
-        limpos = {k: v for k, v in dados.items() if v is not None}
-        return await self.repositorio.editar(item, limpos)
+        return await self.repositorio.editar(item, dados)
 
     async def remover(self, item_id: UUID) -> None:
         item = await self.buscar(item_id)

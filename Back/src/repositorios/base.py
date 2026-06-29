@@ -5,6 +5,8 @@ from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel
 
+from src.modelos.base import agora_utc
+
 ModeloT = TypeVar("ModeloT", bound=SQLModel)
 
 
@@ -41,6 +43,9 @@ class RepositorioSQL(Generic[ModeloT]):
     async def editar(self, item: ModeloT, dados: dict[str, Any]) -> ModeloT:
         for campo, valor in dados.items():
             setattr(item, campo, valor)
+        # Atualiza timestamp de modificação se o modelo tiver esse campo
+        if hasattr(item, "atualizado_em"):
+            item.atualizado_em = agora_utc()  # type: ignore[assignment]
         self.sessao.add(item)
         await self.sessao.commit()
         await self.sessao.refresh(item)

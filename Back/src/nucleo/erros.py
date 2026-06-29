@@ -1,5 +1,5 @@
 from fastapi import Request, status
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import JSONResponse
 from loguru import logger
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
@@ -19,39 +19,39 @@ class ErroApp(Exception):
         self.codigo = codigo
 
 
-async def tratar_erro_app(_: Request, exc: ErroApp) -> ORJSONResponse:
-    return ORJSONResponse(
+async def tratar_erro_app(_: Request, exc: ErroApp) -> JSONResponse:
+    return JSONResponse(
         status_code=exc.status_code,
         content={"detalhe": exc.mensagem, "codigo": exc.codigo},
     )
 
 
-async def tratar_erro_http(_: Request, exc: StarletteHTTPException) -> ORJSONResponse:
-    return ORJSONResponse(
+async def tratar_erro_http(_: Request, exc: StarletteHTTPException) -> JSONResponse:
+    return JSONResponse(
         status_code=exc.status_code,
         content={"detalhe": exc.detail},
         headers=getattr(exc, "headers", None),
     )
 
 
-async def tratar_validacao(_: Request, exc: ValidationError) -> ORJSONResponse:
-    return ORJSONResponse(
+async def tratar_validacao(_: Request, exc: ValidationError) -> JSONResponse:
+    return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detalhe": exc.errors()},
     )
 
 
-async def tratar_integridade(_: Request, exc: IntegrityError) -> ORJSONResponse:
+async def tratar_integridade(_: Request, exc: IntegrityError) -> JSONResponse:
     logger.warning("Erro de integridade: {}", exc.orig)
-    return ORJSONResponse(
+    return JSONResponse(
         status_code=status.HTTP_409_CONFLICT,
         content={"detalhe": "Registro duplicado ou violacao de integridade.", "codigo": "erro_integridade"},
     )
 
 
-async def tratar_erro_geral(request: Request, exc: Exception) -> ORJSONResponse:
+async def tratar_erro_geral(request: Request, exc: Exception) -> JSONResponse:
     logger.exception("Erro inesperado em {}: {}", request.url.path, exc)
-    return ORJSONResponse(
+    return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detalhe": "Erro interno do servidor.", "codigo": "erro_interno"},
     )

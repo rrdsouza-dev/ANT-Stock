@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from src.nucleo.configuracao import configuracao
 
+_HOSTS_SSL = ("supabase.co", "pooler.supabase", "supabase.com")
+
 
 def _ssl_context() -> ssl.SSLContext:
     ctx = ssl.create_default_context()
@@ -14,16 +16,19 @@ def _ssl_context() -> ssl.SSLContext:
 
 
 def _criar_engine():
+    # Remove query string; parâmetros de conexão são passados via connect_args
     url = configuracao().url_banco.split("?")[0]
-    connect_args = {}
-    if "supabase.co" in url or "pooler.supabase" in url:
+    connect_args: dict = {}
+    if any(h in url for h in _HOSTS_SSL):
         connect_args["ssl"] = _ssl_context()
     return create_async_engine(
         url,
         connect_args=connect_args,
         pool_pre_ping=True,
-        pool_size=5,
-        max_overflow=10,
+        pool_size=3,
+        max_overflow=5,
+        pool_timeout=30,
+        pool_recycle=1800,
     )
 
 

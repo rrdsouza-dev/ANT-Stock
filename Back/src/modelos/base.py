@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from enum import StrEnum
 from uuid import UUID, uuid4
 
@@ -35,7 +35,9 @@ class TipoDeposito(StrEnum):
 
 
 def agora_utc() -> datetime:
-    return datetime.now(UTC)
+    # Retorna datetime sem timezone (naive),
+    # compatível com TIMESTAMP WITHOUT TIME ZONE do PostgreSQL.
+    return datetime.utcnow()
 
 
 class DatasMixin(SQLModel):

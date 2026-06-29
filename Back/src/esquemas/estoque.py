@@ -25,7 +25,10 @@ class CategoriaAtualizar(BaseModel):
     ativo: bool | None = None
 
 
-class CategoriaSaida(CategoriaEntrada, SchemaComDatas):
+class CategoriaSaida(SchemaComDatas):
+    deposito_id: UUID
+    nome: str
+    descricao: str | None = None
     ativo: bool
 
 
@@ -46,7 +49,13 @@ class LocalizacaoAtualizar(BaseModel):
     ativo: bool | None = None
 
 
-class LocalizacaoSaida(LocalizacaoEntrada, SchemaComDatas):
+class LocalizacaoSaida(SchemaComDatas):
+    deposito_id: UUID
+    nome: str
+    torre: str | None = None
+    corredor: str | None = None
+    prateleira: str | None = None
+    posicao: str | None = None
     ativo: bool
 
 
@@ -77,7 +86,18 @@ class ProdutoAtualizar(BaseModel):
     ativo: bool | None = None
 
 
-class ProdutoSaida(ProdutoEntrada, SchemaComDatas):
+class ProdutoSaida(SchemaComDatas):
+    deposito_id: UUID
+    nome: str
+    codigo: str | None = None
+    categoria_id: UUID | None = None
+    localizacao_id: UUID | None = None
+    quantidade_minima: int
+    unidade_medida: str | None = None
+    quantidade_por_caixa: int | None = None
+    lote: str | None = None
+    validade: str | None = None
+    observacoes: str | None = None
     ativo: bool
 
 
@@ -92,8 +112,11 @@ class EstoqueAtualizar(BaseModel):
     quantidade: int | None = Field(default=None, ge=0)
 
 
-class EstoqueSaida(EstoqueEntrada, SchemaComDatas):
-    pass
+class EstoqueSaida(SchemaComDatas):
+    deposito_id: UUID
+    produto_id: UUID
+    localizacao_id: UUID | None = None
+    quantidade: int
 
 
 class MovimentacaoEntrada(BaseModel):
@@ -137,5 +160,17 @@ class MovimentacaoCodigoEntrada(BaseModel):
     observacao: str | None = Field(default=None, max_length=500)
 
 
-class MovimentacaoSaida(MovimentacaoEntrada, SchemaComDatas):
+class MovimentacaoSaida(SchemaComDatas):
+    deposito_id: UUID
+    produto_id: UUID
+    tipo: TipoMovimentacao
+    quantidade: int
+    usuario_id: UUID | None = None
+    pedido_id: UUID | None = None
+    origem_id: UUID | None = None
+    destino_id: UUID | None = None
+    lote: str | None = None
+    validade_lote: str | None = None
+    destino_texto: str | None = None
+    observacao: str | None = None
     movimentado_em: datetime

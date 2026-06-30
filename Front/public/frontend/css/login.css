@@ -72,7 +72,7 @@
 }
 
 .auth-right {
-    background: #3ecd8a;
+    background: #35b87b;
     border-radius: 28px;
     display: flex;
     flex-direction: column;
@@ -85,7 +85,7 @@
     overflow: hidden;
 }
 .auth-right .illu {
-    max-width: 520px;
+    max-width: 1500px;
     width: 100%;
     height: auto;
 }

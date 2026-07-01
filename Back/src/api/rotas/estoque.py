@@ -21,7 +21,7 @@ async def listar(
 ) -> list[EstoqueSaida]:
     usuario, deposito_id = usuario_deposito
     itens = await ServicoEstoque(sessao).listar_estoque(
-        usuario.id,
+        usuario,
         deposito_id,
         inicio=inicio,
         limite=limite,
@@ -37,7 +37,7 @@ async def por_produto(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> list[EstoqueSaida]:
     usuario, deposito_id = usuario_deposito
-    itens = await ServicoEstoque(sessao).estoque_do_produto(usuario.id, deposito_id, produto_id)
+    itens = await ServicoEstoque(sessao).estoque_do_produto(usuario, deposito_id, produto_id)
     return [EstoqueSaida.model_validate(item) for item in itens]
 
 
@@ -48,7 +48,7 @@ async def criar(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> EstoqueSaida:
     usuario, deposito_id = usuario_deposito
-    item = await ServicoEstoque(sessao).criar_estoque(usuario.id, deposito_id, dados.model_dump())
+    item = await ServicoEstoque(sessao).criar_estoque(usuario, deposito_id, dados.model_dump())
     return EstoqueSaida.model_validate(item)
 
 
@@ -61,7 +61,7 @@ async def editar(
 ) -> EstoqueSaida:
     usuario, deposito_id = usuario_deposito
     item = await ServicoEstoque(sessao).editar_estoque(
-        usuario.id,
+        usuario,
         deposito_id,
         estoque_id,
         dados.model_dump(exclude_unset=True),
@@ -76,5 +76,5 @@ async def remover(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> MensagemAPI:
     usuario, deposito_id = usuario_deposito
-    await ServicoEstoque(sessao).remover_estoque(usuario.id, deposito_id, estoque_id)
+    await ServicoEstoque(sessao).remover_estoque(usuario, deposito_id, estoque_id)
     return MensagemAPI(mensagem="Estoque removido.")

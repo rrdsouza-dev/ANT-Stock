@@ -6,6 +6,8 @@ import { notify } from "../components/notifications.js";
 import { validateEmail, validatePassword, passwordScore, required } from "../utils/validators.js";
 import { guardedClick } from "../utils/security.js";
 
+const TURMAS_DISPONIVEIS = ["Todas as Turmas", "2A", "2B", "3A"];
+
 export function RegisterPage(root) {
   document.body.classList.add("app-bg");
 
@@ -15,6 +17,7 @@ export function RegisterPage(root) {
     email: el("div", { class: "error-text" }),
     pass: el("div", { class: "error-text" }),
     conf: el("div", { class: "error-text" }),
+    turmas: el("div", { class: "error-text" }),
   };
   const strength = el("div", { class: "strength" }, [el("span"), el("span"), el("span"), el("span")]);
 
@@ -44,32 +47,56 @@ export function RegisterPage(root) {
       perfilSelecionado = value;
       perfilGroup.querySelectorAll(".btn-perfil").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      renderSalaSection();
+      renderTurmasSection();
     });
     perfilGroup.appendChild(btn);
   });
 
-  // ── Sala (only for professor) ────────────────────────────────
-  const salaSection = el("div", { class: "sala-section" });
+  // ── Turmas (apenas para professor, seleção múltipla) ──────────
+  const turmasSection = el("div", { class: "sala-section" });
+  let turmasSelecionadas = [];
 
-  const salaSelect = el("select", { class: "select" }, [
-    el("option", { value: "", text: "Selecione a sala" }),
-    el("option", { value: "2ano", text: "2º Ano" }),
-    el("option", { value: "3ano", text: "3º Ano" }),
-  ]);
-
-  function renderSalaSection() {
-    salaSection.innerHTML = "";
-    if (perfilSelecionado === "professor") {
-      salaSection.appendChild(
-        el("div", { class: "field" }, [
-          el("label", { class: "field-label", text: "Sala" }),
-          salaSelect,
-        ])
-      );
+  function toggleTurma(turma, btn) {
+    if (turma === "Todas as Turmas") {
+      turmasSelecionadas = turmasSelecionadas.includes(turma) ? [] : ["Todas as Turmas"];
+    } else {
+      turmasSelecionadas = turmasSelecionadas.filter(t => t !== "Todas as Turmas");
+      if (turmasSelecionadas.includes(turma)) {
+        turmasSelecionadas = turmasSelecionadas.filter(t => t !== turma);
+      } else {
+        turmasSelecionadas.push(turma);
+      }
     }
+    turmasSection.querySelectorAll(".btn-perfil").forEach(b => {
+      b.classList.toggle("active", turmasSelecionadas.includes(b.dataset.value));
+    });
   }
-  renderSalaSection();
+
+  function renderTurmasSection() {
+    turmasSection.innerHTML = "";
+    if (perfilSelecionado !== "professor") {
+      turmasSelecionadas = [];
+      return;
+    }
+    const grupo = el("div", { class: "perfil-selector" });
+    TURMAS_DISPONIVEIS.forEach((turma) => {
+      const btn = el("button", {
+        type: "button",
+        class: "btn-perfil" + (turmasSelecionadas.includes(turma) ? " active" : ""),
+        "data-value": turma,
+        text: turma,
+      });
+      btn.addEventListener("click", () => toggleTurma(turma, btn));
+      grupo.appendChild(btn);
+    });
+    turmasSection.appendChild(
+      el("div", { class: "field" }, [
+        el("label", { class: "field-label", text: "Turmas" }),
+        grupo,
+      ])
+    );
+  }
+  renderTurmasSection();
 
   pass.addEventListener("input", () => {
     const s = passwordScore(pass.value);
@@ -87,7 +114,8 @@ export function RegisterPage(root) {
       el("label", { class: "field-label", text: "Perfil" }),
       perfilGroup,
     ]),
-    salaSection,
+    turmasSection,
+    errs.turmas,
     submit,
   );
 
@@ -98,7 +126,10 @@ export function RegisterPage(root) {
     const pErr = validatePassword(pass.value); errs.pass.textContent = pErr || "";
     const cErr = pass.value !== conf.value ? "As senhas não conferem." : null;
     errs.conf.textContent = cErr || "";
-    if (nErr || eErr || pErr || cErr) return;
+    const tErr = perfilSelecionado === "professor" && turmasSelecionadas.length === 0
+      ? "Selecione ao menos uma turma." : null;
+    errs.turmas.textContent = tErr || "";
+    if (nErr || eErr || pErr || cErr || tErr) return;
 
     submit.innerHTML = ""; submit.appendChild(el("span", { class: "spinner" }));
     try {
@@ -107,10 +138,8 @@ export function RegisterPage(root) {
         email: email.value.trim(),
         senha: pass.value,
         perfil: perfilSelecionado,
+        turmas: perfilSelecionado === "professor" ? turmasSelecionadas : [],
       };
-      if (perfilSelecionado === "professor" && salaSelect.value) {
-        payload.sala = salaSelect.value;
-      }
 
       const result = await API.register(payload);
       session.signIn(result.user, result.token);

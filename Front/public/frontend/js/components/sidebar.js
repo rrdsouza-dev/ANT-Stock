@@ -12,7 +12,7 @@ const NAV = [
   { path: "/categories",  label: "Categorias & Locais",  icon: "layers" },
   { path: "/reports",     label: "Relatórios",           icon: "clipboard-list" },
   { path: "/school",      label: "Gestão Escolar",       icon: "graduation-cap" },
-  { path: "/users",       label: "Usuários",             icon: "users" },
+  { path: "/users",       label: "Usuários",             icon: "users", gestaoOnly: true },
   { path: "/settings",    label: "Configurações",        icon: "settings" },
 ];
 
@@ -22,7 +22,31 @@ const BOTTOM = [
   { action: "logout",  label: "Log Out",      icon: "log-out" },
 ];
 
+// Card com os dados do usuário logado (substitui o antigo texto explicando perfis).
+function userInfoCard() {
+  const u = session.user || {};
+  const initials = (u.name || u.email || "?").trim().charAt(0).toUpperCase();
+  const perfilLabel = u.profile === "gestao" ? "Gestão" : "Professor";
+
+  const meta = [
+    el("div", { class: "sidebar-user-name", text: u.name || "—" }),
+    el("div", { class: "sidebar-user-email", text: u.email || "—" }),
+    el("span", { class: "chip chip-info sidebar-user-chip", text: perfilLabel }),
+  ];
+  if (u.profile === "professor" && u.turmas?.length) {
+    meta.push(el("div", { class: "sidebar-user-turmas", text: "Turmas: " + u.turmas.join(", ") }));
+  }
+
+  return el("div", { class: "sidebar-user" }, [
+    el("div", { class: "avatar", text: initials }),
+    el("div", { class: "sidebar-user-meta" }, meta),
+  ]);
+}
+
 export function Sidebar(currentPath) {
+  const perfilAtual = session.user?.profile;
+  const navVisivel = NAV.filter(item => !item.gestaoOnly || perfilAtual === "gestao");
+
   const linkNode = (item) => {
     const isActive = currentPath?.startsWith(item.path);
     return el("a", {
@@ -54,7 +78,8 @@ export function Sidebar(currentPath) {
 
   const aside = el("aside", { class: "sidebar" }, [
     el("div", { class: "brand" }, [el("img", { src: "assets/images/logo-dark.jpg", alt: "ANT Stock" })]),
-    el("nav", {}, NAV.map(linkNode)),
+    userInfoCard(),
+    el("nav", {}, navVisivel.map(linkNode)),
     el("div", { class: "nav-bottom" }, BOTTOM.map(bottomNode)),
   ]);
 

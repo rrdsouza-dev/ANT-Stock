@@ -137,7 +137,7 @@ export function ProductsPage(root, ctx) {
     }
 
     function openMov(p) {
-      openMovementModal({ depositId, products, onSave: loadProducts });
+      openMovementModal({ depositId, products, categories: allCategories, locations: allLocations, onSave: loadProducts });
     }
 
     function confirmDelete(p) {

@@ -32,6 +32,49 @@
     margin-top: 6px;
     flex: 1;
 }
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #1f2322;
+}
+.sidebar-user .avatar {
+    flex-shrink: 0;
+}
+.sidebar-user-meta {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.sidebar-user-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-user-email {
+    font-size: 11.5px;
+    color: #8a9694;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-user-chip {
+    margin-top: 2px;
+    width: fit-content;
+}
+.sidebar-user-turmas {
+    font-size: 11px;
+    color: #8a9694;
+    margin-top: 2px;
+}
 .sidebar .nav-section {
     font-size: 11px;
     text-transform: uppercase;

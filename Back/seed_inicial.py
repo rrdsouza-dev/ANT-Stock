@@ -7,7 +7,6 @@ Execute da pasta Back/:
     cd Back
     python seed_inicial.py
 """
-
 import asyncio
 import sys
 from pathlib import Path
@@ -46,6 +45,7 @@ if any(p in db_url for p in placeholders):
 print(f"✓ DATABASE_URL: {db_url[:60]}…")
 
 from sqlalchemy import select, text
+
 from src.banco.sessao import SessaoLocal
 from src.modelos.autenticacao import Perfil, Usuario, UsuarioDeposito
 from src.modelos.base import PerfilCodigo, TipoDeposito

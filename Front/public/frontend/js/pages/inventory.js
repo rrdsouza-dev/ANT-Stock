@@ -1,5 +1,5 @@
 /**
- * FASE 3 + FASE 4 — Entradas e Saídas com leitor de código de barras e CRUD.
+ * Entradas e Saídas — leitor de código de barras + CRUD de movimentações.
  */
 import { el, renderIcons } from "../utils/helpers.js";
 import { AppShell } from "./_shell.js";
@@ -11,13 +11,14 @@ import { guardedClick } from "../utils/security.js";
 import { exportExcel } from "../utils/exportExcel.js";
 import { exportTxt } from "../utils/exportTxt.js";
 import { BarcodeScanner } from "../components/barcodeScanner.js";
-import { openMovementModal, openPreviewCard, openEntryModal, openExitModal, openScanModal } from "../components/productModal.js";
+import { openEntryModal, openExitModal, openScanModal } from "../components/productModal.js";
 
 export function InventoryPage(root, ctx) {
   AppShell(root, ctx.path, (content) => {
     let movementsData = [];
     let products = [];
     let categories = [];
+    let locations = [];
     let depositId = null;
 
     const head = el("div", { class: "page-head" }, [
@@ -26,14 +27,16 @@ export function InventoryPage(root, ctx) {
         el("p", { class: "muted", text: "Registre e acompanhe movimentações de estoque. Use leitor de código de barras ou busca manual." }),
       ]),
       el("div", { class: "exports" }, [
-        el("button", { class: "btn btn-ghost btn-sm", title: "Visualiza o card que abre após escaneamento real — sem criar movimentações",
-          onclick: guardedClick(() => openPreviewCard({ depositId, products: products.map(p => ({...p, nome: p.name, codigo: p.code})), categories: [], onSave: loadMovements })) }, [
-          el("i", { "data-lucide": "eye" }), " Visualizar Card",
-        ]),
-        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openEntryModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), categories, onSave: loadMovements }); }) }, [
+        el("button", { class: "btn btn-soft", onclick: guardedClick(() => {
+          if (!depositId) { notify("Aguarde…", "warning"); return; }
+          openEntryModal({ depositId, products, categories, locations, onSave: loadMovements });
+        }) }, [
           el("i", { "data-lucide": "arrow-down-circle" }), " Entrada",
         ]),
-        el("button", { class: "btn btn-soft", onclick: guardedClick(() => { if (!depositId) { notify("Aguarde…", "warning"); return; } openExitModal({ depositId, products: products.map(p => ({id:p.id, nome:p.name, codigo:p.code})), categories, onSave: loadMovements }); }) }, [
+        el("button", { class: "btn btn-soft", onclick: guardedClick(() => {
+          if (!depositId) { notify("Aguarde…", "warning"); return; }
+          openExitModal({ depositId, products, categories, locations, onSave: loadMovements });
+        }) }, [
           el("i", { "data-lucide": "arrow-up-circle" }), " Saída",
         ]),
         el("button", { class: "btn btn-primary", onclick: guardedClick(() => { exportTxt(movementsData, "movimentacoes.txt"); notify("TXT exportado.", "success"); }) },
@@ -43,7 +46,7 @@ export function InventoryPage(root, ctx) {
       ]),
     ]);
 
-    // ── Barcode scanner panel ──────────────────────────────────
+    // ── Painel do leitor de código de barras ───────────────────
     const scannerSection = el("div", { class: "card card-pad", style: "margin-bottom:18px" }, [
       el("h3", { text: "Leitor de Código de Barras", style: "margin-bottom:12px" }),
     ]);
@@ -66,33 +69,24 @@ export function InventoryPage(root, ctx) {
     async function handleScan(code, refreshHistory) {
       if (!depositId) { notify("Aguarde — carregando depósito…", "warning"); return; }
       try {
-        // Try to find product by barcode via API
-        const allCats = await API.categories(depositId, { limite: 200 }).catch(() => []);
-        const allProds = await API.products(depositId, { limite: 200 }).catch(() => products.map(p => ({id:p.id, nome:p.name, codigo:p.code})));
-        const locs = await API.locations(depositId, { limite: 200 }).catch(() => []);
-
-        // Get stock quantities for each product
         const stockData = await API.stock(depositId, { limite: 500 }).catch(() => []);
         const stockMap = {};
         for (const s of stockData) stockMap[s.produto_id] = (stockMap[s.produto_id] || 0) + s.quantidade;
-        const prodsWithQty = allProds.map(p => ({ ...p, quantidade: stockMap[p.id] || 0 }));
+        const prodsWithQty = products.map(p => ({ ...p, quantidade: stockMap[p.id] || 0 }));
 
         refreshHistory?.();
         openScanModal({
           depositId,
           code,
           products: prodsWithQty,
-          categories: allCats,
-          locations: locs,
+          categories,
+          locations,
           onSave: loadMovements,
         });
       } catch (err) {
         notify(err.message || "Erro na leitura.", "error");
       }
     }
-
-    // legacy compat
-    function openMovModal() {}
 
     function renderTable(rows) {
       tableContainer.innerHTML = "";
@@ -129,14 +123,15 @@ export function InventoryPage(root, ctx) {
           session.setDepositId(depositId);
         }
 
-        // Load movements, products AND categories (for scan and manual entry/exit modals)
-        const [movements, prods, cats] = await Promise.all([
+        const [movements, prods, cats, locs] = await Promise.all([
           API.movements(depositId, { limite: 200 }),
           API.products(depositId, { limite: 200 }).catch(() => []),
           API.categories(depositId, { limite: 200 }).catch(() => []),
+          API.locations(depositId, { limite: 200 }).catch(() => []),
         ]);
-        products = prods.map(p => ({ id: p.id, code: p.codigo || p.id.slice(0, 8), name: p.nome }));
+        products = prods;
         categories = cats;
+        locations = locs;
 
         movementsData = movements.map(m => ({
           id: m.id,

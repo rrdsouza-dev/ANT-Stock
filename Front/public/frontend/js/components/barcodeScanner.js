@@ -1,20 +1,18 @@
 /**
- * FASE 3 — Leitor de código de barras USB (modo teclado).
+ * Leitor de código de barras USB (modo teclado).
  *
  * Leitores USB se comportam como teclado: digitam o código e pressionam Enter.
  * Implementamos:
  *  - Campo com foco automático
  *  - Captura via "keydown" global (modo background) ou campo visível
- *  - Debounce para filtrar digitação humana vs. leitura rápida do scanner
  *  - Callback com o código lido
- *  - Histórico de leituras (via LocalDB)
+ *  - Histórico de leituras temporário (apenas no navegador, não afeta o banco)
  */
 
 import { el, renderIcons } from "../utils/helpers.js";
-import { notify } from "./notifications.js";
 
-// Safe wrapper: barcodeScanner uses only barcodeHistory from localInventoryStore
-// We define it inline to avoid crash if localInventoryStore has issues
+// Histórico de leituras é puramente local/temporário (não é uma movimentação real).
+// "Limpar Leituras" apaga somente este histórico, nunca os dados do backend.
 const BarcodeHistory = {
   _key: "antstock:localdb:barcodeHistory",
   list() {
@@ -28,7 +26,6 @@ const BarcodeHistory = {
     try {
       const table = JSON.parse(localStorage.getItem(this._key) || "{}");
       table[entry.id] = entry;
-      // keep last 20
       const keys = Object.keys(table).sort();
       if (keys.length > 20) delete table[keys[0]];
       localStorage.setItem(this._key, JSON.stringify(table));
@@ -36,9 +33,15 @@ const BarcodeHistory = {
       /* silent */
     }
   },
+  clear() {
+    try {
+      localStorage.removeItem(this._key);
+    } catch {
+      /* silent */
+    }
+  },
 };
 
-const SCANNER_MIN_SPEED_MS = 60; // tempo máximo entre chars de um scanner
 const SCANNER_MIN_LEN = 3; // tamanho mínimo para considerar código válido
 
 /**
@@ -56,10 +59,8 @@ export function BarcodeScanner({
   background = false,
   label = "Código de barras / QR",
 } = {}) {
-  let buffer = "";
   let lastKeyTime = 0;
 
-  // ── Campo visível ──────────────────────────────────────────
   const input = el("input", {
     class: "input barcode-input",
     placeholder: "Escaneie ou digite o código…",
@@ -73,31 +74,14 @@ export function BarcodeScanner({
   });
   const historyList = el("ul", { class: "barcode-history-list" });
 
-  // ── Sample codes for simulation ──────────────────────────────
-  const SAMPLE_CODES = [
-    "7891234567890",
-    "7898765432100",
-    "7890001122334",
-    "SIM-TEST-001",
-    "SIM-TEST-002",
-  ];
-  let simIdx = 0;
-
-  const simBtn = el(
+  const clearHistoryBtn = el(
     "button",
-    {
-      type: "button",
-      class: "btn btn-soft btn-simulate",
-      title: "Simular escaneamento (para testes sem leitor físico)",
-    },
-    [el("i", { "data-lucide": "scan-line" }), " Simular Escaneamento"],
+    { type: "button", class: "btn btn-ghost btn-sm", title: "Limpar leituras temporárias (não apaga movimentações)" },
+    [el("i", { "data-lucide": "eraser" }), " Limpar Leituras"],
   );
-
-  simBtn.addEventListener("click", () => {
-    const code = SAMPLE_CODES[simIdx % SAMPLE_CODES.length];
-    simIdx++;
-    input.value = code;
-    handleCode(code);
+  clearHistoryBtn.addEventListener("click", () => {
+    BarcodeHistory.clear();
+    refreshHistory();
   });
 
   const wrapper = el("div", { class: "barcode-scanner-widget" }, [
@@ -111,7 +95,7 @@ export function BarcodeScanner({
         "button",
         {
           class: "btn btn-soft",
-          title: "Limpar",
+          title: "Limpar campo",
           onclick: () => {
             input.value = "";
             input.focus();
@@ -121,20 +105,18 @@ export function BarcodeScanner({
         [el("i", { "data-lucide": "x" })],
       ),
     ]),
-    el("div", { class: "barcode-simulate-row" }, [simBtn]),
     statusEl,
     el("div", { class: "barcode-history" }, [
-      el("div", {
-        class: "barcode-history-title muted",
-        text: "Últimas leituras",
-      }),
+      el("div", { class: "barcode-history-header" }, [
+        el("div", { class: "barcode-history-title muted", text: "Últimas leituras" }),
+        clearHistoryBtn,
+      ]),
       historyList,
     ]),
   ]);
 
   renderIcons(wrapper);
 
-  // Load history
   function refreshHistory() {
     const history = BarcodeHistory.list()
       .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
@@ -170,8 +152,6 @@ export function BarcodeScanner({
 
   refreshHistory();
 
-  // ── Core scan handler ──────────────────────────────────────
-  //
   function handleCode(code) {
     code = code.trim();
     if (code.length < SCANNER_MIN_LEN) return;
@@ -179,7 +159,6 @@ export function BarcodeScanner({
     statusEl.textContent = `Lido: ${code}`;
     statusEl.className = "barcode-status scanning";
 
-    // Save to local history
     BarcodeHistory.save({
       id: Date.now().toString(),
       code,
@@ -197,7 +176,6 @@ export function BarcodeScanner({
     }, 2000);
   }
 
-  // ── Visible input handler (Enter submits) ──────────────────
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -205,12 +183,11 @@ export function BarcodeScanner({
     }
   });
 
-  // ── Background global capture (scanner speed detection) ───
+  // ── Captura global em segundo plano (detecção por velocidade de digitação) ──
   if (background) {
     let globalBuffer = "";
     let globalTimer = null;
     document.addEventListener("keydown", (e) => {
-      // Ignore if focus is on a different input
       if (
         document.activeElement !== document.body &&
         document.activeElement !== wrapper
@@ -227,9 +204,6 @@ export function BarcodeScanner({
       if (e.key.length === 1) globalBuffer += e.key;
       clearTimeout(globalTimer);
       globalTimer = setTimeout(() => {
-        if (globalBuffer.length >= SCANNER_MIN_LEN) {
-          // Only auto-submit if typed fast (scanner) not slow (human)
-        }
         globalBuffer = "";
       }, 150);
     });

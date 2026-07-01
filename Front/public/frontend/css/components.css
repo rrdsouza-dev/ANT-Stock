@@ -728,6 +728,13 @@ table.data tbody tr:last-child td {
 .barcode-history {
     margin-top: 4px;
 }
+.barcode-history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
 .barcode-history-title {
     font-size: 0.75rem;
     margin-bottom: 6px;
@@ -765,31 +772,7 @@ table.data tbody tr:last-child td {
     color: var(--fg-3);
 }
 
-/* ── Roles grid (users page) ─────────────────────────────── */
-.roles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-}
-.role-card {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
-    background: var(--surface);
-}
-.role-card.active-role {
-    border-color: var(--green-600, #16a34a);
-    box-shadow: 0 0 0 1px var(--green-600, #16a34a);
-}
-.role-header {
-    margin-bottom: 6px;
-}
-.perm-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 6px;
-}
+/* ── Selo de turma (reaproveitado em Usuários) ───────────── */
 .perm-badge {
     font-size: 0.7rem;
     font-weight: 600;
@@ -938,22 +921,6 @@ table.data tbody tr:last-child td {
     transition: min-height 0.15s;
 }
 
-/* ── Simular escaneamento ─────────────────────────────────────── */
-.barcode-simulate-row {
-    margin: 6px 0 2px 0;
-}
-
-.btn-simulate {
-    font-size: 0.82rem;
-    padding: 5px 12px;
-    opacity: 0.75;
-    border: 1px dashed var(--border, #cbd5e0);
-}
-
-.btn-simulate:hover {
-    opacity: 1;
-}
-
 /* ── Modal scan info grid ─────────────────────────────────────── */
 .scan-info-grid {
     display: grid;
@@ -1006,68 +973,32 @@ table.data tbody tr:last-child td {
     gap: 10px;
 }
 
+/* ── Campo com botão de criação inline (ex: Categoria) ─────────── */
+.field-inline-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.field-inline-add .select {
+    flex: 1;
+}
+
+/* ── Modal section ──────────────────────────────────────────── */
+.modal-section { margin-top: 16px; }
+.modal-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted, #64748b);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
 @media (max-width: 480px) {
     .scan-info-grid,
     .form-grid-2 {
         grid-template-columns: 1fr;
     }
-}
-
-/* ── Perfil selector ─────────────────────────────────────────── */
-.perfil-selector { display:flex; gap:8px; flex-wrap:wrap; }
-.btn-perfil {
-  flex:1; min-width:100px; padding:10px 16px;
-  border:2px solid var(--border, #e2e8f0);
-  border-radius:var(--radius, 8px);
-  background:transparent; color:var(--text, #1a202c);
-  cursor:pointer; font-size:.92rem; font-weight:500;
-  transition:border-color .15s, background .15s;
-}
-.btn-perfil:hover { border-color:var(--primary, #3b82f6); }
-.btn-perfil.active {
-  border-color:var(--primary, #3b82f6);
-  background:var(--primary-light, #eff6ff);
-  color:var(--primary, #3b82f6);
-}
-.sala-section { min-height:0; }
-
-/* ── Scanner simulate button ─────────────────────────────────── */
-.barcode-simulate-row { margin:6px 0 2px; }
-.btn-simulate {
-  font-size:.82rem; padding:5px 12px; opacity:.75;
-  border:1px dashed var(--border, #cbd5e0);
-}
-.btn-simulate:hover { opacity:1; }
-
-/* ── Scan info card ──────────────────────────────────────────── */
-.scan-info-grid {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:10px 20px; margin-bottom:12px;
-}
-.scan-info-row { display:flex; flex-direction:column; gap:2px; }
-.scan-info-label { font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
-.scan-info-value { font-weight:600; font-size:.95rem; }
-
-/* ── Badges ──────────────────────────────────────────────────── */
-.badge {
-  display:inline-block; padding:2px 10px; border-radius:99px;
-  font-size:.75rem; font-weight:600; margin-bottom:4px;
-}
-.badge-success { background:#dcfce7; color:#16a34a; }
-.badge-warning  { background:#fef9c3; color:#854d0e; }
-
-/* ── Form grid 2 cols ────────────────────────────────────────── */
-.form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-
-/* ── Modal section ───────────────────────────────────────────── */
-.modal-section { margin-top:16px; }
-.modal-section-title {
-  font-size:.78rem; font-weight:700; letter-spacing:.06em;
-  text-transform:uppercase; color:var(--muted, #64748b);
-  margin-bottom:8px; padding-bottom:4px;
-  border-bottom:1px solid var(--border, #e2e8f0);
-}
-
-@media (max-width:480px) {
-  .scan-info-grid, .form-grid-2 { grid-template-columns:1fr; }
 }

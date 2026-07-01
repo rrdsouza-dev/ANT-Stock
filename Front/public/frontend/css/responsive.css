@@ -18,6 +18,8 @@
   .sidebar .nav-section { display: none; }
   .sidebar .brand { justify-content: center; }
   .sidebar .nav-item { justify-content: center; padding: 12px; }
+  .sidebar-user { justify-content: center; padding: 8px; }
+  .sidebar-user-meta { display: none; }
   .form-grid { grid-template-columns: 1fr; }
 }
 

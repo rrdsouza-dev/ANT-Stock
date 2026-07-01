@@ -11,12 +11,6 @@ class PerfilCodigo(StrEnum):
     GESTAO = "gestao"
 
 
-class StatusCadastro(StrEnum):
-    PENDENTE = "pendente"
-    APROVADO = "aprovado"
-    RECUSADO = "recusado"
-
-
 class TipoMovimentacao(StrEnum):
     ENTRADA = "entrada"
     SAIDA = "saida"
@@ -34,9 +28,16 @@ class TipoDeposito(StrEnum):
     DIDATICO = "didatico"
 
 
+# Turmas válidas que um professor pode selecionar no cadastro.
+TURMAS_VALIDAS: tuple[str, ...] = (
+    "Todas as Turmas",
+    "2A",
+    "2B",
+    "3A",
+)
+
+
 def agora_utc() -> datetime:
-    # Retorna datetime sem timezone (naive),
-    # compatível com TIMESTAMP WITHOUT TIME ZONE do PostgreSQL.
     return datetime.utcnow()
 
 

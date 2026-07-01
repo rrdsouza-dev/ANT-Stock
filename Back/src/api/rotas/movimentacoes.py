@@ -22,7 +22,7 @@ async def listar(
 ) -> list[MovimentacaoSaida]:
     usuario, deposito_id = usuario_deposito
     itens = await ServicoEstoque(sessao).listar_movimentacoes(
-        usuario.id,
+        usuario,
         deposito_id,
         inicio=inicio,
         limite=limite,
@@ -40,7 +40,7 @@ async def buscar(
 ) -> MovimentacaoSaida:
     usuario, deposito_id = usuario_deposito
     return MovimentacaoSaida.model_validate(
-        await ServicoEstoque(sessao).buscar_movimentacao(usuario.id, deposito_id, movimentacao_id)
+        await ServicoEstoque(sessao).buscar_movimentacao(usuario, deposito_id, movimentacao_id)
     )
 
 
@@ -53,7 +53,7 @@ async def criar(
     usuario, deposito_id = usuario_deposito
     payload = dados.model_dump()
     payload["usuario_id"] = payload.get("usuario_id") or usuario.id
-    item = await ServicoEstoque(sessao).registrar_movimentacao(usuario.id, deposito_id, payload)
+    item = await ServicoEstoque(sessao).registrar_movimentacao(usuario, deposito_id, payload)
     return MovimentacaoSaida.model_validate(item)
 
 
@@ -66,7 +66,7 @@ async def criar_por_codigo(
     usuario, deposito_id = usuario_deposito
     payload = dados.model_dump()
     payload["usuario_id"] = payload.get("usuario_id") or usuario.id
-    item = await ServicoEstoque(sessao).registrar_movimentacao_por_codigo(usuario.id, deposito_id, payload)
+    item = await ServicoEstoque(sessao).registrar_movimentacao_por_codigo(usuario, deposito_id, payload)
     return MovimentacaoSaida.model_validate(item)
 
 
@@ -80,7 +80,7 @@ async def entrada(
     payload = dados.model_dump()
     payload["usuario_id"] = payload.get("usuario_id") or usuario.id
     payload["tipo"] = TipoMovimentacao.ENTRADA
-    item = await ServicoEstoque(sessao).registrar_movimentacao(usuario.id, deposito_id, payload)
+    item = await ServicoEstoque(sessao).registrar_movimentacao(usuario, deposito_id, payload)
     return MovimentacaoSaida.model_validate(item)
 
 
@@ -94,5 +94,5 @@ async def saida(
     payload = dados.model_dump()
     payload["usuario_id"] = payload.get("usuario_id") or usuario.id
     payload["tipo"] = TipoMovimentacao.SAIDA
-    item = await ServicoEstoque(sessao).registrar_movimentacao(usuario.id, deposito_id, payload)
+    item = await ServicoEstoque(sessao).registrar_movimentacao(usuario, deposito_id, payload)
     return MovimentacaoSaida.model_validate(item)

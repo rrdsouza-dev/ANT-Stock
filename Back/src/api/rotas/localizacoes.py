@@ -19,7 +19,7 @@ async def listar(
     limite: int = Query(default=100, ge=1, le=200),
 ) -> list[LocalizacaoSaida]:
     usuario, deposito_id = usuario_deposito
-    itens = await ServicoEstoque(sessao).listar_localizacoes(usuario.id, deposito_id, inicio=inicio, limite=limite)
+    itens = await ServicoEstoque(sessao).listar_localizacoes(usuario, deposito_id, inicio=inicio, limite=limite)
     return [LocalizacaoSaida.model_validate(item) for item in itens]
 
 
@@ -31,7 +31,7 @@ async def buscar(
 ) -> LocalizacaoSaida:
     usuario, deposito_id = usuario_deposito
     return LocalizacaoSaida.model_validate(
-        await ServicoEstoque(sessao).buscar_localizacao(usuario.id, deposito_id, localizacao_id)
+        await ServicoEstoque(sessao).buscar_localizacao(usuario, deposito_id, localizacao_id)
     )
 
 
@@ -42,7 +42,7 @@ async def criar(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> LocalizacaoSaida:
     usuario, deposito_id = usuario_deposito
-    item = await ServicoEstoque(sessao).criar_localizacao(usuario.id, deposito_id, dados.model_dump())
+    item = await ServicoEstoque(sessao).criar_localizacao(usuario, deposito_id, dados.model_dump())
     return LocalizacaoSaida.model_validate(item)
 
 
@@ -55,7 +55,7 @@ async def editar(
 ) -> LocalizacaoSaida:
     usuario, deposito_id = usuario_deposito
     item = await ServicoEstoque(sessao).editar_localizacao(
-        usuario.id,
+        usuario,
         deposito_id,
         localizacao_id,
         dados.model_dump(exclude_unset=True),
@@ -70,5 +70,5 @@ async def remover(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> MensagemAPI:
     usuario, deposito_id = usuario_deposito
-    await ServicoEstoque(sessao).remover_localizacao(usuario.id, deposito_id, localizacao_id)
+    await ServicoEstoque(sessao).remover_localizacao(usuario, deposito_id, localizacao_id)
     return MensagemAPI(mensagem="Localizacao removida.")

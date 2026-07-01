@@ -1,8 +1,5 @@
 from src.repositorios.autenticacao import (
-    RepositorioCadastroPendente,
     RepositorioCodigoRecuperacao,
-    RepositorioHistoricoAprovacao,
-    RepositorioHistoricoRecusa,
     RepositorioPerfil,
     RepositorioUsuario,
     RepositorioUsuarioDeposito,
@@ -18,13 +15,10 @@ from src.repositorios.estoque import (
 from src.repositorios.pedido import RepositorioItemPedido, RepositorioPedido
 
 __all__ = [
-    "RepositorioCadastroPendente",
     "RepositorioCategoria",
     "RepositorioCodigoRecuperacao",
     "RepositorioDeposito",
     "RepositorioEstoque",
-    "RepositorioHistoricoAprovacao",
-    "RepositorioHistoricoRecusa",
     "RepositorioItemPedido",
     "RepositorioLocalizacao",
     "RepositorioMovimentacao",

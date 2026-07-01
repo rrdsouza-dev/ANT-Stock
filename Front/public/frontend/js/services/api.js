@@ -36,7 +36,7 @@ export const API = {
         email: payload.email,
         senha: payload.senha || payload.password,
         perfil: payload.perfil || payload.profile || "professor",
-        sala: payload.sala || undefined,
+        turmas: payload.turmas || [],
       },
     });
     return normalizeAuth(data);
@@ -69,9 +69,27 @@ export const API = {
     return this.request("/autenticacao/sair", { method: "POST" });
   },
 
+  // ── Usuários (gestão) ────────────────────────────────────────
+  async users({ inicio = 0, limite = 100 } = {}) {
+    const usuarios = await this.request(`/usuarios?inicio=${inicio}&limite=${limite}`);
+    return usuarios.map(normalizeUser);
+  },
+
   // ── Depósitos ─────────────────────────────────────────────────
   async deposits() {
     return this.request("/depositos");
+  },
+
+  async createDeposit(data) {
+    return this.request("/depositos", { method: "POST", body: data });
+  },
+
+  async updateDeposit(depositId, data) {
+    return this.request(`/depositos/${depositId}`, { method: "PATCH", body: data });
+  },
+
+  async deleteDeposit(depositId) {
+    return this.request(`/depositos/${depositId}`, { method: "DELETE" });
   },
 
   // ── Produtos ──────────────────────────────────────────────────
@@ -81,10 +99,6 @@ export const API = {
 
   async product(depositId, productId) {
     return this.request(`/${depositId}/produtos/${productId}`);
-  },
-
-  async productByCode(depositId, code) {
-    return this.request(`/${depositId}/produtos/codigo/${encodeURIComponent(code)}`);
   },
 
   async createProduct(depositId, data) {
@@ -140,36 +154,12 @@ export const API = {
     return this.request(`/${depositId}/estoque?${qs}`);
   },
 
-  async stockByProduct(depositId, productId) {
-    return this.request(`/${depositId}/estoque/produto/${productId}`);
-  },
-
-  async createStock(depositId, data) {
-    return this.request(`/${depositId}/estoque`, { method: "POST", body: data });
-  },
-
-  async updateStock(depositId, stockId, data) {
-    return this.request(`/${depositId}/estoque/${stockId}`, { method: "PATCH", body: data });
-  },
-
-  async deleteStock(depositId, stockId) {
-    return this.request(`/${depositId}/estoque/${stockId}`, { method: "DELETE" });
-  },
-
   // ── Movimentações ─────────────────────────────────────────────
   async movements(depositId, { inicio = 0, limite = 100, produtoId, pedidoId } = {}) {
     let qs = `inicio=${inicio}&limite=${limite}`;
     if (produtoId) qs += `&produto_id=${produtoId}`;
     if (pedidoId) qs += `&pedido_id=${pedidoId}`;
     return this.request(`/${depositId}/movimentacoes?${qs}`);
-  },
-
-  async movement(depositId, movementId) {
-    return this.request(`/${depositId}/movimentacoes/${movementId}`);
-  },
-
-  async createMovement(depositId, data) {
-    return this.request(`/${depositId}/movimentacoes`, { method: "POST", body: data });
   },
 
   async stockEntry(depositId, data) {
@@ -180,19 +170,11 @@ export const API = {
     return this.request(`/${depositId}/movimentacoes/saida`, { method: "POST", body: data });
   },
 
-  async movementByCode(depositId, data) {
-    return this.request(`/${depositId}/movimentacoes/codigo`, { method: "POST", body: data });
-  },
-
   // ── Pedidos ───────────────────────────────────────────────────
   async orders(depositId, { inicio = 0, limite = 100, usuarioId } = {}) {
     let qs = `inicio=${inicio}&limite=${limite}`;
     if (usuarioId) qs += `&usuario_id=${usuarioId}`;
     return this.request(`/${depositId}/pedidos?${qs}`);
-  },
-
-  async order(depositId, orderId) {
-    return this.request(`/${depositId}/pedidos/${orderId}`);
   },
 
   async createOrder(depositId, data) {
@@ -205,14 +187,6 @@ export const API = {
 
   async deleteOrder(depositId, orderId) {
     return this.request(`/${depositId}/pedidos/${orderId}`, { method: "DELETE" });
-  },
-
-  async orderItems(depositId, orderId) {
-    return this.request(`/${depositId}/pedidos/${orderId}/itens`);
-  },
-
-  async addOrderItem(depositId, orderId, data) {
-    return this.request(`/${depositId}/pedidos/${orderId}/itens`, { method: "POST", body: data });
   },
 };
 
@@ -233,5 +207,7 @@ export function normalizeUser(usuario) {
     email: usuario.email,
     role: usuario.perfil === "gestao" ? "Gestao" : "Professor",
     profile: usuario.perfil,
+    turmas: usuario.turmas || [],
+    ativo: usuario.ativo !== false,
   };
 }

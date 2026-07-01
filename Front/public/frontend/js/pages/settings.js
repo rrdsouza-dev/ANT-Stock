@@ -1,20 +1,12 @@
 import { el, renderIcons } from "../utils/helpers.js";
 import { AppShell } from "./_shell.js";
 import { notify } from "../components/notifications.js";
-import { LocalDB } from "../services/localInventoryStore.js";
-
-const SIMULATED_ROLES = [
-  { value: "administrador", label: "Administrador" },
-  { value: "gestor", label: "Gestor" },
-  { value: "professor", label: "Professor" },
-  { value: "operador", label: "Operador" },
-];
 
 export function SettingsPage(root, ctx) {
   AppShell(root, ctx.path, (content) => {
     const head = el("div", { class: "page-head" }, [el("div", {}, [el("h1", { text: "Configurações" }), el("p", { class: "muted", text: "Preferências do sistema e segurança." })])]);
 
-    const tabs = ["Geral", "Perfil Simulado", "Notificações", "Segurança"];
+    const tabs = ["Geral", "Notificações", "Segurança"];
     let active = "Geral";
     const tabsRow = el("div", { class: "tabs" });
     const body = el("div");
@@ -47,24 +39,6 @@ export function SettingsPage(root, ctx) {
         card.append(
           row("Idioma", "Português (Brasil)", el("select", { class: "select", style: "max-width:200px" }, [el("option", { text: "Português (Brasil)" }), el("option", { text: "English" })])),
           row("Tema escuro", "Em breve.", makeSwitch(false, () => notify("Tema será sincronizado em breve.", "info"))),
-        );
-      } else if (active === "Perfil Simulado") {
-        const current = LocalDB.getSetting("simulated_role", "professor");
-        const select = el("select", { class: "select", style: "max-width:240px" }, SIMULATED_ROLES.map(r => {
-          const opt = el("option", { value: r.value, text: r.label });
-          if (r.value === current) opt.selected = true;
-          return opt;
-        }));
-        select.addEventListener("change", () => {
-          LocalDB.setSetting("simulated_role", select.value);
-          notify(`Visualização simulada como "${SIMULATED_ROLES.find(r => r.value === select.value)?.label}".`, "info");
-        });
-        card.append(
-          el("p", { class: "muted", style: "margin-bottom:14px;font-size:0.85em" }, [
-            "Esta opção altera apenas a visualização de permissões na tela de Usuários, para fins de demonstração. ",
-            "O backend ainda não impõe controle de acesso real por perfil.",
-          ]),
-          row("Perfil ativo (simulado)", "Usado para pré-visualizar permissões na interface.", select),
         );
       } else if (active === "Notificações") {
         card.append(

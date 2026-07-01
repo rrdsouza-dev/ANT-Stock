@@ -24,6 +24,7 @@ from src.repositorios.autenticacao import (
     RepositorioUsuario,
     RepositorioUsuarioDeposito,
 )
+from src.repositorios.estoque import RepositorioDeposito
 
 _NOMES_PERFIL = {
     PerfilCodigo.PROFESSOR: "Professor",
@@ -37,6 +38,7 @@ class ServicoAutenticacao:
         self.perfis = RepositorioPerfil(sessao)
         self.usuarios = RepositorioUsuario(sessao)
         self.usuario_depositos = RepositorioUsuarioDeposito(sessao)
+        self.depositos = RepositorioDeposito(sessao)
         self.codigos = RepositorioCodigoRecuperacao(sessao)
 
     async def cadastrar(self, dados: CadastroEntrada) -> TokenSaida:
@@ -50,10 +52,17 @@ class ServicoAutenticacao:
             "senha_hash": gerar_hash(dados.senha),
             "provedor": "local",
             "perfil_id": perfil.id,
-            "sala": dados.sala if dados.perfil == PerfilCodigo.PROFESSOR else None,
+            "turmas": dados.turmas if dados.perfil == PerfilCodigo.PROFESSOR else [],
             "ativo": True,
         })
         usuario.perfil = perfil
+
+        # Todo usuario novo (professor ou gestao) recebe acesso automatico a todos
+        # os depositos ativos da escola. Evita o erro "Sem acesso a este deposito"
+        # logo apos o cadastro, ja que nao existe fluxo de vinculo manual no Front.
+        depositos_ativos = await self.depositos.listar(limite=200, filtros={"ativo": True})
+        await self.usuario_depositos.vincular_a_depositos(usuario.id, [d.id for d in depositos_ativos])
+
         return self._gerar_token(usuario)
 
     async def entrar(self, dados: EntrarEntrada) -> TokenSaida:
@@ -92,6 +101,9 @@ class ServicoAutenticacao:
 
     async def verificar_acesso(self, usuario_id: UUID, deposito_id: UUID) -> bool:
         return await self.usuario_depositos.existe(usuario_id, deposito_id)
+
+    async def listar_usuarios(self, inicio: int = 0, limite: int = 100) -> list[Usuario]:
+        return await self.usuarios.listar_com_perfil(inicio=inicio, limite=limite)
 
     # ── Métodos privados ────────────────────────────────────────
 

@@ -28,7 +28,7 @@ async def listar(
 ) -> list[PedidoSaida]:
     usuario, deposito_id = usuario_deposito
     itens = await ServicoEstoque(sessao).listar_pedidos(
-        usuario.id,
+        usuario,
         deposito_id,
         inicio=inicio,
         limite=limite,
@@ -44,7 +44,7 @@ async def buscar(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> PedidoSaida:
     usuario, deposito_id = usuario_deposito
-    return PedidoSaida.model_validate(await ServicoEstoque(sessao).buscar_pedido(usuario.id, deposito_id, pedido_id))
+    return PedidoSaida.model_validate(await ServicoEstoque(sessao).buscar_pedido(usuario, deposito_id, pedido_id))
 
 
 @router.post("", response_model=PedidoSaida, status_code=status.HTTP_201_CREATED)
@@ -56,7 +56,7 @@ async def criar(
     usuario, deposito_id = usuario_deposito
     payload = dados.model_dump()
     payload["usuario_id"] = payload.get("usuario_id") or usuario.id
-    item = await ServicoEstoque(sessao).criar_pedido(usuario.id, deposito_id, payload)
+    item = await ServicoEstoque(sessao).criar_pedido(usuario, deposito_id, payload)
     return PedidoSaida.model_validate(item)
 
 
@@ -69,7 +69,7 @@ async def editar(
 ) -> PedidoSaida:
     usuario, deposito_id = usuario_deposito
     item = await ServicoEstoque(sessao).editar_pedido(
-        usuario.id,
+        usuario,
         deposito_id,
         pedido_id,
         dados.model_dump(exclude_unset=True),
@@ -84,7 +84,7 @@ async def remover(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> MensagemAPI:
     usuario, deposito_id = usuario_deposito
-    await ServicoEstoque(sessao).remover_pedido(usuario.id, deposito_id, pedido_id)
+    await ServicoEstoque(sessao).remover_pedido(usuario, deposito_id, pedido_id)
     return MensagemAPI(mensagem="Pedido removido.")
 
 
@@ -95,7 +95,7 @@ async def listar_itens(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> list[ItemPedidoSaida]:
     usuario, deposito_id = usuario_deposito
-    itens = await ServicoEstoque(sessao).itens_do_pedido(usuario.id, deposito_id, pedido_id)
+    itens = await ServicoEstoque(sessao).itens_do_pedido(usuario, deposito_id, pedido_id)
     return [ItemPedidoSaida.model_validate(item) for item in itens]
 
 
@@ -107,5 +107,5 @@ async def adicionar_item(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> ItemPedidoSaida:
     usuario, deposito_id = usuario_deposito
-    item = await ServicoEstoque(sessao).adicionar_item_pedido(usuario.id, deposito_id, pedido_id, dados.model_dump())
+    item = await ServicoEstoque(sessao).adicionar_item_pedido(usuario, deposito_id, pedido_id, dados.model_dump())
     return ItemPedidoSaida.model_validate(item)

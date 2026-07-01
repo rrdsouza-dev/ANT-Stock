@@ -7,6 +7,19 @@ from src.esquemas.base import SchemaComDatas
 from src.modelos import TipoDeposito, TipoMovimentacao
 
 
+class DepositoEntrada(BaseModel):
+    nome: str = Field(min_length=1, max_length=160)
+    tipo: TipoDeposito = TipoDeposito.ESCOLAR
+    descricao: str | None = Field(default=None, max_length=500)
+
+
+class DepositoAtualizar(BaseModel):
+    nome: str | None = Field(default=None, min_length=1, max_length=160)
+    tipo: TipoDeposito | None = None
+    descricao: str | None = Field(default=None, max_length=500)
+    ativo: bool | None = None
+
+
 class DepositoSaida(SchemaComDatas):
     nome: str
     tipo: TipoDeposito

@@ -1,24 +1,14 @@
-from src.modelos.autenticacao import (
-    CadastroPendente,
-    CodigoRecuperacao,
-    HistoricoAprovacao,
-    HistoricoRecusa,
-    Perfil,
-    Usuario,
-    UsuarioDeposito,
-)
-from src.modelos.base import PerfilCodigo, StatusCadastro, StatusPedido, TipoDeposito, TipoMovimentacao
+from src.modelos.autenticacao import CodigoRecuperacao, Perfil, Usuario, UsuarioDeposito
+from src.modelos.base import PerfilCodigo, StatusPedido, TipoDeposito, TipoMovimentacao, TURMAS_VALIDAS
 from src.modelos.estoque import Categoria, Deposito, Estoque, Localizacao, Movimentacao, Produto
 from src.modelos.pedido import ItemPedido, Pedido
 
 __all__ = [
-    "CadastroPendente",
+    "TURMAS_VALIDAS",
     "Categoria",
     "CodigoRecuperacao",
     "Deposito",
     "Estoque",
-    "HistoricoAprovacao",
-    "HistoricoRecusa",
     "ItemPedido",
     "Localizacao",
     "Movimentacao",
@@ -26,7 +16,6 @@ __all__ = [
     "Perfil",
     "PerfilCodigo",
     "Produto",
-    "StatusCadastro",
     "StatusPedido",
     "TipoDeposito",
     "TipoMovimentacao",

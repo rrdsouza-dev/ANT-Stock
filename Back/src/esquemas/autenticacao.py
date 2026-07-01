@@ -1,9 +1,23 @@
-from datetime import datetime
+import re
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-from src.modelos import CadastroPendente, HistoricoAprovacao, HistoricoRecusa, PerfilCodigo, StatusCadastro, Usuario
+from src.modelos import PerfilCodigo, TURMAS_VALIDAS, Usuario
+
+# Regras de senha replicadas no backend (nunca confiar apenas na validacao do front).
+_REGEX_MAIUSCULA = re.compile(r"[A-Z]")
+_REGEX_DIGITO = re.compile(r"\d")
+
+
+def _validar_forca_senha(senha: str) -> str:
+    if len(senha) < 8:
+        raise ValueError("A senha deve ter ao menos 8 caracteres.")
+    if not _REGEX_MAIUSCULA.search(senha):
+        raise ValueError("A senha deve conter ao menos uma letra maiuscula.")
+    if not _REGEX_DIGITO.search(senha):
+        raise ValueError("A senha deve conter ao menos um numero.")
+    return senha
 
 
 class CadastroEntrada(BaseModel):
@@ -11,7 +25,7 @@ class CadastroEntrada(BaseModel):
     email: EmailStr
     senha: str = Field(min_length=8, max_length=128)
     perfil: PerfilCodigo = PerfilCodigo.PROFESSOR
-    sala: str | None = Field(default=None, max_length=30)
+    turmas: list[str] = Field(default_factory=list)
 
     @field_validator("perfil")
     @classmethod
@@ -20,61 +34,18 @@ class CadastroEntrada(BaseModel):
             raise ValueError("O perfil ADM nao pode ser solicitado pelo cadastro publico.")
         return valor
 
-
-class CadastroSolicitadoSaida(BaseModel):
-    mensagem: str
-    status: StatusCadastro = StatusCadastro.PENDENTE
-
-
-class CadastroPendenteSaida(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    nome: str
-    email: EmailStr
-    perfil_solicitado: PerfilCodigo
-    status: StatusCadastro
-    criado_em: datetime
-
+    @field_validator("senha")
     @classmethod
-    def de_modelo(cls, cadastro: CadastroPendente) -> "CadastroPendenteSaida":
-        return cls.model_validate(cadastro)
+    def validar_senha(cls, valor: str) -> str:
+        return _validar_forca_senha(valor)
 
-
-class HistoricoAprovacaoSaida(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    usuario_id: UUID
-    nome: str
-    email: EmailStr
-    perfil: PerfilCodigo
-    aprovado_por_id: UUID
-    criado_em: datetime
-
-
-class HistoricoRecusaSaida(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    nome: str
-    email: EmailStr
-    perfil_solicitado: PerfilCodigo
-    recusado_por_id: UUID
-    motivo: str | None = None
-    criado_em: datetime
-
-
-class AcaoCadastroMassaEntrada(BaseModel):
-    ids: list[UUID] = Field(min_length=1, max_length=100)
-
-
-class RecusarCadastroEntrada(BaseModel):
-    motivo: str | None = Field(default=None, max_length=500)
-
-
-class RecusarCadastroMassaEntrada(AcaoCadastroMassaEntrada):
-    motivo: str | None = Field(default=None, max_length=500)
+    @field_validator("turmas")
+    @classmethod
+    def validar_turmas(cls, valor: list[str]) -> list[str]:
+        invalidas = [t for t in valor if t not in TURMAS_VALIDAS]
+        if invalidas:
+            raise ValueError(f"Turma(s) invalida(s): {', '.join(invalidas)}.")
+        return valor
 
 
 class EntrarEntrada(BaseModel):
@@ -92,7 +63,7 @@ class UsuarioSaida(BaseModel):
     provedor: str
     perfil_id: UUID
     perfil: PerfilCodigo | None = None
-    sala: str | None = None
+    turmas: list[str] = Field(default_factory=list)
     ativo: bool
 
     @classmethod
@@ -106,7 +77,7 @@ class UsuarioSaida(BaseModel):
             provedor=usuario.provedor,
             perfil_id=usuario.perfil_id,
             perfil=perfil,
-            sala=usuario.sala,
+            turmas=usuario.turmas,
             ativo=usuario.ativo,
         )
 
@@ -136,7 +107,7 @@ class ValidarCodigoEntrada(BaseModel):
 class NovaSenhaEntrada(BaseModel):
     email: EmailStr
     codigo: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
-    nova_senha: str = Field(min_length=6, max_length=128)
+    nova_senha: str = Field(min_length=8, max_length=128)
 
     @field_validator("codigo")
     @classmethod
@@ -144,3 +115,8 @@ class NovaSenhaEntrada(BaseModel):
         if not valor.isdigit():
             raise ValueError("O codigo deve conter apenas numeros.")
         return valor
+
+    @field_validator("nova_senha")
+    @classmethod
+    def validar_senha(cls, valor: str) -> str:
+        return _validar_forca_senha(valor)

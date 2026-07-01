@@ -19,7 +19,7 @@ async def listar(
     limite: int = Query(default=100, ge=1, le=200),
 ) -> list[ProdutoSaida]:
     usuario, deposito_id = usuario_deposito
-    itens = await ServicoEstoque(sessao).listar_produtos(usuario.id, deposito_id, inicio=inicio, limite=limite)
+    itens = await ServicoEstoque(sessao).listar_produtos(usuario, deposito_id, inicio=inicio, limite=limite)
     return [ProdutoSaida.model_validate(item) for item in itens]
 
 
@@ -30,7 +30,7 @@ async def buscar(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> ProdutoSaida:
     usuario, deposito_id = usuario_deposito
-    return ProdutoSaida.model_validate(await ServicoEstoque(sessao).buscar_produto(usuario.id, deposito_id, produto_id))
+    return ProdutoSaida.model_validate(await ServicoEstoque(sessao).buscar_produto(usuario, deposito_id, produto_id))
 
 
 @router.get("/codigo/{codigo}", response_model=ProdutoSaida)
@@ -40,7 +40,7 @@ async def buscar_por_codigo(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> ProdutoSaida:
     usuario, deposito_id = usuario_deposito
-    item = await ServicoEstoque(sessao).buscar_produto_por_codigo(usuario.id, deposito_id, codigo)
+    item = await ServicoEstoque(sessao).buscar_produto_por_codigo(usuario, deposito_id, codigo)
     return ProdutoSaida.model_validate(item)
 
 
@@ -51,7 +51,7 @@ async def criar(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> ProdutoSaida:
     usuario, deposito_id = usuario_deposito
-    item = await ServicoEstoque(sessao).criar_produto(usuario.id, deposito_id, dados.model_dump())
+    item = await ServicoEstoque(sessao).criar_produto(usuario, deposito_id, dados.model_dump())
     return ProdutoSaida.model_validate(item)
 
 
@@ -64,7 +64,7 @@ async def editar(
 ) -> ProdutoSaida:
     usuario, deposito_id = usuario_deposito
     item = await ServicoEstoque(sessao).editar_produto(
-        usuario.id,
+        usuario,
         deposito_id,
         produto_id,
         dados.model_dump(exclude_unset=True),
@@ -79,5 +79,5 @@ async def remover(
     sessao: AsyncSession = Depends(sessao_db),
 ) -> MensagemAPI:
     usuario, deposito_id = usuario_deposito
-    await ServicoEstoque(sessao).remover_produto(usuario.id, deposito_id, produto_id)
+    await ServicoEstoque(sessao).remover_produto(usuario, deposito_id, produto_id)
     return MensagemAPI(mensagem="Produto removido.")

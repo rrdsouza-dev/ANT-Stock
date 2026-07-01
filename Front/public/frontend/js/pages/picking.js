@@ -107,7 +107,7 @@ export function PickingPage(root, ctx) {
           return;
         }
 
-        const statusColors = { aberto: "chip-warning", fechado: "chip-success", cancelado: "chip-danger" };
+        const statusColors = { aberto: "chip-warning", separado: "chip-info", concluido: "chip-success", cancelado: "chip-danger" };
         const table = DataTable({
           rows: ordersData, pageSize: 10,
           columns: [
@@ -119,7 +119,9 @@ export function PickingPage(root, ctx) {
             { key: "criado_em", label: "Criado em" },
             { key: "acoes", label: "Ações", render: (r) =>
               el("div", { class: "pc-actions" }, [
-                el("button", { class: "icon-btn", title: "Fechar pedido", onclick: guardedClick(() => changeStatus(r._raw, "fechado")) },
+                el("button", { class: "icon-btn", title: "Marcar como separado", onclick: guardedClick(() => changeStatus(r._raw, "separado")) },
+                  [el("i", { "data-lucide": "package-check" })]),
+                el("button", { class: "icon-btn", title: "Concluir pedido", onclick: guardedClick(() => changeStatus(r._raw, "concluido")) },
                   [el("i", { "data-lucide": "check-circle-2" })]),
                 el("button", { class: "icon-btn", title: "Cancelar pedido", onclick: guardedClick(() => changeStatus(r._raw, "cancelado")) },
                   [el("i", { "data-lucide": "x-circle" })]),

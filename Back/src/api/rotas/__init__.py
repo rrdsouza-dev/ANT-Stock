@@ -7,4 +7,5 @@ __all__ = [
     "movimentacoes",
     "pedidos",
     "produtos",
+    "usuarios",
 ]

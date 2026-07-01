@@ -1,18 +1,13 @@
 /**
  * productModal.js — Modais de produto, escaneamento, entrada e saída.
- * Localização totalmente padronizada por selects (sem texto livre).
+ * Categoria e Localização sempre vêm do backend (sem campos fictícios).
  */
 
 import { el, renderIcons } from "../utils/helpers.js";
 import { notify } from "./notifications.js";
 import { API } from "../services/api.js";
 
-// ── Opções padronizadas ──────────────────────────────────────────
-const TORRES      = ["Torre A", "Torre B", "Torre C"];
-const CORREDORES  = ["1", "2", "3", "4"];
-const PRATELEIRAS = ["1", "2", "3", "4", "5"];
-const POSICOES    = ["A1", "A2", "A3", "B1", "B2", "B3"];
-const UNIDADES    = ["UN", "CX", "KG", "L", "M", "PC", "PAR", "FD", "RL"];
+const UNIDADES = ["UN", "CX", "KG", "L", "M", "PC", "PAR", "FD", "RL"];
 
 // ── Helpers ──────────────────────────────────────────────────────
 function mkSelect(opts, selected, emptyLabel) {
@@ -36,6 +31,33 @@ function field(label, input) {
   ]);
 }
 
+// Campo de Categoria com select + botão "+" para criar uma nova categoria
+// sem sair do modal atual (Produto, Entrada e Saída usam o mesmo helper).
+function categoryField(depositId, categories, selectedId) {
+  const select = mkSelect(categories, selectedId, "Sem categoria");
+  const addBtn = el("button", {
+    type: "button", class: "icon-btn", title: "Nova categoria",
+  }, [el("i", { "data-lucide": "plus" })]);
+
+  addBtn.addEventListener("click", async () => {
+    const nome = (prompt("Nome da nova categoria:") || "").trim();
+    if (!nome) return;
+    try {
+      const nova = await API.createCategory(depositId, { nome });
+      select.appendChild(el("option", { value: nova.id, text: nova.nome, selected: true }));
+      notify("Categoria criada!", "success");
+    } catch (err) {
+      notify(err.message || "Erro ao criar categoria.", "error");
+    }
+  });
+
+  const wrapper = el("div", { class: "field" }, [
+    el("label", { class: "field-label", text: "Categoria" }),
+    el("div", { class: "field-inline-add" }, [select, addBtn]),
+  ]);
+  return { wrapper, select };
+}
+
 function infoRow(label, value) {
   return el("div", { class: "scan-info-row" }, [
     el("span", { class: "scan-info-label muted", text: label }),
@@ -55,6 +77,7 @@ function openBackdrop(card) {
 // ── Modal de Produto (criar / editar) ────────────────────────────
 export function openProductModal({ depositId, product = null, categories = [], locations = [], onSave }) {
   const isEdit = !!product;
+  const categoria = categoryField(depositId, categories, product?.categoria_id);
 
   const f = {
     nome:       el("input", { class: "input", value: product?.nome || "", placeholder: "Nome do produto *" }),
@@ -65,12 +88,7 @@ export function openProductModal({ depositId, product = null, categories = [], l
     qty_caixa:  el("input", { class: "input", type: "number", min: "1", value: product?.quantidade_por_caixa || "" }),
     validade:   el("input", { class: "input", value: product?.validade || "", placeholder: "MM/AAAA" }),
     obs:        el("textarea", { class: "input", style: "height:64px;resize:vertical" }),
-    categoria:  mkSelect(categories, product?.categoria_id, "Sem categoria"),
     localizacao: mkSelect(locations, product?.localizacao_id, "Sem localização"),
-    torre:      mkSelect(TORRES,      product?.torre || "",      "Torre"),
-    corredor:   mkSelect(CORREDORES,  product?.corredor || "",   "Corredor"),
-    prateleira: mkSelect(PRATELEIRAS, product?.prateleira || "", "Prateleira"),
-    posicao:    mkSelect(POSICOES,    product?.posicao || "",    "Posição"),
   };
   if (product?.observacoes) f.obs.value = product.observacoes;
 
@@ -93,18 +111,12 @@ export function openProductModal({ depositId, product = null, categories = [], l
           field("Qtd. por caixa", f.qty_caixa),
           field("Validade", f.validade),
         ]),
-        field("Categoria", f.categoria),
+        categoria.wrapper,
         field("Observações", f.obs),
       ]),
       el("div", { class: "modal-section" }, [
-        el("h4", { class: "modal-section-title", text: "Localização Física" }),
-        el("div", { class: "form-grid-2" }, [
-          field("Torre", f.torre),
-          field("Corredor", f.corredor),
-          field("Prateleira", f.prateleira),
-          field("Posição", f.posicao),
-        ]),
-        field("Localização do sistema", f.localizacao),
+        el("h4", { class: "modal-section-title", text: "Localização" }),
+        field("Localização", f.localizacao),
       ]),
       errEl,
     ]),
@@ -124,7 +136,7 @@ export function openProductModal({ depositId, product = null, categories = [], l
         nome,
         codigo:              f.codigo.value.trim() || undefined,
         quantidade_minima:   parseInt(f.qtd_min.value) || 0,
-        categoria_id:        f.categoria.value || undefined,
+        categoria_id:        categoria.select.value || undefined,
         localizacao_id:      f.localizacao.value || undefined,
         unidade_medida:      f.unidade.value || undefined,
         quantidade_por_caixa: parseInt(f.qty_caixa.value) || undefined,
@@ -148,41 +160,26 @@ export function openProductModal({ depositId, product = null, categories = [], l
   return close;
 }
 
-// ── Modal de Visualização de Card (botão "Visualizar Card") ───────
-// Abre o mesmo card que seria exibido após um escaneamento real.
-// NÃO cria movimentações, NÃO altera dados.
-export function openPreviewCard({ depositId, products = [], categories = [], onSave }) {
-  // Use first product if available, otherwise show empty state
-  const product = products[0] || null;
-  const catMap  = Object.fromEntries(categories.map(c => [c.id, c.nome]));
-
-  if (product) {
-    _openFoundCard({ depositId, product, catMap, products, categories, onSave, isPreview: true });
-  } else {
-    // Show the "not found" quick registration card as preview
-    _openNotFoundCard({ depositId, code: "EXEMPLO-001", categories, onSave, isPreview: true });
-  }
-}
-
 // ── Modal pós-escaneamento ────────────────────────────────────────
-// Chamado automaticamente ao escanear um código real.
+// Chamado automaticamente ao escanear um código real (leitor USB/teclado).
 export function openScanModal({ depositId, code, products = [], categories = [], locations = [], onSave }) {
   const found = products.find(p => p.codigo === code || p.code === code);
   const catMap = Object.fromEntries(categories.map(c => [c.id, c.nome]));
+  const locMap = Object.fromEntries(locations.map(l => [l.id, l.nome]));
   if (found) {
-    _openFoundCard({ depositId, product: found, catMap, products, categories, locations, onSave });
+    _openFoundCard({ depositId, product: found, catMap, locMap, products, categories, locations, onSave });
   } else {
     _openNotFoundCard({ depositId, code, categories, locations, onSave });
   }
 }
 
 // ── Card: produto encontrado ──────────────────────────────────────
-function _openFoundCard({ depositId, product, catMap, products, categories, locations, onSave, isPreview = false }) {
+function _openFoundCard({ depositId, product, catMap, locMap, products, categories, locations, onSave }) {
   const qty = product.quantidade ?? product.quantity ?? "—";
 
   const card = el("div", { class: "modal" }, [
     el("div", { class: "modal-header" }, [
-      el("span", { class: "badge badge-success", text: isPreview ? "Prévia do Card" : "Produto encontrado" }),
+      el("span", { class: "badge badge-success", text: "Produto encontrado" }),
       el("h3", { text: product.nome || product.name }),
     ]),
     el("div", { class: "product-modal-body" }, [
@@ -193,23 +190,21 @@ function _openFoundCard({ depositId, product, catMap, products, categories, loca
         infoRow("Unidade de medida", product.unidade_medida || "—"),
         infoRow("Lote",             product.lote || "—"),
         infoRow("Validade",          product.validade || "—"),
-        infoRow("Localização",       product.localizacao_id || "—"),
+        infoRow("Localização",       locMap[product.localizacao_id] || "—"),
         infoRow("Observações",       product.observacoes || "—"),
         infoRow("Data de cadastro",  product.criado_em ? product.criado_em.slice(0,10) : "—"),
       ]),
     ]),
     el("div", { class: "modal-actions" }, [
       el("button", { class: "btn btn-ghost", text: "Fechar", onclick: () => backdrop.remove() }),
-      ...(isPreview ? [] : [
-        el("button", { class: "btn btn-secondary", text: "Registrar Saída", onclick: () => {
-          backdrop.remove();
-          openExitModal({ depositId, product, products, onSave });
-        }}),
-        el("button", { class: "btn btn-primary", text: "Registrar Entrada", onclick: () => {
-          backdrop.remove();
-          openEntryModal({ depositId, product, products, locations, onSave });
-        }}),
-      ]),
+      el("button", { class: "btn btn-secondary", text: "Registrar Saída", onclick: () => {
+        backdrop.remove();
+        openExitModal({ depositId, product, products, categories, locations, onSave });
+      }}),
+      el("button", { class: "btn btn-primary", text: "Registrar Entrada", onclick: () => {
+        backdrop.remove();
+        openEntryModal({ depositId, product, products, categories, locations, onSave });
+      }}),
     ]),
   ]);
 
@@ -222,24 +217,20 @@ function _openFoundCard({ depositId, product, catMap, products, categories, loca
 }
 
 // ── Card: produto NÃO encontrado (cadastro rápido) ────────────────
-function _openNotFoundCard({ depositId, code, categories, locations, onSave, isPreview = false }) {
+function _openNotFoundCard({ depositId, code, categories, locations, onSave }) {
+  const categoria = categoryField(depositId, categories, null);
   const f = {
     nome:      el("input", { class: "input", placeholder: "Nome do produto *" }),
     codigo:    el("input", { class: "input", value: code, placeholder: "Código" }),
-    categoria: mkSelect(categories, null, "Sem categoria"),
     unidade:   mkSelect(UNIDADES, "", "Unidade de medida"),
     lote:      el("input", { class: "input", placeholder: "Número do lote" }),
     qty_caixa: el("input", { class: "input", type: "number", min: "1", placeholder: "Qtd. por caixa" }),
     quantidade: el("input", { class: "input", type: "number", min: "0", value: "1", placeholder: "Quantidade inicial" }),
     validade:  el("input", { class: "input", placeholder: "Validade (MM/AAAA)" }),
     obs:       el("textarea", { class: "input", style: "height:56px;resize:vertical", placeholder: "Observações" }),
-    torre:     mkSelect(TORRES,      "", "Torre"),
-    corredor:  mkSelect(CORREDORES,  "", "Corredor"),
-    prateleira:mkSelect(PRATELEIRAS, "", "Prateleira"),
-    posicao:   mkSelect(POSICOES,    "", "Posição"),
+    localizacao: mkSelect(locations, null, "Sem localização"),
   };
 
-  // Pre-fill date/time
   const now = new Date();
   const dataEntrada = now.toLocaleDateString("pt-BR");
   const horaEntrada = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
@@ -250,7 +241,7 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
 
   const card = el("div", { class: "modal" }, [
     el("div", { class: "modal-header" }, [
-      el("span", { class: "badge badge-warning", text: isPreview ? "Prévia do Card" : "Produto não encontrado" }),
+      el("span", { class: "badge badge-warning", text: "Produto não encontrado" }),
       el("h3", { text: "Cadastro Rápido" }),
       el("p", { class: "muted", style: "font-size:.83em;margin:2px 0 0" }, [
         `Código: ${code}  |  Data entrada: ${dataEntrada}  ${horaEntrada}`,
@@ -260,7 +251,7 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
       field("Nome *", f.nome),
       el("div", { class: "form-grid-2" }, [
         field("Código de barras", f.codigo),
-        field("Categoria", f.categoria),
+        categoria.wrapper,
       ]),
       el("div", { class: "form-grid-2" }, [
         field("Quantidade inicial", f.quantidade),
@@ -272,15 +263,7 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
       ]),
       el("div", { class: "form-grid-2" }, [
         field("Validade", f.validade),
-      ]),
-      el("div", { class: "modal-section" }, [
-        el("h4", { class: "modal-section-title", text: "Localização" }),
-        el("div", { class: "form-grid-2" }, [
-          field("Torre", f.torre),
-          field("Corredor", f.corredor),
-          field("Prateleira", f.prateleira),
-          field("Posição", f.posicao),
-        ]),
+        field("Localização", f.localizacao),
       ]),
       field("Observações", f.obs),
       errEl,
@@ -295,24 +278,17 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
   cancelBtn.addEventListener("click", close);
 
   saveBtn.addEventListener("click", async () => {
-    if (isPreview) { close(); return; }
     const nome = f.nome.value.trim();
     if (!nome) { errEl.textContent = "Nome é obrigatório."; return; }
     errEl.textContent = "";
     saveBtn.disabled = true;
     try {
-      const locNome = [
-        f.torre.value ? f.torre.value : "",
-        f.corredor.value ? "Corredor " + f.corredor.value : "",
-        f.prateleira.value ? "Prateleira " + f.prateleira.value : "",
-        f.posicao.value,
-      ].filter(Boolean).join(" / ") || undefined;
-
-      // 1. Create product
+      // 1. Cria o produto
       const product = await API.createProduct(depositId, {
         nome,
         codigo:              f.codigo.value.trim() || undefined,
-        categoria_id:        f.categoria.value || undefined,
+        categoria_id:        categoria.select.value || undefined,
+        localizacao_id:      f.localizacao.value || undefined,
         unidade_medida:      f.unidade.value || undefined,
         quantidade_por_caixa: parseInt(f.qty_caixa.value) || undefined,
         lote:                f.lote.value.trim() || undefined,
@@ -320,12 +296,13 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
         observacoes:         f.obs.value.trim() || undefined,
       });
 
-      // 2. Register entry (if quantity > 0)
+      // 2. Registra a entrada inicial (se quantidade > 0), na localização escolhida
       const qty = parseInt(f.quantidade.value) || 0;
       if (qty > 0) {
         await API.stockEntry(depositId, {
           produto_id: product.id,
           quantidade: qty,
+          destino_id: f.localizacao.value || undefined,
           observacao: `Cadastro rápido via escaneamento. ${f.obs.value.trim()}`.trim() || undefined,
         });
       }
@@ -348,21 +325,18 @@ function _openNotFoundCard({ depositId, code, categories, locations, onSave, isP
 // ── Modal de Entrada ──────────────────────────────────────────────
 export function openEntryModal({ depositId, product = null, products = [], categories = [], locations = [], onSave }) {
   const productSelect = product ? null : mkSelect(
-    products.map(p => ({ id: p.id || p.id, nome: `${p.nome || p.name} (${p.codigo || p.code || ""})` })),
+    products.map(p => ({ id: p.id, nome: `${p.nome || p.name} (${p.codigo || p.code || ""})` })),
     null, "Selecione o produto *"
   );
+  const categoria = categoryField(depositId, categories, product?.categoria_id);
 
   const f = {
     qty:        el("input", { class: "input", type: "number", min: "1", value: "1", placeholder: "Quantidade recebida *" }),
     lote:       el("input", { class: "input", placeholder: "Número do lote" }),
     qty_caixa:  el("input", { class: "input", type: "number", min: "1", placeholder: "Qtd. por caixa" }),
     validade:   el("input", { class: "input", placeholder: "Validade (MM/AAAA)" }),
-    categoria:  mkSelect(categories, product?.categoria_id || null, "Sem categoria"),
+    localizacao: mkSelect(locations, product?.localizacao_id || null, "Sem localização"),
     obs:        el("input", { class: "input", placeholder: "Observação (opcional)" }),
-    torre:      mkSelect(TORRES,      "", "Torre"),
-    corredor:   mkSelect(CORREDORES,  "", "Corredor"),
-    prateleira: mkSelect(PRATELEIRAS, "", "Prateleira"),
-    posicao:    mkSelect(POSICOES,    "", "Posição"),
   };
 
   const errEl = el("div", { class: "error-text" });
@@ -380,15 +354,9 @@ export function openEntryModal({ depositId, product = null, products = [], categ
       field("Qtd. por caixa", f.qty_caixa),
       field("Validade", f.validade),
     ]),
-    field("Categoria", f.categoria),
-    el("div", { class: "modal-section" }, [
-      el("h4", { class: "modal-section-title", text: "Localização" }),
-      el("div", { class: "form-grid-2" }, [
-        field("Torre", f.torre),
-        field("Corredor", f.corredor),
-        field("Prateleira", f.prateleira),
-        field("Posição", f.posicao),
-      ]),
+    el("div", { class: "form-grid-2" }, [
+      categoria.wrapper,
+      field("Localização", f.localizacao),
     ]),
     field("Observação", f.obs),
     errEl,
@@ -416,21 +384,22 @@ export function openEntryModal({ depositId, product = null, products = [], categ
       await API.stockEntry(depositId, {
         produto_id: productId,
         quantidade: qty,
+        destino_id: f.localizacao.value || undefined,
         lote: f.lote.value.trim() || undefined,
         validade_lote: f.validade.value.trim() || undefined,
         observacao: f.obs.value.trim() || undefined,
       });
 
-      // Update product fields if filled (categoria, lote, validade, qty_caixa)
-      if (product?.id) {
-        const updates = {};
-        if (f.categoria.value) updates.categoria_id = f.categoria.value;
-        if (f.lote.value.trim()) updates.lote = f.lote.value.trim();
-        if (f.validade.value.trim()) updates.validade = f.validade.value.trim();
-        if (f.qty_caixa.value) updates.quantidade_por_caixa = parseInt(f.qty_caixa.value);
-        if (Object.keys(updates).length > 0) {
-          await API.updateProduct(depositId, product.id, updates).catch(() => {});
-        }
+      // Mantém o cadastro do produto atualizado (categoria, localização, lote, validade, qty_caixa)
+      // para que essas informações apareçam corretamente ao consultar o produto depois.
+      const updates = {};
+      if (categoria.select.value) updates.categoria_id = categoria.select.value;
+      if (f.localizacao.value) updates.localizacao_id = f.localizacao.value;
+      if (f.lote.value.trim()) updates.lote = f.lote.value.trim();
+      if (f.validade.value.trim()) updates.validade = f.validade.value.trim();
+      if (f.qty_caixa.value) updates.quantidade_por_caixa = parseInt(f.qty_caixa.value);
+      if (productId && Object.keys(updates).length > 0) {
+        await API.updateProduct(depositId, productId, updates).catch(() => {});
       }
 
       notify("Entrada registrada com sucesso!", "success");
@@ -447,15 +416,16 @@ export function openEntryModal({ depositId, product = null, products = [], categ
 }
 
 // ── Modal de Saída ────────────────────────────────────────────────
-export function openExitModal({ depositId, product = null, products = [], categories = [], onSave }) {
+export function openExitModal({ depositId, product = null, products = [], categories = [], locations = [], onSave }) {
   const productSelect = product ? null : mkSelect(
     products.map(p => ({ id: p.id, nome: `${p.nome || p.name} (${p.codigo || p.code || ""})` })),
     null, "Selecione o produto *"
   );
+  const categoria = categoryField(depositId, categories, product?.categoria_id);
 
   const f = {
     qty:      el("input", { class: "input", type: "number", min: "1", value: "1", placeholder: "Quantidade retirada *" }),
-    categoria: mkSelect(categories, product?.categoria_id || null, "Sem categoria"),
+    localizacao: mkSelect(locations, product?.localizacao_id || null, "Sem localização"),
     destino:  el("input", { class: "input", placeholder: "Destino (ex: Sala 3, Professor João)" }),
     obs:      el("input", { class: "input", placeholder: "Observação (opcional)" }),
   };
@@ -468,7 +438,10 @@ export function openExitModal({ depositId, product = null, products = [], catego
   if (productSelect) bodyChildren.push(field("Produto *", productSelect));
   bodyChildren.push(
     field("Quantidade retirada *", f.qty),
-    field("Categoria", f.categoria),
+    el("div", { class: "form-grid-2" }, [
+      categoria.wrapper,
+      field("Localização (origem)", f.localizacao),
+    ]),
     field("Destino", f.destino),
     field("Observação", f.obs),
     errEl,
@@ -496,16 +469,19 @@ export function openExitModal({ depositId, product = null, products = [], catego
       await API.stockExit(depositId, {
         produto_id: productId,
         quantidade: qty,
+        origem_id: f.localizacao.value || undefined,
         destino_texto: f.destino.value.trim() || undefined,
         observacao: f.obs.value.trim() || undefined,
       });
 
-      // Update product category if user selected one
-      if (product?.id && f.categoria.value) {
-        await API.updateProduct(depositId, product.id, {
-          categoria_id: f.categoria.value,
-        }).catch(() => {});
+      // Mantém o cadastro do produto atualizado (categoria/localização), assim como na Entrada.
+      const updates = {};
+      if (categoria.select.value) updates.categoria_id = categoria.select.value;
+      if (f.localizacao.value) updates.localizacao_id = f.localizacao.value;
+      if (productId && Object.keys(updates).length > 0) {
+        await API.updateProduct(depositId, productId, updates).catch(() => {});
       }
+
       notify("Saída registrada com sucesso!", "success");
       close();
       onSave?.();
@@ -520,16 +496,16 @@ export function openExitModal({ depositId, product = null, products = [], catego
 }
 
 // ── openMovementModal (compat com inventory.js) ───────────────────
-export function openMovementModal({ depositId, products = [], categories = [], onSave, initialCode }) {
+export function openMovementModal({ depositId, products = [], categories = [], locations = [], onSave, initialCode }) {
   const matched = initialCode ? products.find(p => p.code === initialCode || p.codigo === initialCode) : null;
   if (matched) {
-    _openFoundCard({ depositId, product: matched, catMap: Object.fromEntries(categories.map(c => [c.id, c.nome])), products, categories, onSave });
+    _openFoundCard({
+      depositId, product: matched,
+      catMap: Object.fromEntries(categories.map(c => [c.id, c.nome])),
+      locMap: Object.fromEntries(locations.map(l => [l.id, l.nome])),
+      products, categories, locations, onSave,
+    });
   } else {
-    openEntryModal({ depositId, products, categories, onSave });
+    openEntryModal({ depositId, products, categories, locations, onSave });
   }
-}
-
-// ── LocationDetailBadge (sem localStorage — usa dados do backend) ─
-export function LocationDetailBadge(productId) {
-  return null; // Localização exibida nos cards via API
 }
